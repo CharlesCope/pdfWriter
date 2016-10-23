@@ -1,0 +1,44 @@
+// This came from Open Office file to PDF.
+// The file only has this text. Japanese Hello こんにちは
+// That is 15 unique characters JapnesHlo こんにちは
+// That includes the space.
+// 1  Widths 662- Missing Width character
+// 2  Widths 359- J
+// 3  Widths 520- a
+// 4  Widths 600- p
+// 5  Widths 578- n
+// 6  Widths 535- e
+// 7  Widths 433- s
+// 8  Widths 351-   I think this is the space need to find out?
+// 9  Widths 724- H
+// 10 Widths 246- l
+// 11 Widths 599- 0
+// 12 Widths 1000- こ
+// 13 Widths 1000- ん
+// 14 Widths 1000- に
+// 15 Widths 1000- は
+
+10 0 obj
+<</Type/FontDescriptor/FontName/BAAAAA+MalgunGothic
+/Flags 4
+/FontBBox[-976 -248 1198 932]/ItalicAngle 0
+/Ascent 1088
+/Descent -241
+/CapHeight 931
+/StemV 80
+/FontFile2 8 0 R
+>>
+endobj
+
+11
+12 0 obj
+<</Type/Font/Subtype/TrueType/BaseFont/BAAAAA+MalgunGothic
+/FirstChar 0
+/LastChar 15
+/Widths[662 359 520 600 578 535 433 351 724 246 599 1000 1000 1000 1000 1000
+]
+/FontDescriptor 10 0 R
+/ToUnicode 11 0 R
+>>endobj
+
+13
