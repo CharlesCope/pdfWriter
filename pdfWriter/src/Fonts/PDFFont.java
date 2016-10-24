@@ -116,10 +116,32 @@ public class PDFFont {
 		return strFontBBox;
 		
 	}
+	
+	public int getSpaceWidthToPDFWidth(){
+		/**Advance width rule : The space's advance width is set by visually selecting a value that is appropriate for the current font.
+		 * The general guidelines for the advance widths are:
+		 *  The minimum value should be no less than 1/5 the em, 
+		 *  which is equivalent to the value of a thin space in traditional typesetting.
+		 *  For an average width font a good value is ~1/4 the em.
+		 *  Example: In Monotype's font Times New Roman-regular the space is 512 units, the em is 2048.  
+		 */
+		// Just me taking a stab at it.
+		double dblMin = intUnitsPerEm * .20;
+		double dblAvg = intUnitsPerEm * .25;
+		double dblWide = intUnitsPerEm * .33;
+		double dblTotal = (dblMin + dblAvg + dblWide)/ 3;
+		int results = fontToPDFfont.pdfScalingFormula((int)dblTotal,intUnitsPerEm);
 		
+		if (results < (intUnitsPerEm * .5)){return results;}
+		else{ return fontToPDFfont.pdfScalingFormula((int) (intUnitsPerEm * .5),intUnitsPerEm);}
+		
+	}
 	public int getGlyphWidthToPDFWidth(int CharCode){
+		
 		try {
+			
 			return fontToPDFfont.pdfScalingFormula(fontToPDFfont.getMyChcFont().getGlyph(CharCode).getAdvanceWidth(), intUnitsPerEm);
+			
 		} catch (Exception e) {
 			return 0;
 		}

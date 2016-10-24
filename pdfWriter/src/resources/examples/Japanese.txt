@@ -9,7 +9,7 @@
 // 5  Widths 578- n
 // 6  Widths 535- e
 // 7  Widths 433- s
-// 8  Widths 351-   I think this is the space need to find out?
+// 8  Widths 351-   I think this is the space but don't know how they figure it.
 // 9  Widths 724- H
 // 10 Widths 246- l
 // 11 Widths 599- 0
