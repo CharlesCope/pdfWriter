@@ -20,6 +20,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import Cmaps.identityH;
+
 
 public class TestWriterClass extends JDialog {
 	private static final long serialVersionUID = -1816624295986831984L;
@@ -95,6 +97,18 @@ public class TestWriterClass extends JDialog {
 		btnPDF.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		btnPDF.setBounds(156, 197, 122, 23);
 		contentPanel.add(btnPDF);
+		
+		JButton btnCmap = new JButton("Test Cmap Class");
+		btnCmap.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Just testing the class as I create it.
+				identityH testCmap = new identityH();
+				System.out.println(testCmap.toString());
+				
+			}
+		});
+		btnCmap.setBounds(10, 198, 135, 23);
+		contentPanel.add(btnCmap);
 	}
 	private void setUpEvents(){
 		btnPDF.addActionListener(new ActionListener() {
