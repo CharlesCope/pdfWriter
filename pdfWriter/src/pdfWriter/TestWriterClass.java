@@ -110,9 +110,9 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.pdfProducer("pdfWritter");
 				myPDFClass.PageCount(1);
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
-				
+				// Just Checking.
 				// TODO: Will need to change Showing Text Method
-				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfTrueTypeFonts.TT_Arial_BoldItalic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfTrueTypeFonts.TT_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
@@ -144,7 +144,7 @@ public class TestWriterClass extends JDialog {
 		         case "Korean":
 		        	 lblMessage.setFont(fontMalgun);
 		        	 // Should look like this Korean 여보세요
-		        	 lblMessage.setText("Korean Hello " + "\uC5E5\uBCF4\uC138\uC694");
+		        	 lblMessage.setText("Example company Wizard text = \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC");
 		        	 break;
 		         case "Spanish":
 		        	 lblMessage.setFont(fontTimes);

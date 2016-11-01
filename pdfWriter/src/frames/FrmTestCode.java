@@ -168,7 +168,7 @@ public class FrmTestCode extends JFrame {
 		CharCode = myPDFFont.getCmapFormat().mapCharCode(0);
 		int pdfwidth = myPDFFont.getGlyphWidthToPDFWidth(CharCode);
 		model.addRow(new Object[]{unicode,0,symbol,CharCode,pdfwidth});
-		
+		String strTest = null;
 		for(int i= 1 ; i < 65535 ; i++){
 			temp = myPDFFont.getUnicodeEscapeString(i);
 			symbol = (char) Integer.parseInt( temp.substring(2), 16 );
@@ -178,10 +178,12 @@ public class FrmTestCode extends JFrame {
 				// Deal with the space
 				if (i == 32){pdfwidth = myPDFFont.getSpaceWidthToPDFWidth();}
 				else{pdfwidth = myPDFFont.getGlyphWidthToPDFWidth(CharCode);}
+				strTest+= pdfwidth +",";
 				model.addRow(new Object[]{unicode,i,symbol,CharCode,pdfwidth});
 			}
 		}
 		System.out.println("The Table has " + model.getRowCount()+ " Rows");
+		//System.out.print(strTest);
 	}
 	
 	public void listFonts(){

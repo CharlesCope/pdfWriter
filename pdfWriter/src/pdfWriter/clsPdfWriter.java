@@ -84,6 +84,7 @@ public class clsPdfWriter {
 	    TT_SymbolBold ,
 	    TT_SymbolItalic ,
 	    TT_SymbolBoldItalic ,
+	    TT_MalgunGothic,
 	}
 	
 	public enum pdfColorSpace{
@@ -1354,6 +1355,16 @@ public class clsPdfWriter {
                     TT_Font.MissingWidth = "332";
                     GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
                     TT_Font.Parameters = "/Flags 16454 /FontBBox [-250 -220 1246 1005] /MissingWidth 332 /StemV 191 /StemH 191 /ItalicAngle -11 /CapHeight 1005 /XHeight 503 /Ascent 1005 /Descent -220 /Leading 225 /MaxWidth 1038 /AvgWidth 600";
+ // Just trying this.          
+            }else if(strFontName.equals("pdfTrueTypeFonts.TT_MalgunGothic")){
+                TT_Font.BaseFont = "MalgunGothic";
+                TT_Font.FirstChar = "0";
+                TT_Font.LastChar = "28";
+                TT_Font.MissingWidth = "662";
+                GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
+                                         353, 602, 344, 700, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+                TT_Font.Parameters = "/Flags 4 /FontBBox [-976 -248 1198 932] /MissingWidth 662 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 718 /XHeight 512 /Ascent 1088 /Descent -241 /Leading 0 /MaxWidth 1238 /AvgWidth 463";
+                    
             }
 
 
@@ -1377,7 +1388,8 @@ public class clsPdfWriter {
             strFont += "/FirstChar " + TT_Font.FirstChar + "\r\n";
             strFont += "/LastChar " + TT_Font.LastChar + "\r\n";
             strFont += "/FontDescriptor " + intFontDescriptorObject.toString() + " 0 R " + "\r\n";
-            strFont += "/Encoding /WinAnsiEncoding" + "\r\n";
+           // strFont += "/Encoding /Identity-H" + "\r\n";
+            // strFont += "/Encoding /WinAnsiEncoding" + "\r\n";
             strFont += "/Widths [" + "\r\n";
             strFont += TT_Font.Widths;
             strFont += "] >>" + "\r\n";
@@ -1392,7 +1404,11 @@ public class clsPdfWriter {
             strFont += "/FontName /" + TT_Font.BaseFont;
             strFont += TT_Font.Parameters + ">>" + "\r\n";
             strFont += "endobj" + "\r\n";
-
+            // Just testing
+            upDateReffenceTable();
+            strFont += intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+            strFont += "endobj" + "\r\n";
+            
         return strFont;
     }
 
