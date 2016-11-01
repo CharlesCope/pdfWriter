@@ -103,6 +103,7 @@ public class TestWriterClass extends JDialog {
 			public void actionPerformed(ActionEvent arg0) {
 				// Just testing the class as I create it.
 				identityH testCmap = new identityH();
+				System.out.println("The file Length is " +testCmap.Length());
 				System.out.println(testCmap.toString());
 				
 			}
