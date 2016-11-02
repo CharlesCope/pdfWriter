@@ -20,6 +20,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import Cmaps.identityH;
+
 public class clsPdfWriter {
 
   //... Enum	
@@ -1130,7 +1132,9 @@ public class clsPdfWriter {
         //-- It ok to hard code this pdf object because it never changes.
         strTrailer += "/Info 1 0 R" +  "\r\n";
         //-- Need to add one for the Info object and one for root object
-        Integer intRootObject  = intFontCount + 2 + intXObjectCount + intFontDescriptorCount;
+        // TODO: Need to have if statement here as well hard coding it for now.
+        //Integer intRootObject  = intFontCount + 2 + intXObjectCount + intFontDescriptorCount;
+        Integer intRootObject  = intFontCount + 3 + intXObjectCount + intFontDescriptorCount;
         strTrailer += "/Root " + intRootObject.toString() + " 0 R" +  "\r\n";
         strTrailer += ">>" +  "\r\n";
         strTrailer += "startxref" +  "\r\n";
@@ -1361,7 +1365,7 @@ public class clsPdfWriter {
                 TT_Font.FirstChar = "0";
                 TT_Font.LastChar = "28";
                 TT_Font.MissingWidth = "662";
-                GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
+                 GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
                                          353, 602, 344, 700, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
                 TT_Font.Parameters = "/Flags 4 /FontBBox [-976 -248 1198 932] /MissingWidth 662 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 718 /XHeight 512 /Ascent 1088 /Descent -241 /Leading 0 /MaxWidth 1238 /AvgWidth 463";
                     
@@ -1379,7 +1383,9 @@ public class clsPdfWriter {
                 }
             }
             Integer intFontDescriptorObject  = 1;
+            Integer intToUnicodeObject  = 1;
             intFontDescriptorObject += intpdfObjectCount;
+            intToUnicodeObject += intFontDescriptorObject;
             //-- The Font details object
             strFont += "<< /Type /Font" + "\r\n";
             strFont += "/Subtype /TrueType" + "\r\n";
@@ -1388,11 +1394,16 @@ public class clsPdfWriter {
             strFont += "/FirstChar " + TT_Font.FirstChar + "\r\n";
             strFont += "/LastChar " + TT_Font.LastChar + "\r\n";
             strFont += "/FontDescriptor " + intFontDescriptorObject.toString() + " 0 R " + "\r\n";
-           // strFont += "/Encoding /Identity-H" + "\r\n";
+           // Need a if statement here for Times Roman
+            strFont += "/Encoding /Identity-H" + "\r\n";
             // strFont += "/Encoding /WinAnsiEncoding" + "\r\n";
             strFont += "/Widths [" + "\r\n";
             strFont += TT_Font.Widths;
-            strFont += "] >>" + "\r\n";
+            //strFont += "] >>" + "\r\n"; The before line
+            strFont += "] " + "\r\n";
+            // Added next line
+            strFont += "/ToUnicode " + intToUnicodeObject.toString() + " 0 R " + "\r\n";
+            strFont += ">> " + "\r\n"; // Added this line.
             strFont += "endobj" + "\r\n";
 
             //-- The Font Descriptor - A font descriptor is a dictionary whose entries specify various font attributes
@@ -1407,6 +1418,12 @@ public class clsPdfWriter {
             // Just testing
             upDateReffenceTable();
             strFont += intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+            // Create the Cmap object
+            identityH CmapH = new identityH();
+            strFont += "<< /Length " + CmapH.Length() + " >>" + "\r\n";
+            strFont += "stream" + "\r\n";
+            strFont += CmapH.toString() + "\r\n";
+            strFont += "endstream" + "\r\n";
             strFont += "endobj" + "\r\n";
             
         return strFont;
