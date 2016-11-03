@@ -20,7 +20,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import Cmaps.identityH;
+import pdfCmaps.identityH;
 
 public class clsPdfWriter {
 
@@ -693,22 +693,7 @@ public class clsPdfWriter {
 
     //End Region	
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+		
 	 
 	//...Region "Helper Subs"
     private void upDateReffenceTable(){
@@ -743,7 +728,6 @@ public class clsPdfWriter {
         return strFileHeader;
         //-- After this function is called you must call the pdfFileInfo function
     }
-
 
     private String pdfFileInfo() {
         //-- Need to set our Collection for this object 

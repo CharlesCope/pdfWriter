@@ -20,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import Cmaps.identityH;
+import pdfCmaps.identityH;
 
 
 public class TestWriterClass extends JDialog {
