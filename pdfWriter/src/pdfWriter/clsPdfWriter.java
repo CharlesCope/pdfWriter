@@ -1208,6 +1208,7 @@ public class clsPdfWriter {
         
         Integer intFormat  = 0;
         FontDescriptor TT_Font = new FontDescriptor(); 
+      
         //-- Info.
         //-- The value of the Flags entry in a font descriptor.Parameters is an unsigned 32-bit integer containing
         //-- flags specifying various characteristics of the font. Bit positions within the flag word are 

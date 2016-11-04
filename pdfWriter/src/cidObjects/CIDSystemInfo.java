@@ -1,7 +1,7 @@
-package CIDobjects;
+package cidObjects;
 
 public class CIDSystemInfo {
-	final private String JavaNewLine = System.getProperty("line.separator");
+	private final String PDFCRLF = "\r\n";
 	private StringBuilder sbCIDSystemInfoDic = new StringBuilder();
 	private String strRegistry;
 	private String strOrdering;
@@ -23,9 +23,11 @@ public class CIDSystemInfo {
 	public void setIntSupplement(int intSupplement) {this.intSupplement = intSupplement;}
 
 	public String toString(){
-		sbCIDSystemInfoDic.append("/Registry " + strRegistry + JavaNewLine);
-		sbCIDSystemInfoDic.append("/Ordering " + strOrdering+ JavaNewLine);
-		sbCIDSystemInfoDic.append("/Supplement " + Integer.toString(intSupplement)+ JavaNewLine);
+		sbCIDSystemInfoDic.append("<< " );// Start of dictionary
+		sbCIDSystemInfoDic.append("/Registry " + strRegistry + PDFCRLF);
+		sbCIDSystemInfoDic.append("/Ordering " + strOrdering+ PDFCRLF);
+		sbCIDSystemInfoDic.append("/Supplement " + Integer.toString(intSupplement)+ PDFCRLF);
+		sbCIDSystemInfoDic.append(">> " + PDFCRLF);// End of dictionary
 		return sbCIDSystemInfoDic.toString();
 	}
 	
