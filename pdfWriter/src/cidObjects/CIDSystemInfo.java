@@ -10,17 +10,17 @@ public class CIDSystemInfo {
 	/** The constructors  for the class	 */
 	public CIDSystemInfo(){}
 	
-	public String getStrRegistry() {return strRegistry;	}
+	public String getRegistry() {return strRegistry;	}
 
-	public void setStrRegistry(String strRegistry) {this.strRegistry = strRegistry;}
+	public void setRegistry(String strRegistry) {this.strRegistry = strRegistry;}
 
-	public String getStrOrdering() {return strOrdering;}
+	public String getOrdering() {return strOrdering;}
 
-	public void setStrOrdering(String strOrdering) {this.strOrdering = strOrdering;}
+	public void setOrdering(String strOrdering) {this.strOrdering = strOrdering;}
 
-	public int getIntSupplement() {return intSupplement;}
+	public int getSupplement() {return intSupplement;}
 
-	public void setIntSupplement(int intSupplement) {this.intSupplement = intSupplement;}
+	public void setSupplement(int intSupplement) {this.intSupplement = intSupplement;}
 
 	public String toString(){
 		sbCIDSystemInfoDic.append("<< " );// Start of dictionary
