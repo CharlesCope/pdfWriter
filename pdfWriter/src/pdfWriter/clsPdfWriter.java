@@ -161,9 +161,7 @@ public class clsPdfWriter {
     private Integer intFontDescriptorCount; //-- Keep up with Font Descriptors
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
-    
-    //... 
-  //  public Shell ownerShell; 
+  
     private Integer intCrossRefOffSet;
     
 	public clsPdfWriter() {
@@ -1055,7 +1053,7 @@ public class clsPdfWriter {
         //-- After this function it can loop again or call the buildCrossReffenceTable
     }
 
-    private String	buildCrossReffenceTable() {
+    private String	buildCrossReferenceTable() {
     	String strComment  = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to buildCrossReffenceTable " +  "\r\n";
@@ -1410,8 +1408,7 @@ public class clsPdfWriter {
             strFont += CmapH.toString() + "\r\n";
             strFont += "endstream" + "\r\n";
             strFont += "endobj" + "\r\n";
-            
-        return strFont;
+          return strFont;
     }
 
 
@@ -2179,45 +2176,17 @@ public class clsPdfWriter {
 	    }
 	
 	
-	    //-- Need to know where the reffence table starts
-	    //-- The next entry is the cross reffence table so add one to the lenght of the string
-	    //-- to point to the cross reffence table start point.
+	    //-- Need to know where the reference table starts
+	    //-- The next entry is the cross reference table so add one to the length of the string
+	    //-- to point to the cross reference table start point.
 	    intCrossRefOffSet +=   1;
-	    //-- Now build or cross reffernce table
-	    writeString(writer2, buildCrossReffenceTable());
+	    //-- Now build or cross reference table
+	    writeString(writer2, buildCrossReferenceTable());
 	    writeString(writer2, FileTrailer(intCrossRefOffSet));
 	    
 	    writer2.close();
-	    //-- Save the file to disk. New Code...
-	    //My.Computer.FileSystem.WriteAllText(strFilePath, FileText.toString(), False)
-	
-	    //-- This old code will work but the new code does not. I found the problem but not the answer to it.
-	    //-- When writing the image data the (My.Computer.FileSystem.WriteAllText) changes the Hex value of Null(00) to Space(20)
-	    //-- which in turn corrupt the image file. Until I find a solution I must use old vb6 code.
-	    
-
-	        //...writeString(writer, FileText.toString());
-	    }catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	    
-	    /*
-	    Integer intFileNumber = 0;
-	    //-- FreeFile returns an Integer representing the next file number available for use by the Open statement
-	    
-	    intFileNumber = FreeFile();
-	    //-- You must open a file before any I/O operation can be performed on it.
-	    FileOpen(intFileNumber, strFilePath, OpenMode.Output);
-	    //-- All data written to the file using Print is internationally aware; 
-	    //-- that is, the data is properly formatted using the appropriate decimal separator. 
-	    //-- If the user wishes to output data for use by multiple locales, then Write should be used.
-	    //-- MSDN describes the Print method as follows so I should be able to find new version once I get the program working.
-	    //-- Public Sub Print( ByVal FileNumber As Integer, ByVal ParamArray Output() As Object )
-	    Print(intFileNumber, FileText.toString());
-	    //-- Just close the file and save it to disk.
-	    FileClose(intFileNumber);*/
-	
+	    }catch (Exception e) {e.printStackTrace();}
+	  
 	
 	}		 
 	    
