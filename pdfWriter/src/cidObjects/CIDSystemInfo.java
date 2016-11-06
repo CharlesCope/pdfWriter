@@ -10,16 +10,14 @@ public class CIDSystemInfo {
 	/** The constructors  for the class	 */
 	public CIDSystemInfo(){}
 	
+	/** Property Getters */
 	public String getRegistry() {return strRegistry;	}
-
-	public void setRegistry(String strRegistry) {this.strRegistry = strRegistry;}
-
 	public String getOrdering() {return strOrdering;}
-
-	public void setOrdering(String strOrdering) {this.strOrdering = strOrdering;}
-
 	public int getSupplement() {return intSupplement;}
-
+	
+	/** Property Setters */	
+	public void setRegistry(String strRegistry) {this.strRegistry = strRegistry;}
+	public void setOrdering(String strOrdering) {this.strOrdering = strOrdering;}
 	public void setSupplement(int intSupplement) {this.intSupplement = intSupplement;}
 
 	public String toString(){
