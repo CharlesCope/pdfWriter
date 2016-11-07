@@ -3,8 +3,8 @@ package cidObjects;
 public class CIDSystemInfo {
 	private final String PDFCRLF = "\r\n";
 	private StringBuilder sbCIDSystemInfoDic = new StringBuilder();
-	private String strRegistry;
-	private String strOrdering;
+	private String strRegistry="";
+	private String strOrdering="";
 	private int intSupplement;
 	
 	/** The constructors  for the class	 */

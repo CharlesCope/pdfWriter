@@ -4,15 +4,15 @@ public class CIDFontDictionary {
 	private final String  PDFCRLF = "\r\n";
 	private StringBuilder sbCIDFontDict = new StringBuilder();
 	private String strType = "/Type /Font" + PDFCRLF;
-	private String strSubType;
-	private String strBaseFont;
-	private String strCIDSystemInfo;
-	private String strFontDescriptor;
-	private String strDW;
-	private String strW;
-	private String strDW2;
-	private String strW2;
-	private String strCIDToGIDMap;
+	private String strSubType="";
+	private String strBaseFont="";
+	private String strCIDSystemInfo="";
+	private String strFontDescriptor="";
+	private String strDW="";
+	private String strW="";
+	private String strDW2="";
+	private String strW2="";
+	private String strCIDToGIDMap="";
 	
 	public static enum CIDFontTypes{
 		CIDFontType0,

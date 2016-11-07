@@ -127,7 +127,7 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
 				// Just Checking.
 				// TODO: Will need to change Showing Text Method
-				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfTrueTypeFonts.TT_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfTrueTypeFonts.TT_Times_Italic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";

@@ -4,32 +4,32 @@ public class FontDescriptor {
 	private final String  PDFCRLF = "\r\n";
 	private StringBuilder sbFontDescriptorDic = new StringBuilder();
 	private String strType = "/Type /FontDescriptor" + PDFCRLF;
-	private String strFontName;
-	private String strFontFamily;
-	private String strFontStretch;
-	private String strFontWeight;
-	private String strFlags;
-	private String strFontBBox;
-	private String strItalicAngle;
-	private String strAscent;
-	private String strDescent;
-	private String strLeading;
-	private String strCapHeight;
-	private String strXHeight;
-	private String strStemV;
-	private String strStemH;
-	private String strAvgWidth;
-	private String strMaxWidth;
-	private String strMissingWidth;
-	private String strFontFile;
-	private String strFontFile2;
-	private String strFontFile3;
-	private String strCharSet;
+	private String strFontName="";
+	private String strFontFamily="";
+	private String strFontStretch="";
+	private String strFontWeight="";
+	private String strFlags="";
+	private String strFontBBox="";
+	private String strItalicAngle="";
+	private String strAscent="";
+	private String strDescent="";
+	private String strLeading="";
+	private String strCapHeight="";
+	private String strXHeight="";
+	private String strStemV="";
+	private String strStemH="";
+	private String strAvgWidth="";
+	private String strMaxWidth="";
+	private String strMissingWidth="";
+	private String strFontFile="";
+	private String strFontFile2="";
+	private String strFontFile3="";
+	private String strCharSet="";
 	// for the CID
-	private String strStyle;
-	private String strLang;
-	private String strFD;
-	private String strCIDSet;
+	private String strStyle="";
+	private String strLang="";
+	private String strFD="";
+	private String strCIDSet="";
 	
 	public static enum StretchName{
 		UltraCondensed,
@@ -113,13 +113,13 @@ public class FontDescriptor {
 	
 	public String toString(){
 		sbFontDescriptorDic.append("<< " );// Start of dictionary
-		sbFontDescriptorDic.append(strType + PDFCRLF );
-		sbFontDescriptorDic.append("/FontName "+strFontName + PDFCRLF );
+		sbFontDescriptorDic.append(strType);
+		sbFontDescriptorDic.append("/FontName /"+strFontName + PDFCRLF );
 		if(strFontFamily.length()>0){sbFontDescriptorDic.append("/FontFamily "+strFontFamily+ PDFCRLF );}//Optional
 		if(strFontStretch.length()>0){sbFontDescriptorDic.append("/FontStretch "+strFontStretch+ PDFCRLF );}//Optional
 		if(strFontWeight.length()>0){sbFontDescriptorDic.append("/FontWeight " +strFontWeight+ PDFCRLF );}//Optional
 		sbFontDescriptorDic.append("/Flags " + strFlags + PDFCRLF );
-		sbFontDescriptorDic.append("/FontBBox [ "+ strFontBBox + " ]"+ PDFCRLF );
+		sbFontDescriptorDic.append("/FontBBox ["+ strFontBBox + "]"+ PDFCRLF );
 		sbFontDescriptorDic.append("/ItalicAngle "+ strItalicAngle + PDFCRLF );
 		if(strAscent.length()>0){sbFontDescriptorDic.append("/Ascent " +strAscent+ PDFCRLF );}//Optional Type 3
 		if(strDescent.length()>0){sbFontDescriptorDic.append("/Descent "+ strDescent+ PDFCRLF );}//Optional Type 3

@@ -21,6 +21,8 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 
 import pdfCmaps.identityH;
+import pdfObjects.FontDescriptor;
+import pdfObjects.Type1FontDictionary;
 
 public class clsPdfWriter {
 
@@ -94,20 +96,9 @@ public class clsPdfWriter {
 	    pdfRGB ,
 	    pdfGrayScale ,
 	}	
-	
-	
-	
+		
   //... Structure
-	
-	public class FontDescriptor{
-	    String BaseFont;
-	    String FirstChar ;
-	    String LastChar ;
-	    String Parameters ;
-	    String Widths ;
-	    String MissingWidth;
-    }
-	
+		
 	public class ImageDictionary{
 	    Long ImgDicWidth ;
 	    Long ImgDicHeight ;
@@ -120,7 +111,7 @@ public class clsPdfWriter {
 	}	
 	
   //... private Variables
-	
+	private final String  PDFCRLF = "\r\n";
     //-- I want to be able to keep up with each object and it offset using collection.
     //-- This will be a name value pair Example "1 obj" 08 
     private NameValueCollection	colCrossReferenceTable;
@@ -345,9 +336,7 @@ public class clsPdfWriter {
 		
 	}	
     
-
-	
-	 public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, pdfStandardFonts FontName, 
+	public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, pdfStandardFonts FontName, 
 			 	Integer Fontsize , Color color, pdfTextAlign Align , Integer Rotate){
 		 //--Ok I want to add any text for a page to the collection for that page.
 		 switch(Align){
@@ -375,12 +364,12 @@ public class clsPdfWriter {
 	     String strCodeText  = "";
 	
 	     //--rg- Set RGB color for nonstroking operations
-	     strCodeText += color.getRed() + " " + color.getGreen() + " " + color.getBlue() + " rg"+"\r\n";
+	     strCodeText += color.getRed() + " " + color.getGreen() + " " + color.getBlue() + " rg"+PDFCRLF;
 	
 	     //--BT- Begin text object
-	     strCodeText += "BT" + "\r\n";
+	     strCodeText += "BT" + PDFCRLF;
 	     //--Tf - Set text font and size
-	     strCodeText += "/F" + dicFontsUsed.get("pdfStandardFonts." + FontName.toString()).toString() + " " + Fontsize.toString()+ " Tf" + "\r\n";
+	     strCodeText += "/F" + dicFontsUsed.get("pdfStandardFonts." + FontName.toString()).toString() + " " + Fontsize.toString()+ " Tf" + PDFCRLF;
 	     //--Now do we need to rotate it
 	     if(Rotate != 0){
 	         //--System.Math.Sin and System.Math.Cos is in radians. we need to convert to degrees
@@ -395,20 +384,20 @@ public class clsPdfWriter {
 	         //--Tm- Set text matrix and text line matrix
 	         //--Using the + operator caused a error in compiler so had to go back to VB6 style string concatenation to get over exception.
 	         strCodeText += String.format(fmt, sngCosAngle) + " " + String.format(fmt, sngSinAngle) + " " + String.format(fmt, -sngSinAngle) + " " +
-	        		 String.format(fmt, sngCosAngle) + " " + sngHorzOffSet + " " + sngVertOffSet + " Tm" + "\r\n";
+	        		 String.format(fmt, sngCosAngle) + " " + sngHorzOffSet + " " + sngVertOffSet + " Tm" + PDFCRLF;
 	     }else{
 	         //--
 	         //--Where to place the string on the page                               Td- Move text position
-	         strCodeText += sngHorzOffSet + " " + sngVertOffSet + " Td" + "\r\n";
+	         strCodeText += sngHorzOffSet + " " + sngVertOffSet + " Td" + PDFCRLF;
 	     }
 	
 	
 	     //--Text to display on page
-	     strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" + "\r\n";
+	     strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" + PDFCRLF;
 	
 	
 	     //--End the Text block
-	     strCodeText += "ET" + "\r\n";
+	     strCodeText += "ET" + PDFCRLF;
 	     //--Need to keep keys unique
 	     intStringCount += 1;
 	     colPageText.add(intPage + "." + intStringCount, strCodeText);		 
@@ -452,12 +441,12 @@ public class clsPdfWriter {
 
       //-- rg- Set RGB color for nonstroking operations
       
-      strCodeText += color.getRed() + " " + color.getGreen() + " " + color.getBlue() + " rg"+"\r\n";
+      strCodeText += color.getRed() + " " + color.getGreen() + " " + color.getBlue() + " rg"+PDFCRLF;
 
       //-- BT- Begin text object
-      strCodeText += "BT" +"\r\n";
+      strCodeText += "BT" +PDFCRLF;
       //-- Tf - Set text font and size
-      strCodeText += "/F" + dicFontsUsed.get("pdfTrueTypeFonts." + FontName.toString()).toString() + " " + FontSize.toString() + " Tf" +"\r\n";
+      strCodeText += "/F" + dicFontsUsed.get("pdfTrueTypeFonts." + FontName.toString()).toString() + " " + FontSize.toString() + " Tf" +PDFCRLF;
       //-- Now do we need to rotate it
       if (Rotate != 0) {
           //-- System.Math.Sin and System.Math.Cos is in radians. we need to convert to degrees
@@ -474,21 +463,21 @@ public class clsPdfWriter {
           //-- Using the + operator caused a error in compiler so had to go back to VB6 style string concatenation to get over exception.
           	  
           strCodeText += String.format(fmt, sngCosAngle) + " " + String.format(fmt, sngSinAngle) + " " + String.format(fmt, -sngSinAngle) + " " +
-     	        		 String.format(fmt, sngCosAngle) + " " + sngHorzOffSet + " " + sngVertOffSet + " Tm" + "\r\n";
+     	        		 String.format(fmt, sngCosAngle) + " " + sngHorzOffSet + " " + sngVertOffSet + " Tm" + PDFCRLF;
           
       }else{
           //-- 
           //-- Where to place the string on the page                               Td- Move text position
-          strCodeText += sngHorzOffSet.toString() + " " + sngVertOffSet.toString() + " Td" +"\r\n";
+          strCodeText += sngHorzOffSet.toString() + " " + sngVertOffSet.toString() + " Td" +PDFCRLF;
       }
 
 
       //-- Text to display on page
-      strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" +"\r\n";
+      strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" +PDFCRLF;
 
 
       //-- End the Text block
-      strCodeText += "ET" +"\r\n";
+      strCodeText += "ET" +PDFCRLF;
       //-- Need to keep keys unique
       intStringCount += 1;
       colPageText.add(intPage.toString() + "." + intStringCount.toString(), strCodeText);
@@ -515,27 +504,27 @@ public class clsPdfWriter {
     public void LineHorizontal(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, Integer LineLength , Color LineColor, Integer intThickness){
     	String strComment  = "";
         if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to LineHorizontal " + "\r\n";
+            strComment = "% Comment- Call to LineHorizontal " + PDFCRLF;
         }
         String strCodeLine  = strComment;
         String fmt  = "%03d";
         //--Set the color of the line
-        strCodeLine += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + "\r\n";
+        strCodeLine += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + PDFCRLF;
         //--Set the thickness of the line
-        strCodeLine += intThickness.toString() + " w" + "\r\n";
+        strCodeLine += intThickness.toString() + " w" + PDFCRLF;
         //--m - Begin a new subpath by moving the current point to coordinates (x, y),
         //--omitting any connecting line segment. If the previous path construction operator
         //--in the current path was also m, the new m overrides it; no vestige of the previous m
         //--operation remains in the path.
         //--This is the Starting point of the line
-        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt,sngVertOffSet) + " m" + "\r\n";
+        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt,sngVertOffSet) + " m" + PDFCRLF;
         //--This draws the line to the length from the start point
         //--Line draws from right of page to left of page.
         Integer sngLenght  = sngHorzOffSet - LineLength;
         //--l - Append a straight line segment from the current point to the point (x, y).
-        strCodeLine += String.format(fmt, sngLenght) + " " + String.format(fmt, sngVertOffSet) + " l" + "\r\n";
+        strCodeLine += String.format(fmt, sngLenght) + " " + String.format(fmt, sngVertOffSet) + " l" + PDFCRLF;
         //--The S is for paint the line (path) Stroked 
-        strCodeLine += "S" + "\r\n";
+        strCodeLine += "S" + PDFCRLF;
         //--Need to keep keys unique
         intLineCount += 1;
         colLineCode.add(intPage.toString() + "." + intLineCount.toString(), strCodeLine);
@@ -546,28 +535,28 @@ public class clsPdfWriter {
     
     	String strComment  = "";
         if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to LineVertical " + "\r\n";
+            strComment = "% Comment- Call to LineVertical " + PDFCRLF;
         }
         String strCodeLine  = strComment;
         String fmt  = "%03d";
         
         //--Set the color of the line
-        strCodeLine += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + "\r\n";
+        strCodeLine += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + PDFCRLF;
         //--Set the thickness of the line
-        strCodeLine += intThickness.toString() + " w" + "\r\n";
+        strCodeLine += intThickness.toString() + " w" + PDFCRLF;
         //--m - Begin a new subpath by moving the current point to coordinates (x, y),
         //--omitting any connecting line segment. If the previous path construction operator
         //--in the current path was also m, the new m overrides it; no vestige of the previous m
         //--operation remains in the path.
         //--This is the Starting point of the line
-        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt,sngVertOffSet) + " m" + "\r\n";
+        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt,sngVertOffSet) + " m" + PDFCRLF;
 
         //--Line draws from bottom of page to top of page.
         Integer sngHeight  = sngVertOffSet - LineLength;
         //--l - Append a straight line segment from the current point to the point (x, y).
-        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt, sngHeight) + " l" + "\r\n";
+        strCodeLine += String.format(fmt, sngHorzOffSet) + " " + String.format(fmt, sngHeight) + " l" + PDFCRLF;
         //--The S is for paint the line(path) Stroked 
-        strCodeLine += "S" + "\r\n";
+        strCodeLine += "S" + PDFCRLF;
         //--Need to keep keys unique
         intLineCount += 1;
         colLineCode.add(intPage.toString() + "." + intLineCount.toString(), strCodeLine);
@@ -579,7 +568,7 @@ public class clsPdfWriter {
     
         String strComment  = "";
         if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to LineHorizontal " + "\r\n";
+            strComment = "% Comment- Call to LineHorizontal " + PDFCRLF;
         }
         
         
@@ -617,7 +606,7 @@ public class clsPdfWriter {
         String fmt = "%4d";
         String strDrawImage  = strComment;
         //--q - Save graphics state
-        strDrawImage = "q" + "\r\n";
+        strDrawImage = "q" + PDFCRLF;
         strDrawImage += String.format(fmt,  imgWidth) + strBitMap;
         strDrawImage += String.format(fmt,  ImgHeight) + " ";
         strDrawImage += String.format(fmt,  sngHorzLeftOffSet) + " ";
@@ -626,7 +615,7 @@ public class clsPdfWriter {
         //--Do - Invoke named XObject
         strDrawImage += "/" + Name + " Do ";
         //--Q - Restore graphics state
-        strDrawImage += "Q" + "\r\n";
+        strDrawImage += "Q" + PDFCRLF;
         //--Need to keep keys unique
         intDrawImagesCount += 1;
         colDrawImages.add(intPage.toString() + "." + intDrawImagesCount.toString(), strDrawImage);
@@ -636,7 +625,7 @@ public class clsPdfWriter {
     public void DrawCircle(Integer intPage , Point Center , Integer Radius , Color LineColor){
     	String strComment  = "";
         if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to DrawCircle " + "\r\n";
+            strComment = "% Comment- Call to DrawCircle " + PDFCRLF;
         }
     
         //--Given the coordinates of the four points of the BezierCurve
@@ -645,11 +634,11 @@ public class clsPdfWriter {
         String strCircle  = strComment;
         String fmt = "%03d";
         //--Set the color of the line
-        strCircle += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + "\r\n";
+        strCircle += LineColor.getRed() + " " + LineColor.getGreen() + " " + LineColor.getBlue() + " RG" + PDFCRLF;
         //--Set our center point
         Point Point0 = new Point(Center.x, Center.y - Radius);
         
-        strCircle += String.format(fmt, Point0.x) + " " + String.format(fmt, Point0.y) + " m" + "\r\n";
+        strCircle += String.format(fmt, Point0.x) + " " + String.format(fmt, Point0.y) + " m" + PDFCRLF;
         
 
         Point Point1 = new Point((int)(Center.x + sngParameterT * Radius), Center.y - Radius);
@@ -674,7 +663,7 @@ public class clsPdfWriter {
         //--Our Closing Curve
         strCircle += BezierCurve(Point10, Point11, Point12);
         //--The S is for paint the line (path) Stroked 
-        strCircle += "S" + "\r\n";
+        strCircle += "S" + PDFCRLF;
 
         //--Need to keep keys unique
         intCircleCount += 1;
@@ -686,7 +675,7 @@ public class clsPdfWriter {
         //--Curved path segments are specified as cubic Bézier curves. Such curves are defined by four points: 
         //--the two endpoints (the current point P0 and the final point P3 ) and two control points P1 and P2
         //--This function should only be called after the Start point has been created using the Move m control char in pdf.
-        return ControlPoint1.x + " " + ControlPoint1.y + " " + ControlPoint2.x + " " + ControlPoint2.y + " " + FinalPoint.x + " " + FinalPoint.y + " c" + "\r\n";
+        return ControlPoint1.x + " " + ControlPoint1.y + " " + ControlPoint2.x + " " + ControlPoint2.y + " " + FinalPoint.x + " " + FinalPoint.y + " c" + PDFCRLF;
     }
 
     //End Region	
@@ -695,7 +684,7 @@ public class clsPdfWriter {
 	 
 	//...Region "Helper Subs"
     private void upDateReffenceTable(){
-        //-- This just keep up with each pdf obj that is created an added to the cross reffence table at the
+        //-- This just keep up with each pdf obj that is created an added to the cross reference table at the
         //-- end of the file.
         intpdfObjectCount += 1;
         colCrossReferenceTable.add(intpdfObjectCount.toString() + " 0 obj", FileText.length()+"");
@@ -720,7 +709,7 @@ public class clsPdfWriter {
         //-- it is recommended that the header line be immediately followed by a comment line containing at 
         //-- least four binary characters—that is, characters whose codes are 128 or greater 
         //-- %âãÏÓ these seem to be the standard on files I have tested.
-        strFileHeader += "%aaIO" + "\r\n";
+        strFileHeader += "%aaIO" + PDFCRLF;
         //-- Now give it back
 
         return strFileHeader;
@@ -732,30 +721,30 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment  = "";
         if (_pdfCommentFile){
-            strComment = "% Comment- Call to pdfFileInfo " + "\r\n";
+            strComment = "% Comment- Call to pdfFileInfo " + PDFCRLF;
         }
-        String strFileInfo  = strComment + intpdfObjectCount + " 0 obj" +  "\r\n";
+        String strFileInfo  = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
         //-- Any entry whose value is not known should be omitted from the dictionary 
         //-- rather than included with an empty string as its value.
         if (_pdfTitle.length() > 0) {
-            strFileInfo += "<< /Title (" + _pdfTitle + ")" +  "\r\n";
+            strFileInfo += "<< /Title (" + _pdfTitle + ")" +  PDFCRLF;
         }else{
             strFileInfo += "<< ";
         }
         if (_pdfAuthor.length() > 0 ) {
-            strFileInfo += "/Author (" + _pdfAuthor + ")" +  "\r\n";
+            strFileInfo += "/Author (" + _pdfAuthor + ")" +  PDFCRLF;
         }
         if (_pdfCreator.length() > 0 ) {
-            strFileInfo += "/Creator (" + _pdfCreator + ")" +  "\r\n";
+            strFileInfo += "/Creator (" + _pdfCreator + ")" +  PDFCRLF;
         }
         if (_pdfKeyWords.length() > 0 ) {
-            strFileInfo += "/Keywords (" + _pdfKeyWords + ")" +  "\r\n";
+            strFileInfo += "/Keywords (" + _pdfKeyWords + ")" +  PDFCRLF;
         }
         if (_pdfSubject.length() > 0 ) {
-            strFileInfo += "/Subject (" + _pdfSubject + ")" +  "\r\n";
+            strFileInfo += "/Subject (" + _pdfSubject + ")" +  PDFCRLF;
         }
         if (_pdfProducer.length() > 0 ) {
-            strFileInfo += "/Producer (" + _pdfProducer + ")" +  "\r\n";
+            strFileInfo += "/Producer (" + _pdfProducer + ")" +  PDFCRLF;
         }
         //-- We should alway show the Creation Date of the file.
         //-- A date is an ASCII string of the form( D : YYYYMMDDHHmmSSOHH ' mm ' )
@@ -764,10 +753,10 @@ public class clsPdfWriter {
         
         SimpleDateFormat sdf = new SimpleDateFormat("yyyymmddhhmmss");
         
-        strFileInfo += "/CreationDate (D:" + sdf.format(new Date()) + "-05'00')" +  "\r\n";
-        //strFileInfo += "/ModDate (D:" & Format(Now, "yyyymmddhhmmss") & "-05'00')" +  "\r\n";
-        strFileInfo += ">>" +  "\r\n";
-        strFileInfo += "endobj" +  "\r\n";
+        strFileInfo += "/CreationDate (D:" + sdf.format(new Date()) + "-05'00')" +  PDFCRLF;
+        //strFileInfo += "/ModDate (D:" & Format(Now, "yyyymmddhhmmss") & "-05'00')" +  PDFCRLF;
+        strFileInfo += ">>" +  PDFCRLF;
+        strFileInfo += "endobj" +  PDFCRLF;
 
         return strFileInfo;
         //-- After this function is called you must call the rootCatalog function
@@ -778,7 +767,7 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to rootCatalog " +  "\r\n";
+            strComment = "% Comment- Call to rootCatalog " +  PDFCRLF;
         }
         //-- The catalog contains references to other objects defining the document’s contents,
         //-- outline, article threads (PDF 1.1), named destinations, and other attributes.
@@ -786,15 +775,15 @@ public class clsPdfWriter {
         //-- such as whether its outline and thumbnail page images should be displayed automatically and 
         //-- whether some location other than the first page should be shown when the document is opened.
 
-        String strRoot = strComment + intpdfObjectCount + " 0 obj" +  "\r\n";
+        String strRoot = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
         //-- *Required* The type of PDF object that this dictionary describes; must be Catalog for the catalog dictionary.
-        strRoot += "<< /Type /Catalog" +  "\r\n";
+        strRoot += "<< /Type /Catalog" +  PDFCRLF;
         //-- Hard Coding does not work break ever time I change code...........
         Integer intAvailableObject  = intpdfObjectCount + 1;
-        strRoot += "/Outlines " + intAvailableObject + " 0 R" +  "\r\n";
+        strRoot += "/Outlines " + intAvailableObject + " 0 R" +  PDFCRLF;
         intAvailableObject += 1;
         //-- *Required* The page tree node that is the root of the document’s page tree.
-        strRoot += "/Pages " + intAvailableObject + " 0 R" +  "\r\n";
+        strRoot += "/Pages " + intAvailableObject + " 0 R" +  PDFCRLF;
         //-- *Optional* A name object specifying the page layout to be used when the document is opened
         //-- SinglePage           Display one page at a time
         //-- OneColumn            Display the pages in one column
@@ -803,7 +792,7 @@ public class clsPdfWriter {
         //-- TwoPageLeft(PDF 1.5) Display the pages two at a time, with odd-numbered pages on the left
         //-- TwoPageRight(PDF 1.5) Display the pages two at a time, with odd-numbered pages on the right
         //--Default value: SinglePage.
-        // strRoot += "/PageLayout /SinglePage" +  "\r\n";
+        // strRoot += "/PageLayout /SinglePage" +  PDFCRLF;
         //-- *Optional* A name object specifying how the document should be displayed when opened
         //-- UseNone      Neither document outline nor thumbnail images visible
         //-- UseOutlines  Document outline visible
@@ -812,7 +801,7 @@ public class clsPdfWriter {
         //-- UseOC(PDF 1.5) Optional content group panel visible
         //-- UseAttachments(PDF 1.6) Attachments panel visible
         //-- Default value: UseNone
-        // strRoot += "/PageMode /UseNone" +  "\r\n";
+        // strRoot += "/PageMode /UseNone" +  PDFCRLF;
         //-- *Optional* (PDF 1.4) A language identifier specifying the natural language for all text in the document
         //-- except where overridden by language specifications for structure element
         //-- ISO 639-1: two-letter codes, one per language or macrolanguage
@@ -821,7 +810,7 @@ public class clsPdfWriter {
         //-- español  - es
         //-- Japanese - ja
         //-- Korean   - ko
-        // strRoot += "/Lang (en)" +  "\r\n";
+        // strRoot += "/Lang (en)" +  PDFCRLF;
         //-- *Optional*  A viewer preferences dictionary  specifying the way the document is to be displayed
         //-- on the screen. if (this entry is absent, applications should use their own current user preference settings.
         //-- *Optional* HideToolbar     - A flag specifying whether to hide the viewer application’s tool bars when the document is active. 
@@ -832,9 +821,9 @@ public class clsPdfWriter {
         //-- FitWindow    boolean/true false
         //-- CenterWindow boolean/true false
         //-- HideMenubar  boolean/true false
-        // strRoot += "/ViewerPreferences << /HideToolbar false /DisplayDocTitle true /HideWindowUI false >>" +  "\r\n";
-        strRoot += ">>" +  "\r\n";
-        strRoot += "endobj" +  "\r\n";
+        // strRoot += "/ViewerPreferences << /HideToolbar false /DisplayDocTitle true /HideWindowUI false >>" +  PDFCRLF;
+        strRoot += ">>" +  PDFCRLF;
+        strRoot += "endobj" +  PDFCRLF;
 
 
         return strRoot;
@@ -846,14 +835,14 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to OutLines " +  "\r\n";
+            strComment = "% Comment- Call to OutLines " +  PDFCRLF;
         }
         //-- I have not implemented this yet but it needed so I left it in the code.
-        String strOutLine  = strComment + intpdfObjectCount + " 0 obj" +  "\r\n";
-        strOutLine += "<< /Type /Outlines" +  "\r\n";
-        strOutLine += "/Count 0" +  "\r\n";
-        strOutLine += ">>" +  "\r\n";
-        strOutLine += "endobj" +  "\r\n";
+        String strOutLine  = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
+        strOutLine += "<< /Type /Outlines" +  PDFCRLF;
+        strOutLine += "/Count 0" +  PDFCRLF;
+        strOutLine += ">>" +  PDFCRLF;
+        strOutLine += "endobj" +  PDFCRLF;
         return strOutLine;
         //-- After this function is called you must call the PageTree function
     }
@@ -863,40 +852,40 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment  = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to PageTree " +  "\r\n";
+            strComment = "% Comment- Call to PageTree " +  PDFCRLF;
         }
         //-- The pages of a document are accessed through a structure known as the page tree, 
         //-- which defines the ordering of pages in the document
         //-- The tree contains nodes of two types—intermediate nodes, called page tree nodes, 
         //-- and leaf nodes, called page objects
-        String strPageTree = strComment + intpdfObjectCount + " 0 obj" +  "\r\n";
+        String strPageTree = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
         intPageTree = intpdfObjectCount;
         //-- The simplest structure would consist of a single page tree node that references all 
         //-- of the document’s page objects directly.
         //-- *Required* The type of PDF object that this dictionary describes; must be Pages for a page tree node.
-        strPageTree += "<< /Type /Pages" +  "\r\n";
+        strPageTree += "<< /Type /Pages" +  PDFCRLF;
         //-- *Required* Kids -  An array of indirect references to the immediate children of this node. The children may
         //-- be page objects or other page tree nodes.
         Integer intKids  = intpdfObjectCount;
         //-- We must have at least one page in the file
         //-- The 2 comes from 1 for the PageTree object and 1 for the Resources object
         intKids += 2;
-        strPageTree += "/Kids [ " +  "\r\n";
-        strPageTree += intKids + " 0 R " +  "\r\n";
+        strPageTree += "/Kids [ " +  PDFCRLF;
+        strPageTree += intKids + " 0 R " +  PDFCRLF;
         //-- if (there is more than one page add there objects here.
         for(int intCounter = 2 ; intCounter<= _pdfPageCount; intCounter++){
             intKids += 3;
-            strPageTree += intKids + " 0 R " +  "\r\n";
+            strPageTree += intKids + " 0 R " +  PDFCRLF;
         }
 
-        strPageTree += "]" +  "\r\n";
+        strPageTree += "]" +  PDFCRLF;
         //-- *Required* Count - The number of leaf nodes (page objects) that are descendants of this node within the page tree.
-        strPageTree += "/Count " + _pdfPageCount.toString() +  "\r\n";
+        strPageTree += "/Count " + _pdfPageCount.toString() +  PDFCRLF;
         Integer intResources   = intpdfObjectCount;
         intResources += 1;
-        strPageTree += "/Resources " + intResources.toString() + " 0 R " +  "\r\n";
-        strPageTree += ">>" +  "\r\n";
-        strPageTree += "endobj" +  "\r\n";
+        strPageTree += "/Resources " + intResources.toString() + " 0 R " +  PDFCRLF;
+        strPageTree += ">>" +  PDFCRLF;
+        strPageTree += "endobj" +  PDFCRLF;
         return strPageTree;
         //-- After this function is called you must call the Resources function
     }
@@ -906,9 +895,9 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to Resources " +  "\r\n";
+            strComment = "% Comment- Call to Resources " +  PDFCRLF;
         }
-        String strResource  = strComment + intpdfObjectCount.toString() + " 0 obj" +  "\r\n";
+        String strResource  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
         //-- Entries in a resource dictionary Not Added yet.
         //-- ExtGState - A dictionary that maps resource names to graphics state parameter dictionaries
         //-- ColorSpace- A dictionary that maps each resource name to either the name of a device-dependent color space or an array describing a color space
@@ -919,35 +908,35 @@ public class clsPdfWriter {
         //-- We have to have /ProcSet /PDF / Text at a min..
         //-- For resource type ProcSet, the value is an array of procedure set names
 
-        strResource += "<< /ProcSet [ /PDF /Text" + (colXobjectImages.size() > 0 ? " /ImageC" : "") + "]" +  "\r\n";
+        strResource += "<< /ProcSet [ /PDF /Text" + (colXobjectImages.size() > 0 ? " /ImageC" : "") + "]" +  PDFCRLF;
         //-- A dictionary that maps resource names to external objects
         if (colXobjectImages.size() > 0 ) {
-            strResource += "/XObject << " +  "\r\n";
+            strResource += "/XObject << " +  PDFCRLF;
             //-- Write the Images 
             Set<String> keys = colXobjectImages.keySet();
             for (String k: keys){
                 strResource += "/" + k + " ";
-                strResource += colXobjectImages.get(k) +  "\r\n";
+                strResource += colXobjectImages.get(k) +  PDFCRLF;
                 //-- Need to keep up with our XObject so our file trailer will point to correct object.
                 intXObjectCount += 1;
             }
-            strResource += ">>" +  "\r\n";
+            strResource += ">>" +  PDFCRLF;
         }
 
         //-- A dictionary that maps resource names to font dictionaries
         if (colFonts.size() > 0 ) {
-            strResource += "/Font << " +  "\r\n";
+            strResource += "/Font << " +  PDFCRLF;
             //-- Here we need to loop through the collection of fonts.
             Set<String> keys = colFonts.keySet();
             for (String key: keys){
-                strResource += "/" + key.toString() + " " + colFonts.get(key).toString() + " 0 R " +  "\r\n";
+                strResource += "/" + key.toString() + " " + colFonts.get(key).toString() + " 0 R " +  PDFCRLF;
             }
-            strResource += ">>" +  "\r\n";
+            strResource += ">>" +  PDFCRLF;
         }
 
 
-        strResource += ">>" +  "\r\n";
-        strResource += "endobj" +  "\r\n";
+        strResource += ">>" +  PDFCRLF;
+        strResource += "endobj" +  PDFCRLF;
 
         return strResource;
         //-- After this function is called you must call the Page function
@@ -958,21 +947,21 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment  = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to Page " +  "\r\n";
+            strComment = "% Comment- Call to Page " +  PDFCRLF;
         }
-        String strPage  = strComment + intpdfObjectCount.toString() + " 0 obj" +  "\r\n";
-        strPage += "<< /Type /Page" +  "\r\n";
-        strPage += "/Parent " + intPageTree.toString() + " 0 R" +  "\r\n";
+        String strPage  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
+        strPage += "<< /Type /Page" +  PDFCRLF;
+        strPage += "/Parent " + intPageTree.toString() + " 0 R" +  PDFCRLF;
         //-- *Required* MediaBox- Defining the boundaries of the physical medium on which the page is intended to be displayed or printed
-        strPage += "/MediaBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  "\r\n";
+        strPage += "/MediaBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
         //-- *Optional* CropBox - Its contents are to be clipped (cropped) to this rectangle
-        strPage += "/CropBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  "\r\n";
+        strPage += "/CropBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
 
         Integer intNextObjects  = intpdfObjectCount;
         intNextObjects += 1;
-        strPage += "/Contents " + intNextObjects.toString() + " 0 R" +  "\r\n";
-        strPage += ">>" +  "\r\n";
-        strPage += "endobj" +  "\r\n";
+        strPage += "/Contents " + intNextObjects.toString() + " 0 R" +  PDFCRLF;
+        strPage += ">>" +  PDFCRLF;
+        strPage += "endobj" +  PDFCRLF;
         //-- Keeps up with our human page count.
         intPageCount += 1;
         return strPage;
@@ -984,20 +973,20 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to ContentStream " +  "\r\n";
+            strComment = "% Comment- Call to ContentStream " +  PDFCRLF;
         }
-        String strContent  = strComment + intpdfObjectCount.toString() + " 0 obj" +  "\r\n";
+        String strContent  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
         //-- *Required* Length - The number of bytes from the beginning of the line following
         //-- the keyword stream to the last byte just before the keyword endstream.
         //-- if (the length is not know before hand write the stream and set the length in another
         //-- object and point to that object in the Length section.Example << /Length 15 0 R >>
         Integer intNextObjNumber = intpdfObjectCount + 1;
 
-        strContent += "<< /Length " + intNextObjNumber.toString() + " 0 R" +  "\r\n" + ">>" +  "\r\n";
+        strContent += "<< /Length " + intNextObjNumber.toString() + " 0 R" +  PDFCRLF + ">>" +  PDFCRLF;
         strContent += "stream";
         //-- Figure the stream length as per note above
         Integer intStartOffSet  = strContent.length();
-        strContent += "\r\n";
+        strContent += PDFCRLF;
         //-- Draw any images on this page
         Set<String> keys = colDrawImages.keySet();
         for (String key: keys){
@@ -1033,8 +1022,8 @@ public class clsPdfWriter {
         
           //-- Ok done writting the Content need to figure the length
         intStreamLength = strContent.length() - intStartOffSet;
-        strContent += "endstream" +  "\r\n";
-        strContent += "endobj" +  "\r\n";
+        strContent += "endstream" +  PDFCRLF;
+        strContent += "endobj" +  PDFCRLF;
         return strContent;
         //-- After this function is called you must call the StreamLengthObj function
     }
@@ -1044,11 +1033,11 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to StreamLengthObj " +  "\r\n";
+            strComment = "% Comment- Call to StreamLengthObj " +  PDFCRLF;
         }
-        String strLength  = strComment + intpdfObjectCount.toString() + " 0 obj" +  "\r\n";
-        strLength += intStreamLength.toString() +  "\r\n";
-        strLength += "endobj" +  "\r\n";
+        String strLength  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
+        strLength += intStreamLength.toString() +  PDFCRLF;
+        strLength += "endobj" +  PDFCRLF;
         return strLength;
         //-- After this function it can loop again or call the buildCrossReffenceTable
     }
@@ -1056,11 +1045,11 @@ public class clsPdfWriter {
     private String	buildCrossReferenceTable() {
     	String strComment  = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to buildCrossReffenceTable " +  "\r\n";
+            strComment = "% Comment- Call to buildCrossReffenceTable " +  PDFCRLF;
         }
         //-- Each cross-reference section begins with a line containing the keyword
         //-- xref
-        String  strCrossReffence = strComment + "xref" +  "\r\n";
+        String  strCrossReffence = strComment + "xref" +  PDFCRLF;
         //-- For a file that has never been updated, the cross-reference section contains
         //-- only one subsection, whose object numbering begins at 0.
         strCrossReffence += "0 ";
@@ -1069,10 +1058,10 @@ public class clsPdfWriter {
         Integer intObjNumberCount   = 1;
         //-- Our Collection count start at 1 so we need to add 1 to it for the zero base needed
         intObjNumberCount += colCrossReferenceTable.size();
-        strCrossReffence += intObjNumberCount.toString() +  "\r\n";
+        strCrossReffence += intObjNumberCount.toString() +  PDFCRLF;
         //-- The first entry in the table (object number 0) is always free
         //-- and has a generation number of 65,535;
-        strCrossReffence += "0000000000 65535 f" +  "\r\n";
+        strCrossReffence += "0000000000 65535 f" +  PDFCRLF;
         //-- There are two kinds of cross-reference entries: one for objects that are in use and another
         //-- for objects that have been deleted and therefore are free.
         //-- Both types of entries have similar basic formats, distinguished by the keyword n (for an in-use entry)
@@ -1092,7 +1081,7 @@ public class clsPdfWriter {
         Set<String> keys = colCrossReferenceTable.keySet();
         for (String key: keys){
         	intPad = Integer.parseInt(colCrossReferenceTable.get(key));
-        	strCrossReffence += String.format(fmt,  intPad) + " 00000 n" +  "\r\n";
+        	strCrossReffence += String.format(fmt,  intPad) + " 00000 n" +  PDFCRLF;
         }
         
         //-- Now return our Cross reffence table
@@ -1103,25 +1092,23 @@ public class clsPdfWriter {
     private String FileTrailer(Integer byteOfSet  ) { 
     	String strComment = "";
         if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to FileTrailer " +  "\r\n";
+            strComment = "% Comment- Call to FileTrailer " +  PDFCRLF;
         }
         //--The trailer of a PDF file enables an application reading the file to quickly find 
         //--the cross-reference table and certain special objects
         //--Applications should read a PDFfile from its end. 
-        String strTrailer  = strComment + "trailer" +  "\r\n";
-        strTrailer += "<< /Size " + Integer.toString(1 + colCrossReferenceTable.size()) +  "\r\n";
+        String strTrailer  = strComment + "trailer" +  PDFCRLF;
+        strTrailer += "<< /Size " + Integer.toString(1 + colCrossReferenceTable.size()) +  PDFCRLF;
         //-- It not required to have a Info Dictionary object but I think it best to have it.
         //-- It ok to hard code this pdf object because it never changes.
-        strTrailer += "/Info 1 0 R" +  "\r\n";
+        strTrailer += "/Info 1 0 R" +  PDFCRLF;
         //-- Need to add one for the Info object and one for root object
-        // TODO: Need to have if statement here as well hard coding it for now.
-        //Integer intRootObject  = intFontCount + 2 + intXObjectCount + intFontDescriptorCount;
-        Integer intRootObject  = intFontCount + 3 + intXObjectCount + intFontDescriptorCount;
-        strTrailer += "/Root " + intRootObject.toString() + " 0 R" +  "\r\n";
-        strTrailer += ">>" +  "\r\n";
-        strTrailer += "startxref" +  "\r\n";
+        Integer intRootObject  = intFontCount + 2 + intXObjectCount + intFontDescriptorCount;
+        strTrailer += "/Root " + intRootObject.toString() + " 0 R" +  PDFCRLF;
+        strTrailer += ">>" +  PDFCRLF;
+        strTrailer += "startxref" +  PDFCRLF;
         //-- Need the starting point of the cross reffence table to be pass in.
-        strTrailer += byteOfSet.toString() +  "\r\n";
+        strTrailer += byteOfSet.toString() +  PDFCRLF;
         //-- The two preceding lines contain the keyword startxref and the byte offset 
         //-- from the beginning of the file to the beginning of the xref keyword in the 
         //-- last cross-reference section
@@ -1138,11 +1125,11 @@ public class clsPdfWriter {
     private String LoadStandardFont(String strFontName ) {
     	String strComment   = "";
         if( _pdfCommentFile == true){
-            strComment = "% Comment- Call to LoadStandardFont " + "\r\n";
+            strComment = "% Comment- Call to LoadStandardFont " + PDFCRLF;
         }
         //-- Need to set our Collection for this object 
         upDateReffenceTable();
-        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- Keep our collection up to date
         colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
@@ -1180,234 +1167,389 @@ public class clsPdfWriter {
                 strBaseFont = "ZapfDingbats";
         }
         
-        strFont += "<< /Type /Font" + "\r\n";
-        strFont += "/Subtype /Type1" + "\r\n";
-        strFont += "/Name /F" + dicFontsUsed.get(strFontName).toString() + "\r\n";
-        strFont += "/BaseFont /" + strBaseFont + "\r\n";
-        strFont += "/Encoding /WinAnsiEncoding" + "\r\n";
-        strFont += ">>" + "\r\n";
-        strFont += "endobj" + "\r\n";
+        strFont += "<< /Type /Font" + PDFCRLF;
+        strFont += "/Subtype /Type1" + PDFCRLF;
+        strFont += "/Name /F" + dicFontsUsed.get(strFontName).toString() + PDFCRLF;
+        strFont += "/BaseFont /" + strBaseFont + PDFCRLF;
+        strFont += "/Encoding /WinAnsiEncoding" + PDFCRLF;
+        strFont += ">>" + PDFCRLF;
+        strFont += "endobj" + PDFCRLF;
         return strFont;
     }
 
     private String LoadTrueTypeFont(String strFontName ) {
     	String strComment  = "";
-        if( _pdfCommentFile == true){
-            strComment = "% Comment- Call to LoadTrueTypeFont " + "\r\n";
-        }
+        if( _pdfCommentFile == true){strComment = "% Comment- Call to LoadTrueTypeFont " + PDFCRLF; }
+       
         //-- Need to set our Collection for this object 
         upDateReffenceTable();
-        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- Keep our collection up to date
         colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
 
         int[] GlyphWidths = null;
-        
-        Integer intFormat  = 0;
-        FontDescriptor TT_Font = new FontDescriptor(); 
+        Type1FontDictionary type1FontDic = new Type1FontDictionary(); 
+        FontDescriptor fontDesc = new FontDescriptor();
       
-        //-- Info.
-        //-- The value of the Flags entry in a font descriptor.Parameters is an unsigned 32-bit integer containing
-        //-- flags specifying various characteristics of the font. Bit positions within the flag word are 
-        //-- numbered from 1 (low-order) to 32 (high-order). There are 9 flags total in ver 1.7 these are hard coded
+        if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Roman")){
+        	type1FontDic.setBaseFont("TT_TimesNewRoman");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{250, 333, 408, 500, 500, 833, 778, 180, 333, 333, 500, 564, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 564, 564, 564, 444, 921, 722, 667, 667, 722, 611, 556, 722, 722, 333, 389, 722, 611, 889, 722, 722, 556, 722, 667, 556, 611, 722, 722, 944, 722, 722, 611, 333, 278, 333, 469, 500, 333, 444, 500, 444, 500, 444, 333, 500, 500, 278, 278, 500, 278, 778, 500, 500, 500, 500, 333, 389, 278, 500, 500, 722, 500, 500, 444, 480, 200, 480, 541, 778, 500, 778, 333, 500, 444, 1000, 500, 500, 333, 1000, 556, 333, 889, 778, 611, 778, 778, 333, 333, 444, 444, 350, 500, 1000, 333, 980, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 200, 500, 333, 760, 276, 500, 564, 333, 760, 500, 400, 549, 300, 300, 333, 576, 453, 250, 333, 300, 310, 500, 750, 750, 750, 444, 722, 722, 722, 722, 722, 722, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 722, 722, 722, 722, 722, 722, 564, 722, 722, 722, 722, 722, 722, 556, 500, 444, 444, 444, 444, 444, 444, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 500, 500, 500};
+        	fontDesc.setFontName("TT_TimesNewRoman");
+        	fontDesc.setFlags("34");
+        	fontDesc.setFontBBox(-250, -216, 1200, 1000);
+        	fontDesc.setMissingWidth("333");
+        	fontDesc.setStemV("73");
+        	fontDesc.setStemH("73");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("891");
+        	fontDesc.setXHeight("446");
+        	fontDesc.setAscent("891");
+        	fontDesc.setDescent("-216");
+        	fontDesc.setLeading("149");
+        	fontDesc.setMaxWidth("1000");
+        	fontDesc.setAvgWidth("401");
 
-         
-            //-- Make sure we are starting fresh
-        TT_Font.BaseFont = "";
-        TT_Font.FirstChar = "";
-        TT_Font.LastChar = "";
-        TT_Font.MissingWidth = "";
-        TT_Font.Parameters = "";
-        TT_Font.Widths = "";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Bold")){
+        	type1FontDic.setBaseFont("TT_TimesNewRomanBold");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar ("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{250, 333, 555, 500, 500, 1000, 833, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 930, 722, 667, 722, 722, 667, 611, 778, 778, 389, 500, 778, 667, 944, 722, 778, 611, 778, 722, 556, 667, 722, 722, 1000, 722, 722, 667, 333, 278, 333, 581, 500, 333, 500, 556, 444, 556, 444, 333, 500, 556, 278, 333, 556, 278, 833, 556, 500, 556, 556, 444, 389, 333, 556, 500, 722, 500, 500, 444, 394, 220, 394, 520, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 1000, 778, 667, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 220, 500, 333, 747, 300, 500, 570, 333, 747, 500, 400, 549, 300, 300, 333, 576, 540, 250, 333, 300, 330, 500, 750, 750, 750, 500, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 778, 778, 778, 778, 778, 570, 778, 722, 722, 722, 722, 722, 611, 556, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 500, 556, 500};
+        	fontDesc.setFontName("TT_TimesNewRomanBold");
+        	fontDesc.setFlags("16418");
+        	fontDesc.setFontBBox(-250, -216, 1201, 1000);
+        	fontDesc.setMissingWidth("333");
+        	fontDesc.setStemV("136");
+        	fontDesc.setStemH("136");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("891");
+        	fontDesc.setXHeight("446");
+        	fontDesc.setAscent("891");
+        	fontDesc.setDescent("-216");
+        	fontDesc.setLeading("149");
+        	fontDesc.setMaxWidth("1001");
+        	fontDesc.setAvgWidth("401");
 
-        
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Italic")){
+        	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{250, 333, 420, 500, 500, 833, 778, 214, 333, 333, 500, 675, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 675, 675, 675, 500, 920, 611, 611, 667, 722, 611, 611, 722, 722, 333, 444, 667, 556, 833, 667, 722, 611, 722, 611, 500, 556, 722, 611, 833, 611, 556, 556, 389, 278, 389, 422, 500, 333, 500, 500, 444, 500, 444, 278, 500, 500, 278, 278, 444, 278, 722, 500, 500, 500, 500, 389, 389, 278, 500, 444, 667, 444, 444, 389, 400, 275, 400, 541, 778, 500, 778, 333, 500, 556, 889, 500, 500, 333, 1000, 500, 333, 944, 778, 556, 778, 778, 333, 333, 556, 556, 350, 500, 889, 333, 980, 389, 333, 667, 778, 389, 556, 250, 389, 500, 500, 500, 500, 275, 500, 333, 760, 276, 500, 675, 333, 760, 500, 400, 549, 300, 300, 333, 576, 523, 250, 333, 300, 310, 500, 750, 750, 750, 500, 611, 611, 611, 611, 611, 611, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 667, 722, 722, 722, 722, 722, 675, 722, 722, 722, 722, 722, 556, 611, 500, 500, 500, 500, 500, 500, 500, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 444, 500, 444};
+        	fontDesc.setFontName("TT_TimesNewRomanItalic");
+        	fontDesc.setFlags("98");
+        	fontDesc.setFontBBox(-250, -216, 1200, 1000);
+        	fontDesc.setMissingWidth("333");
+        	fontDesc.setStemV("73");
+        	fontDesc.setStemH("73");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("891");
+        	fontDesc.setXHeight("446");
+        	fontDesc.setAscent("891");
+        	fontDesc.setDescent("-216");
+        	fontDesc.setLeading("149");
+        	fontDesc.setMaxWidth("1000");
+        	fontDesc.setAvgWidth("402");
 
-            if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Roman")){
-                    TT_Font.BaseFont = "TT_TimesNewRoman";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "333";
-                    GlyphWidths = new int[]{250, 333, 408, 500, 500, 833, 778, 180, 333, 333, 500, 564, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 564, 564, 564, 444, 921, 722, 667, 667, 722, 611, 556, 722, 722, 333, 389, 722, 611, 889, 722, 722, 556, 722, 667, 556, 611, 722, 722, 944, 722, 722, 611, 333, 278, 333, 469, 500, 333, 444, 500, 444, 500, 444, 333, 500, 500, 278, 278, 500, 278, 778, 500, 500, 500, 500, 333, 389, 278, 500, 500, 722, 500, 500, 444, 480, 200, 480, 541, 778, 500, 778, 333, 500, 444, 1000, 500, 500, 333, 1000, 556, 333, 889, 778, 611, 778, 778, 333, 333, 444, 444, 350, 500, 1000, 333, 980, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 200, 500, 333, 760, 276, 500, 564, 333, 760, 500, 400, 549, 300, 300, 333, 576, 453, 250, 333, 300, 310, 500, 750, 750, 750, 444, 722, 722, 722, 722, 722, 722, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 722, 722, 722, 722, 722, 722, 564, 722, 722, 722, 722, 722, 722, 556, 500, 444, 444, 444, 444, 444, 444, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 500, 500, 500};
-                    TT_Font.Parameters = "/Flags 34 /FontBBox [-250 -216 1200 1000] /MissingWidth 333 /StemV 73 /StemH 73 /ItalicAngle 0 /CapHeight 891 /XHeight 446 " + "/Ascent 891 /Descent -216 /Leading 149 /MaxWidth 1000 /AvgWidth 401";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_BoldItalic")){
+        	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{250, 389, 555, 500, 500, 833, 778, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 832, 667, 667, 667, 722, 667, 667, 722, 778, 389, 500, 667, 611, 889, 722, 722, 611, 722, 667, 556, 611, 722, 667, 889, 667, 611, 611, 333, 278, 333, 570, 500, 333, 500, 500, 444, 500, 444, 333, 500, 556, 278, 278, 500, 278, 778, 556, 500, 500, 500, 389, 389, 278, 556, 444, 667, 500, 444, 389, 348, 220, 348, 570, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 944, 778, 611, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 389, 611, 250, 389, 500, 500, 500, 500, 220, 500, 333, 747, 266, 500, 606, 333, 747, 500, 400, 549, 300, 300, 333, 576, 500, 250, 333, 300, 300, 500, 750, 750, 750, 500, 667, 667, 667, 667, 667, 667, 944, 667, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 722, 722, 722, 722, 722, 570, 722, 722, 722, 722, 722, 611, 611, 500, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 444, 500, 444};
+        	fontDesc.setFontName("TT_TimesNewRomanItalic");
+        	fontDesc.setFlags("16482");
+        	fontDesc.setFontBBox(-250, -216, 1200, 1000);
+        	fontDesc.setMissingWidth("333");
+        	fontDesc.setStemV("131");
+        	fontDesc.setStemH("131");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("891");
+        	fontDesc.setXHeight("446");
+        	fontDesc.setAscent("891");
+        	fontDesc.setDescent("-216");
+        	fontDesc.setLeading("149");
+        	fontDesc.setMaxWidth("1000");
+        	fontDesc.setAvgWidth("412");
 
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Bold")){
-                    TT_Font.BaseFont = "TT_TimesNewRomanBold";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "333";
-                    GlyphWidths = new int[]{250, 333, 555, 500, 500, 1000, 833, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 930, 722, 667, 722, 722, 667, 611, 778, 778, 389, 500, 778, 667, 944, 722, 778, 611, 778, 722, 556, 667, 722, 722, 1000, 722, 722, 667, 333, 278, 333, 581, 500, 333, 500, 556, 444, 556, 444, 333, 500, 556, 278, 333, 556, 278, 833, 556, 500, 556, 556, 444, 389, 333, 556, 500, 722, 500, 500, 444, 394, 220, 394, 520, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 1000, 778, 667, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 220, 500, 333, 747, 300, 500, 570, 333, 747, 500, 400, 549, 300, 300, 333, 576, 540, 250, 333, 300, 330, 500, 750, 750, 750, 500, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 778, 778, 778, 778, 778, 570, 778, 722, 722, 722, 722, 722, 611, 556, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 500, 556, 500};
-                    TT_Font.Parameters = "/Flags 16418 /FontBBox [-250 -216 1201 1000] /MissingWidth 333 /StemV 136 /StemH 136 /ItalicAngle 0 /CapHeight 891 /XHeight 446 " + "/Ascent 891 /Descent -216 /Leading 149 /MaxWidth 1001 /AvgWidth 401";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial")){
+        	type1FontDic.setBaseFont("TT_Arial");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
+        	fontDesc.setFontName("TT_Arial");
+        	fontDesc.setFlags("32");
+        	fontDesc.setFontBBox(-250, -221, 1190, 1000);
+        	fontDesc.setMissingWidth("272");
+        	fontDesc.setStemV("80");
+        	fontDesc.setStemH("80");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("905");
+        	fontDesc.setXHeight("453");
+        	fontDesc.setAscent("905");
+        	fontDesc.setDescent("-212");
+        	fontDesc.setLeading("150");
+        	fontDesc.setMaxWidth("992");
+        	fontDesc.setAvgWidth("441");
 
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Italic")){
-                    TT_Font.BaseFont = "TT_TimesNewRomanItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "333";
-                    GlyphWidths = new int[]{250, 333, 420, 500, 500, 833, 778, 214, 333, 333, 500, 675, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 675, 675, 675, 500, 920, 611, 611, 667, 722, 611, 611, 722, 722, 333, 444, 667, 556, 833, 667, 722, 611, 722, 611, 500, 556, 722, 611, 833, 611, 556, 556, 389, 278, 389, 422, 500, 333, 500, 500, 444, 500, 444, 278, 500, 500, 278, 278, 444, 278, 722, 500, 500, 500, 500, 389, 389, 278, 500, 444, 667, 444, 444, 389, 400, 275, 400, 541, 778, 500, 778, 333, 500, 556, 889, 500, 500, 333, 1000, 500, 333, 944, 778, 556, 778, 778, 333, 333, 556, 556, 350, 500, 889, 333, 980, 389, 333, 667, 778, 389, 556, 250, 389, 500, 500, 500, 500, 275, 500, 333, 760, 276, 500, 675, 333, 760, 500, 400, 549, 300, 300, 333, 576, 523, 250, 333, 300, 310, 500, 750, 750, 750, 500, 611, 611, 611, 611, 611, 611, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 667, 722, 722, 722, 722, 722, 675, 722, 722, 722, 722, 722, 556, 611, 500, 500, 500, 500, 500, 500, 500, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 444, 500, 444};
-                    TT_Font.Parameters = "/Flags 98 /FontBBox [-250 -216 1200 1000] /MissingWidth 333 /StemV 73 /StemH 73 /ItalicAngle -11 /CapHeight 891 /XHeight 446 /Ascent 891 /Descent -216 /Leading 149 /MaxWidth 1000 /AvgWidth 402";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Bold")){
+        	type1FontDic.setBaseFont("TT_ArialBold");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
+        	fontDesc.setFontName("TT_ArialBold");
+        	fontDesc.setFlags("16416");
+        	fontDesc.setFontBBox(-250, -212, 1120, 1000);
+        	fontDesc.setMissingWidth("311");
+        	fontDesc.setStemV("153");
+        	fontDesc.setStemH("153");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("905");
+        	fontDesc.setXHeight("453");
+        	fontDesc.setAscent("905");
+        	fontDesc.setDescent("-212");
+        	fontDesc.setLeading("150");
+        	fontDesc.setMaxWidth("933");
+        	fontDesc.setAvgWidth("479");
 
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_BoldItalic")){
-                    TT_Font.BaseFont = "TT_TimesNewRomanItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "333";
-                    GlyphWidths = new int[]{250, 389, 555, 500, 500, 833, 778, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 832, 667, 667, 667, 722, 667, 667, 722, 778, 389, 500, 667, 611, 889, 722, 722, 611, 722, 667, 556, 611, 722, 667, 889, 667, 611, 611, 333, 278, 333, 570, 500, 333, 500, 500, 444, 500, 444, 333, 500, 556, 278, 278, 500, 278, 778, 556, 500, 500, 500, 389, 389, 278, 556, 444, 667, 500, 444, 389, 348, 220, 348, 570, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 944, 778, 611, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 389, 611, 250, 389, 500, 500, 500, 500, 220, 500, 333, 747, 266, 500, 606, 333, 747, 500, 400, 549, 300, 300, 333, 576, 500, 250, 333, 300, 300, 500, 750, 750, 750, 500, 667, 667, 667, 667, 667, 667, 944, 667, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 722, 722, 722, 722, 722, 570, 722, 722, 722, 722, 722, 611, 611, 500, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 444, 500, 444};
-                    TT_Font.Parameters = "/Flags 16482 /FontBBox [-250 -216 1200 1000] /MissingWidth 333 /StemV 131 /StemH 131 /ItalicAngle -11 /CapHeight 891 /XHeight 446 /Ascent 891 /Descent -216 /Leading 149 /MaxWidth 1000 /AvgWidth 412";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Italic")){
+        	type1FontDic.setBaseFont("TT_ArialItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
+        	fontDesc.setFontName("TT_ArialItalic");
+        	fontDesc.setFlags("96");
+        	fontDesc.setFontBBox(-250, -212, 1134, 1000);
+        	fontDesc.setMissingWidth("259");
+        	fontDesc.setStemV("80");
+        	fontDesc.setStemH("80");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("905");
+        	fontDesc.setXHeight("453");
+        	fontDesc.setAscent("905");
+        	fontDesc.setDescent("-212");
+        	fontDesc.setLeading("150");
+        	fontDesc.setMaxWidth("945");
+        	fontDesc.setAvgWidth("441");
 
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial")){
-                    TT_Font.BaseFont = "TT_Arial";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "272";
-                    GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
-                    TT_Font.Parameters = "/Flags 32 /FontBBox [-250 -221 1190 1000] /MissingWidth 272 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 905 /XHeight 453 /Ascent 905 /Descent -212 /Leading 150 /MaxWidth 992 /AvgWidth 441";
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_BoldItalic")){
+        	type1FontDic.setBaseFont("TT_ArialBoldItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
+        	fontDesc.setFontName("TT_ArialBoldItalic");
+        	fontDesc.setFlags("16480");
+        	fontDesc.setFontBBox(-250, -212, 1120, 1000);
+        	fontDesc.setMissingWidth("311");
+        	fontDesc.setStemV("153");
+        	fontDesc.setStemH("153");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("905");
+        	fontDesc.setXHeight("453");
+        	fontDesc.setAscent("905");
+        	fontDesc.setDescent("-212");
+        	fontDesc.setLeading("150");
+        	fontDesc.setMaxWidth("933");
+        	fontDesc.setAvgWidth("479");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNew")){
+        	type1FontDic.setBaseFont("TT_CourierNew");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
+        	fontDesc.setFontName("TT_CourierNew");
+        	fontDesc.setFlags("34");
+        	fontDesc.setFontBBox(-250, -300, 720, 1000);
+        	fontDesc.setMissingWidth("600");
+        	fontDesc.setStemV("109");
+        	fontDesc.setStemH("109");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("833");
+        	fontDesc.setXHeight("417");
+        	fontDesc.setAscent("833");
+        	fontDesc.setDescent("-300");
+        	fontDesc.setLeading("133");
+        	fontDesc.setMaxWidth("600");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBold")){
+        	type1FontDic.setBaseFont("TT_CourierNewBold");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
+        	fontDesc.setFontName("TT_CourierNewBold");
+        	fontDesc.setFlags("16418");
+        	fontDesc.setFontBBox(-250, -300, 720, 1000);
+        	fontDesc.setMissingWidth("600");
+        	fontDesc.setStemV("191");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("833");
+        	fontDesc.setXHeight("417");
+        	fontDesc.setAscent("833");
+        	fontDesc.setDescent("-300");
+        	fontDesc.setLeading("133");
+        	fontDesc.setMaxWidth("600");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewItalic")){
+        	type1FontDic.setBaseFont("TT_CourierNewItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
+        	fontDesc.setFontName("TT_CourierNewItalic");
+        	fontDesc.setFlags("98");
+        	fontDesc.setFontBBox(-250, -300, 720, 1000);
+        	fontDesc.setMissingWidth("600");
+        	fontDesc.setStemV("109");
+        	fontDesc.setStemH("109");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("833");
+        	fontDesc.setXHeight("417");
+        	fontDesc.setAscent("833");
+        	fontDesc.setDescent("-300");
+        	fontDesc.setLeading("133");
+        	fontDesc.setMaxWidth("600");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBoldItalic")){
+        	type1FontDic.setBaseFont("TT_CourierNewBoldItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("32");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
+        	fontDesc.setFontName("TT_CourierNewBoldItalic");
+        	fontDesc.setFlags("16482");
+        	fontDesc.setFontBBox(-250, -300, 720, 1000);
+        	fontDesc.setMissingWidth("600");
+        	fontDesc.setStemV("191");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("833");
+        	fontDesc.setXHeight("417");
+        	fontDesc.setAscent("833");
+        	fontDesc.setDescent("-300");
+        	fontDesc.setLeading("133");
+        	fontDesc.setMaxWidth("600");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_Symbol")){
+        	type1FontDic.setBaseFont("TT_Symbol");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("30");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
+        	fontDesc.setFontName("TT_Symbol");
+        	fontDesc.setFlags("6");
+        	fontDesc.setFontBBox(-250, -220,1246, 1005);
+        	fontDesc.setMissingWidth("332");
+        	fontDesc.setStemV("109");
+        	fontDesc.setStemH("109");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("1005");
+        	fontDesc.setXHeight("503");
+        	fontDesc.setAscent("1005");
+        	fontDesc.setDescent("-220");
+        	fontDesc.setLeading("225");
+        	fontDesc.setMaxWidth("1038");
+        	fontDesc.setAvgWidth("601");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBold")){
+        	type1FontDic.setBaseFont("TT_SymbolBold");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("30");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
+        	fontDesc.setFontName("TT_SymbolBold");
+        	fontDesc.setFlags("16390");
+        	fontDesc.setFontBBox(-250, -220, 1246, 1005);
+        	fontDesc.setMissingWidth("332");
+        	fontDesc.setStemV("191");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("1005");
+        	fontDesc.setXHeight("503");
+        	fontDesc.setAscent("1005");
+        	fontDesc.setDescent("-220");
+        	fontDesc.setLeading("225");
+        	fontDesc.setMaxWidth("1038");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolItalic")){
+        	type1FontDic.setBaseFont("TT_SymbolItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("30");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
+        	fontDesc.setFontName("TT_SymbolItalic");
+        	fontDesc.setFlags("70");
+        	fontDesc.setFontBBox(-250, -220, 1246, 1005);
+        	fontDesc.setMissingWidth("332");
+        	fontDesc.setStemV("109");
+        	fontDesc.setStemH("109");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("1005");
+        	fontDesc.setXHeight("503");
+        	fontDesc.setAscent("1005");
+        	fontDesc.setDescent("-220");
+        	fontDesc.setLeading("225");
+        	fontDesc.setMaxWidth("1038");
+        	fontDesc.setAvgWidth("600");
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBoldItalic")){
+        	type1FontDic.setBaseFont("TT_SymbolBoldItalic");
+        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setFirstChar("30");
+        	type1FontDic.setLastChar("255");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
+        	fontDesc.setFontName("TT_SymbolBoldItalic");
+        	fontDesc.setFlags("16454");
+        	fontDesc.setFontBBox(-250, -220, 1246, 1005);
+        	fontDesc.setMissingWidth("332");
+        	fontDesc.setStemV("191");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("-11");
+        	fontDesc.setCapHeight("1005");
+        	fontDesc.setXHeight("503");
+        	fontDesc.setAscent("1005");
+        	fontDesc.setDescent("-220");
+        	fontDesc.setLeading("225");
+        	fontDesc.setMaxWidth("1038");
+        	fontDesc.setAvgWidth("600");
 
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Bold")){
-                    TT_Font.BaseFont = "TT_ArialBold";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "311";
-                    GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
-                    TT_Font.Parameters = "/Flags 16416 /FontBBox [-250 -212 1120 1000] /MissingWidth 311 /StemV 153 /StemH 153 /ItalicAngle 0 /CapHeight 905 /XHeight 453 /Ascent 905 /Descent -212 /Leading 150 /MaxWidth 933 /AvgWidth 479";
-
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Italic")){
-                    TT_Font.BaseFont = "TT_ArialItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "259";
-                    GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
-                    TT_Font.Parameters = "/Flags 96 /FontBBox [-250 -212 1134 1000] /MissingWidth 259 /StemV 80 /StemH 80 /ItalicAngle -11 /CapHeight 905 /XHeight 453 /Ascent 905 /Descent -212 /Leading 150 /MaxWidth 945 /AvgWidth 441";
-
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_BoldItalic")){
-                    TT_Font.BaseFont = "TT_ArialBoldItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "311";
-                    GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
-                    TT_Font.Parameters = "/Flags 16480 /FontBBox [-250 -212 1120 1000] /MissingWidth 311 /StemV 153 /StemH 153 /ItalicAngle -11 /CapHeight 905 /XHeight 453 /Ascent 905 /Descent -212 /Leading 150 /MaxWidth 933 /AvgWidth 479";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNew")){
-                    TT_Font.BaseFont = "TT_CourierNew";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "600";
-                    GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-                    TT_Font.Parameters = "/Flags 34 /FontBBox [-250 -300 720 1000] /MissingWidth 600 /StemV 109 /StemH 109 /ItalicAngle 0 /CapHeight 833 /XHeight 417 /Ascent 833 /Descent -300 /Leading 133 /MaxWidth 600 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBold")){
-                    TT_Font.BaseFont = "TT_CourierNewBold";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "600";
-                    GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-                    TT_Font.Parameters = "/Flags 16418 /FontBBox [-250 -300 720 1000] /MissingWidth 600 /StemV 191 /StemH 191 /ItalicAngle 0 /CapHeight 833 /XHeight 417 /Ascent 833 /Descent -300 /Leading 133 /MaxWidth 600 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewItalic")){
-                    TT_Font.BaseFont = "TT_CourierNewItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "600";
-                    GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-                    TT_Font.Parameters = "/Flags 98 /FontBBox [-250 -300 720 1000] /MissingWidth 600 /StemV 109 /StemH 109 /ItalicAngle -11 /CapHeight 833 /XHeight 417 /Ascent 833 /Descent -300 /Leading 133 /MaxWidth 600 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBoldItalic")){
-                    TT_Font.BaseFont = "TT_CourierNewBoldItalic";
-                    TT_Font.FirstChar = "32";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "600";
-                    GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-                    TT_Font.Parameters = "/Flags 16482 /FontBBox [-250 -300 720 1000] /MissingWidth 600 /StemV 191 /StemH 191 /ItalicAngle -11 /CapHeight 833 /XHeight 417 /Ascent 833 /Descent -300 /Leading 133 /MaxWidth 600 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_Symbol")){
-                    TT_Font.BaseFont = "TT_Symbol";
-                    TT_Font.FirstChar = "30";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "332";
-                    GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-                    TT_Font.Parameters = "/Flags 6 /FontBBox [-250 -220 1246 1005] /MissingWidth 332 /StemV 109 /StemH 109 /ItalicAngle 0 /CapHeight 1005 /XHeight 503 /Ascent 1005 /Descent -220 /Leading 225 /MaxWidth 1038 /AvgWidth 601";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBold")){
-                    TT_Font.BaseFont = "TT_SymbolBold";
-                    TT_Font.FirstChar = "30";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "332";
-                    GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-                    TT_Font.Parameters = "/Flags 16390 /FontBBox [-250 -220 1246 1005] /MissingWidth 332 /StemV 191 /StemH 191 /ItalicAngle 0 /CapHeight 1005 /XHeight 503 /Ascent 1005 /Descent -220 /Leading 225 /MaxWidth 1038 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolItalic")){
-                    TT_Font.BaseFont = "TT_SymbolItalic";
-                    TT_Font.FirstChar = "30";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "332";
-                    GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-                    TT_Font.Parameters = "/Flags 70 /FontBBox [-250 -220 1246 1005] /MissingWidth 332 /StemV 109 /StemH 109 /ItalicAngle -11 /CapHeight 1005 /XHeight 503 /Ascent 1005 /Descent -220 /Leading 225 /MaxWidth 1038 /AvgWidth 600";
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBoldItalic")){
-                    TT_Font.BaseFont = "TT_SymbolBoldItalic";
-                    TT_Font.FirstChar = "30";
-                    TT_Font.LastChar = "255";
-                    TT_Font.MissingWidth = "332";
-                    GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-                    TT_Font.Parameters = "/Flags 16454 /FontBBox [-250 -220 1246 1005] /MissingWidth 332 /StemV 191 /StemH 191 /ItalicAngle -11 /CapHeight 1005 /XHeight 503 /Ascent 1005 /Descent -220 /Leading 225 /MaxWidth 1038 /AvgWidth 600";
- // Just trying this.          
-            }else if(strFontName.equals("pdfTrueTypeFonts.TT_MalgunGothic")){
-                TT_Font.BaseFont = "MalgunGothic";
-                TT_Font.FirstChar = "0";
-                TT_Font.LastChar = "28";
-                TT_Font.MissingWidth = "662";
-                 GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
-                                         353, 602, 344, 700, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
-                TT_Font.Parameters = "/Flags 4 /FontBBox [-976 -248 1198 932] /MissingWidth 662 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 718 /XHeight 512 /Ascent 1088 /Descent -241 /Leading 0 /MaxWidth 1238 /AvgWidth 463";
-                    
-            }
-
-
-            //-- Figure our widths for the selected font
-            for(int intCount = Integer.parseInt(TT_Font.FirstChar); intCount <= Integer.parseInt(TT_Font.LastChar); intCount++){
-                intFormat += 1;
-                TT_Font.Widths += GlyphWidths[intCount - Integer.parseInt(TT_Font.FirstChar)] + " ";
-                //-- Just keep the format for human readable not needed for file.
-                if( intFormat == 16 ){
-                    TT_Font.Widths +=   "\r\n";
-                    intFormat = 0;
-                }
-            }
-            Integer intFontDescriptorObject  = 1;
-            Integer intToUnicodeObject  = 1;
-            intFontDescriptorObject += intpdfObjectCount;
-            intToUnicodeObject += intFontDescriptorObject;
-            //-- The Font details object
-            strFont += "<< /Type /Font" + "\r\n";
-            strFont += "/Subtype /TrueType" + "\r\n";
-            strFont += "/Name /F" + dicFontsUsed.get(strFontName).toString() + "\r\n";
-            strFont += "/BaseFont /" + TT_Font.BaseFont + "\r\n";
-            strFont += "/FirstChar " + TT_Font.FirstChar + "\r\n";
-            strFont += "/LastChar " + TT_Font.LastChar + "\r\n";
-            strFont += "/FontDescriptor " + intFontDescriptorObject.toString() + " 0 R " + "\r\n";
-           // Need a if statement here for Times Roman
-            strFont += "/Encoding /Identity-H" + "\r\n";
-            // strFont += "/Encoding /WinAnsiEncoding" + "\r\n";
-            strFont += "/Widths [" + "\r\n";
-            strFont += TT_Font.Widths;
-            //strFont += "] >>" + "\r\n"; The before line
-            strFont += "] " + "\r\n";
-            // Added next line
-            strFont += "/ToUnicode " + intToUnicodeObject.toString() + " 0 R " + "\r\n";
-            strFont += ">> " + "\r\n"; // Added this line.
-            strFont += "endobj" + "\r\n";
+        }
+            // Set the rest of the Font Dictionary properties
+            type1FontDic.setWidths(GlyphWidths);
+            type1FontDic.setFontDescriptor( String.valueOf(intpdfObjectCount + 1) + " 0 R ");
+            strFont += type1FontDic.toString();
+            strFont += "endobj" + PDFCRLF;
 
             //-- The Font Descriptor - A font descriptor is a dictionary whose entries specify various font attributes
             //-- Need to set our Collection for this object 
             upDateReffenceTable();
             intFontDescriptorCount += 1;
-            strFont += intpdfObjectCount.toString() + " 0 obj" + "\r\n";
-            strFont += "<< /Type /FontDescriptor";
-            strFont += "/FontName /" + TT_Font.BaseFont;
-            strFont += TT_Font.Parameters + ">>" + "\r\n";
-            strFont += "endobj" + "\r\n";
-            // Just testing
-            upDateReffenceTable();
-            strFont += intpdfObjectCount.toString() + " 0 obj" + "\r\n";
-            // Create the Cmap object
-            identityH CmapH = new identityH();
-            strFont += "<< /Length " + CmapH.Length() + " >>" + "\r\n";
-            strFont += "stream" + "\r\n";
-            strFont += CmapH.toString() + "\r\n";
-            strFont += "endstream" + "\r\n";
-            strFont += "endobj" + "\r\n";
+            strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+            strFont += fontDesc.toString();
+            strFont += "endobj" + PDFCRLF;
           return strFont;
     }
 
@@ -1560,7 +1702,7 @@ public class clsPdfWriter {
         if (blnFlag == true) {
         	String strComment  = "";
             if (_pdfCommentFile == true) {
-                strComment = "% Comment- Call to LoadImgFromBMPFile " + "\r\n";
+                strComment = "% Comment- Call to LoadImgFromBMPFile " + PDFCRLF;
         	}
             return strComment + LoadImgFromArray(Name, para);
         }
@@ -1603,7 +1745,7 @@ public class clsPdfWriter {
         upDateReffenceTable();
         String strComment  = "";
         if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to LoadImgFromJPEGFile " + "\r\n";
+            strComment = "% Comment- Call to LoadImgFromJPEGFile " + PDFCRLF;
         }
         //-- The image dictionary specifies the width, height, and number of bits per component
         //-- explicitly. The number of color components can be inferred from the color space specified in the dictionary
@@ -1620,21 +1762,21 @@ public class clsPdfWriter {
         ///Name /ImgJPEG1>>
 
         //-- Set our Object number
-        String strImage  = strComment + intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+        String strImage  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- This writes out the Xobject Dictionary
 
-        strImage += "<</Type /XObject" + "\r\n";
-        strImage += "/Subtype /Image" + "\r\n";
-        strImage += "/Filter [/" + strImageJPEG.ImgDicFilter.toString() + " ]" + "\r\n";
-        strImage += "/Width " + strImageJPEG.ImgDicWidth.toString() + "\r\n";
-        strImage += "/Height " + strImageJPEG.ImgDicHeight.toString() + "\r\n";
-        strImage += "/ColorSpace /" + strImageJPEG.ImgDicColorSpace.toString() + "\r\n";
-        strImage += "/BitsPerComponent " + strImageJPEG.ImgDicBitsPerComponent.toString() + "\r\n";
-        strImage += "/Length " + strImageJPEG.ImgDicFileSize.toString() + "\r\n";
-        strImage += "/Name /" + Name.toString() + ">>" + "\r\n";
+        strImage += "<</Type /XObject" + PDFCRLF;
+        strImage += "/Subtype /Image" + PDFCRLF;
+        strImage += "/Filter [/" + strImageJPEG.ImgDicFilter.toString() + " ]" + PDFCRLF;
+        strImage += "/Width " + strImageJPEG.ImgDicWidth.toString() + PDFCRLF;
+        strImage += "/Height " + strImageJPEG.ImgDicHeight.toString() + PDFCRLF;
+        strImage += "/ColorSpace /" + strImageJPEG.ImgDicColorSpace.toString() + PDFCRLF;
+        strImage += "/BitsPerComponent " + strImageJPEG.ImgDicBitsPerComponent.toString() + PDFCRLF;
+        strImage += "/Length " + strImageJPEG.ImgDicFileSize.toString() + PDFCRLF;
+        strImage += "/Name /" + Name.toString() + ">>" + PDFCRLF;
         //-- Sample data is represented as a stream of bytes, interpreted as 8-bit unsigned integers in the range 0 to 255.
-        strImage += "stream" + "\r\n";
+        strImage += "stream" + PDFCRLF;
         
         BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
         writeString(writer, strImage);
@@ -1651,9 +1793,9 @@ public class clsPdfWriter {
 	        
          
         
-        strImage="\r\n";
-        strImage += "endstream" + "\r\n";
-        strImage += "endobj" + "\r\n";
+        strImage=PDFCRLF;
+        strImage += "endstream" + PDFCRLF;
+        strImage += "endobj" + PDFCRLF;
 
         BufferedWriter writer2 = new BufferedWriter(new FileWriter(file, true));
         writeString(writer2, strImage);
@@ -2017,29 +2159,29 @@ public class clsPdfWriter {
         //-- /Length 10 0 R         ( Points to our next availabe object)
 
         //-- Set our Object number
-        Dim strImage As String = intpdfObjectCount.toString() + " 0 obj" + "\r\n";
+        Dim strImage As String = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- This writes out the Xobject Dictionary
         strImage += "<<" & vbCrLf
-        strImage += "/Type /XObject" + "\r\n";
-        strImage += "/Subtype /Image" + "\r\n";
-        strImage += "/Name /" + Name + "\r\n";
-        strImage += "/Width " + imgWidth.toString() + "\r\n";
-        strImage += "/Height " + ImgHeight.toString() + "\r\n";
+        strImage += "/Type /XObject" + PDFCRLF;
+        strImage += "/Subtype /Image" + PDFCRLF;
+        strImage += "/Name /" + Name + PDFCRLF;
+        strImage += "/Width " + imgWidth.toString() + PDFCRLF;
+        strImage += "/Height " + ImgHeight.toString() + PDFCRLF;
 
         //-- strDevice is use in the select case below
         Dim strDevice As String = IIf(ColorSpace = pdfColorSpace.pdfRGB, "DeviceRGB", "DeviceGray") //--IIf(expr, truepart, falsepart)
 
         Select Case ImgBPP
             Case 24
-                strImage += "/BitsPerComponent 8" + "\r\n";
-                strImage += "/ColorSpace /" + strDevice + "\r\n";
-                strImage += "/Length " + intpdfObjectCount.toString() + " 0 R" + "\r\n";
+                strImage += "/BitsPerComponent 8" + PDFCRLF;
+                strImage += "/ColorSpace /" + strDevice + PDFCRLF;
+                strImage += "/Length " + intpdfObjectCount.toString() + " 0 R" + PDFCRLF;
 
             Case 8, 4, 1
-                strImage += "/BitsPerComponent " + CStr(ImgBPP) + "\r\n";
+                strImage += "/BitsPerComponent " + CStr(ImgBPP) + PDFCRLF;
                 strImage += "/ColorSpace [/Indexed /" + strDevice + " " + CStr((2 ^ ImgBPP) - 1) + " "
-                strImage += intpdfObjectCount.toString() + " 0 R]" + "\r\n";
+                strImage += intpdfObjectCount.toString() + " 0 R]" + PDFCRLF;
                 Dim intNextObject As Integer = intpdfObjectCount
                 intNextObject += 1
                 strImage += "/Length " + intNextObject.toString() + " 0 R"
@@ -2050,11 +2192,11 @@ public class clsPdfWriter {
 
         //-- Sample data is represented as a stream of bytes, interpreted as 8-bit unsigned integers in the range 0 to 255.
 
-        strImage += ">>" + "\r\n";
-        strImage += "stream" + "\r\n";
-        strImage += strPixel + "\r\n";
-        strImage += "endstream" + "\r\n";
-        strImage += "endobj" + "\r\n";
+        strImage += ">>" + PDFCRLF;
+        strImage += "stream" + PDFCRLF;
+        strImage += strPixel + PDFCRLF;
+        strImage += "endstream" + PDFCRLF;
+        strImage += "endobj" + PDFCRLF;
 
         //-- Add it to the Resource Object must be here because it the end of the obj.
         colXobjectImages.Add(Name, intpdfObjectCount.toString() + " 0 R ")
@@ -2062,12 +2204,12 @@ public class clsPdfWriter {
 
         //-- Need to set our Collection for this object 
         upDateReffenceTable()
-        strImage += intpdfObjectCount.toString() + " 0 obj" + "\r\n";
-        strImage += strPixel.Length.toString() + "\r\n";
+        strImage += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+        strImage += strPixel.Length.toString() + PDFCRLF;
         //-- When using bmp file we creat a second object for the length so we need to count it for the file trailer.
         intXObjectCount += 1
         //-- This ends Xobject Dictionary
-        strImage += "endobj" + "\r\n";
+        strImage += "endobj" + PDFCRLF;
 
         If ImgBPP <= 8 Then
             Dim strColor As String
@@ -2080,12 +2222,12 @@ public class clsPdfWriter {
 
             //-- Figure the length base on the color bits
 
-            strImage += "<<" + "\r\n";
-            strImage += "/Length " + strColor.Length.toString() + " >>" + "\r\n";
-            strImage += "stream" + "\r\n";
-            strImage += strColor + "\r\n";
-            strImage += "endstream" + "\r\n";
-            strImage += "endobj" + "\r\n";
+            strImage += "<<" + PDFCRLF;
+            strImage += "/Length " + strColor.Length.toString() + " >>" + PDFCRLF;
+            strImage += "stream" + PDFCRLF;
+            strImage += strColor + PDFCRLF;
+            strImage += "endstream" + PDFCRLF;
+            strImage += "endobj" + PDFCRLF;
 
         End If
     	
