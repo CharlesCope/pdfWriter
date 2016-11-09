@@ -1194,7 +1194,7 @@ public class clsPdfWriter {
       
         if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Roman")){
         	type1FontDic.setBaseFont("TT_TimesNewRoman");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1216,7 +1216,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Bold")){
         	type1FontDic.setBaseFont("TT_TimesNewRomanBold");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar ("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1238,7 +1238,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Italic")){
         	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1260,7 +1260,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_BoldItalic")){
         	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1282,7 +1282,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial")){
         	type1FontDic.setBaseFont("TT_Arial");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1304,7 +1304,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Bold")){
         	type1FontDic.setBaseFont("TT_ArialBold");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1326,7 +1326,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Italic")){
         	type1FontDic.setBaseFont("TT_ArialItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1348,7 +1348,7 @@ public class clsPdfWriter {
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_BoldItalic")){
         	type1FontDic.setBaseFont("TT_ArialBoldItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1369,7 +1369,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("479");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNew")){
         	type1FontDic.setBaseFont("TT_CourierNew");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1390,7 +1390,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBold")){
         	type1FontDic.setBaseFont("TT_CourierNewBold");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1411,7 +1411,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewItalic")){
         	type1FontDic.setBaseFont("TT_CourierNewItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1432,7 +1432,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBoldItalic")){
         	type1FontDic.setBaseFont("TT_CourierNewBoldItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1453,7 +1453,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Symbol")){
         	type1FontDic.setBaseFont("TT_Symbol");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1474,7 +1474,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("601");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBold")){
         	type1FontDic.setBaseFont("TT_SymbolBold");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1495,7 +1495,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolItalic")){
         	type1FontDic.setBaseFont("TT_SymbolItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
@@ -1516,7 +1516,7 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBoldItalic")){
         	type1FontDic.setBaseFont("TT_SymbolBoldItalic");
-        	type1FontDic.setName(intpdfObjectCount.toString());
+        	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
