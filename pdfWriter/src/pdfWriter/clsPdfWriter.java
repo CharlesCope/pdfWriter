@@ -1193,13 +1193,13 @@ public class clsPdfWriter {
         FontDescriptor fontDesc = new FontDescriptor();
       
         if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Roman")){
-        	type1FontDic.setBaseFont("TT_TimesNewRoman");
+        	type1FontDic.setBaseFont("TimesNewRomanPSMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{250, 333, 408, 500, 500, 833, 778, 180, 333, 333, 500, 564, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 564, 564, 564, 444, 921, 722, 667, 667, 722, 611, 556, 722, 722, 333, 389, 722, 611, 889, 722, 722, 556, 722, 667, 556, 611, 722, 722, 944, 722, 722, 611, 333, 278, 333, 469, 500, 333, 444, 500, 444, 500, 444, 333, 500, 500, 278, 278, 500, 278, 778, 500, 500, 500, 500, 333, 389, 278, 500, 500, 722, 500, 500, 444, 480, 200, 480, 541, 778, 500, 778, 333, 500, 444, 1000, 500, 500, 333, 1000, 556, 333, 889, 778, 611, 778, 778, 333, 333, 444, 444, 350, 500, 1000, 333, 980, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 200, 500, 333, 760, 276, 500, 564, 333, 760, 500, 400, 549, 300, 300, 333, 576, 453, 250, 333, 300, 310, 500, 750, 750, 750, 444, 722, 722, 722, 722, 722, 722, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 722, 722, 722, 722, 722, 722, 564, 722, 722, 722, 722, 722, 722, 556, 500, 444, 444, 444, 444, 444, 444, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 500, 500, 500};
-        	fontDesc.setFontName("TT_TimesNewRoman");
+        	fontDesc.setFontName("TimesNewRomanPSMT");
         	fontDesc.setFlags("34");
         	fontDesc.setFontBBox(-250, -216, 1200, 1000);
         	fontDesc.setMissingWidth("333");
@@ -1215,13 +1215,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("401");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Bold")){
-        	type1FontDic.setBaseFont("TT_TimesNewRomanBold");
+        	type1FontDic.setBaseFont("TimesNewRomanBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar ("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{250, 333, 555, 500, 500, 1000, 833, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 930, 722, 667, 722, 722, 667, 611, 778, 778, 389, 500, 778, 667, 944, 722, 778, 611, 778, 722, 556, 667, 722, 722, 1000, 722, 722, 667, 333, 278, 333, 581, 500, 333, 500, 556, 444, 556, 444, 333, 500, 556, 278, 333, 556, 278, 833, 556, 500, 556, 556, 444, 389, 333, 556, 500, 722, 500, 500, 444, 394, 220, 394, 520, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 1000, 778, 667, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 444, 722, 250, 333, 500, 500, 500, 500, 220, 500, 333, 747, 300, 500, 570, 333, 747, 500, 400, 549, 300, 300, 333, 576, 540, 250, 333, 300, 330, 500, 750, 750, 750, 500, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 778, 778, 778, 778, 778, 570, 778, 722, 722, 722, 722, 722, 611, 556, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 500, 556, 500};
-        	fontDesc.setFontName("TT_TimesNewRomanBold");
+        	fontDesc.setFontName("TimesNewRomanBold");
         	fontDesc.setFlags("16418");
         	fontDesc.setFontBBox(-250, -216, 1201, 1000);
         	fontDesc.setMissingWidth("333");
@@ -1237,13 +1237,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("401");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Italic")){
-        	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
+        	type1FontDic.setBaseFont("TimesNewRomanItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{250, 333, 420, 500, 500, 833, 778, 214, 333, 333, 500, 675, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 675, 675, 675, 500, 920, 611, 611, 667, 722, 611, 611, 722, 722, 333, 444, 667, 556, 833, 667, 722, 611, 722, 611, 500, 556, 722, 611, 833, 611, 556, 556, 389, 278, 389, 422, 500, 333, 500, 500, 444, 500, 444, 278, 500, 500, 278, 278, 444, 278, 722, 500, 500, 500, 500, 389, 389, 278, 500, 444, 667, 444, 444, 389, 400, 275, 400, 541, 778, 500, 778, 333, 500, 556, 889, 500, 500, 333, 1000, 500, 333, 944, 778, 556, 778, 778, 333, 333, 556, 556, 350, 500, 889, 333, 980, 389, 333, 667, 778, 389, 556, 250, 389, 500, 500, 500, 500, 275, 500, 333, 760, 276, 500, 675, 333, 760, 500, 400, 549, 300, 300, 333, 576, 523, 250, 333, 300, 310, 500, 750, 750, 750, 500, 611, 611, 611, 611, 611, 611, 889, 667, 611, 611, 611, 611, 333, 333, 333, 333, 722, 667, 722, 722, 722, 722, 722, 675, 722, 722, 722, 722, 722, 556, 611, 500, 500, 500, 500, 500, 500, 500, 667, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 500, 500, 500, 500, 500, 500, 549, 500, 500, 500, 500, 500, 444, 500, 444};
-        	fontDesc.setFontName("TT_TimesNewRomanItalic");
+        	fontDesc.setFontName("TimesNewRomanItalic");
         	fontDesc.setFlags("98");
         	fontDesc.setFontBBox(-250, -216, 1200, 1000);
         	fontDesc.setMissingWidth("333");
@@ -1259,13 +1259,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("402");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_BoldItalic")){
-        	type1FontDic.setBaseFont("TT_TimesNewRomanItalic");
+        	type1FontDic.setBaseFont("TimesNewRomanBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{250, 389, 555, 500, 500, 833, 778, 278, 333, 333, 500, 570, 250, 333, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 333, 333, 570, 570, 570, 500, 832, 667, 667, 667, 722, 667, 667, 722, 778, 389, 500, 667, 611, 889, 722, 722, 611, 722, 667, 556, 611, 722, 667, 889, 667, 611, 611, 333, 278, 333, 570, 500, 333, 500, 500, 444, 500, 444, 333, 500, 556, 278, 278, 500, 278, 778, 556, 500, 500, 500, 389, 389, 278, 556, 444, 667, 500, 444, 389, 348, 220, 348, 570, 778, 500, 778, 333, 500, 500, 1000, 500, 500, 333, 1000, 556, 333, 944, 778, 611, 778, 778, 333, 333, 500, 500, 350, 500, 1000, 333, 1000, 389, 333, 722, 778, 389, 611, 250, 389, 500, 500, 500, 500, 220, 500, 333, 747, 266, 500, 606, 333, 747, 500, 400, 549, 300, 300, 333, 576, 500, 250, 333, 300, 300, 500, 750, 750, 750, 500, 667, 667, 667, 667, 667, 667, 944, 667, 667, 667, 667, 667, 389, 389, 389, 389, 722, 722, 722, 722, 722, 722, 722, 570, 722, 722, 722, 722, 722, 611, 611, 500, 500, 500, 500, 500, 500, 500, 722, 444, 444, 444, 444, 444, 278, 278, 278, 278, 500, 556, 500, 500, 500, 500, 500, 549, 500, 556, 556, 556, 556, 444, 500, 444};
-        	fontDesc.setFontName("TT_TimesNewRomanItalic");
+        	fontDesc.setFontName("TimesNewRomanBoldItalic");
         	fontDesc.setFlags("16482");
         	fontDesc.setFontBBox(-250, -216, 1200, 1000);
         	fontDesc.setMissingWidth("333");
@@ -1281,13 +1281,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("412");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial")){
-        	type1FontDic.setBaseFont("TT_Arial");
+        	type1FontDic.setBaseFont("Arial");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
-        	fontDesc.setFontName("TT_Arial");
+        	fontDesc.setFontName("ArialMT");
         	fontDesc.setFlags("32");
         	fontDesc.setFontBBox(-250, -221, 1190, 1000);
         	fontDesc.setMissingWidth("272");
@@ -1303,13 +1303,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("441");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Bold")){
-        	type1FontDic.setBaseFont("TT_ArialBold");
+        	type1FontDic.setBaseFont("ArialBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
-        	fontDesc.setFontName("TT_ArialBold");
+        	fontDesc.setFontName("ArialBold");
         	fontDesc.setFlags("16416");
         	fontDesc.setFontBBox(-250, -212, 1120, 1000);
         	fontDesc.setMissingWidth("311");
@@ -1325,13 +1325,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("479");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Italic")){
-        	type1FontDic.setBaseFont("TT_ArialItalic");
+        	type1FontDic.setBaseFont("ArialItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{278, 278, 355, 556, 556, 889, 667, 191, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 278, 278, 584, 584, 584, 556, 1015, 667, 667, 722, 722, 667, 611, 778, 722, 278, 500, 667, 556, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 278, 278, 278, 469, 556, 333, 556, 556, 500, 556, 556, 278, 556, 556, 222, 222, 500, 222, 833, 556, 556, 556, 556, 333, 500, 278, 556, 500, 722, 500, 500, 500, 334, 260, 334, 584, 750, 556, 750, 222, 556, 333, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 222, 222, 333, 333, 350, 556, 1000, 333, 1000, 500, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 260, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 537, 278, 333, 333, 365, 556, 834, 834, 834, 611, 667, 667, 667, 667, 667, 667, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 500, 556, 556, 556, 556, 278, 278, 278, 278, 556, 556, 556, 556, 556, 556, 556, 549, 611, 556, 556, 556, 556, 500, 556, 500};
-        	fontDesc.setFontName("TT_ArialItalic");
+        	fontDesc.setFontName("ArialItalic");
         	fontDesc.setFlags("96");
         	fontDesc.setFontBBox(-250, -212, 1134, 1000);
         	fontDesc.setMissingWidth("259");
@@ -1347,13 +1347,13 @@ public class clsPdfWriter {
         	fontDesc.setAvgWidth("441");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_BoldItalic")){
-        	type1FontDic.setBaseFont("TT_ArialBoldItalic");
+        	type1FontDic.setBaseFont("ArialBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{278, 333, 474, 556, 556, 889, 722, 238, 333, 333, 389, 584, 278, 333, 278, 278, 556, 556, 556, 556, 556, 556, 556, 556, 556, 556, 333, 333, 584, 584, 584, 611, 975, 722, 722, 722, 722, 667, 611, 778, 722, 278, 556, 722, 611, 833, 722, 778, 667, 778, 722, 667, 611, 722, 667, 944, 667, 667, 611, 333, 278, 333, 584, 556, 333, 556, 611, 556, 611, 556, 333, 611, 611, 278, 278, 556, 278, 889, 611, 611, 611, 611, 389, 556, 333, 611, 556, 778, 556, 556, 500, 389, 280, 389, 584, 750, 556, 750, 278, 556, 500, 1000, 556, 556, 333, 1000, 667, 333, 1000, 750, 611, 750, 750, 278, 278, 500, 500, 350, 556, 1000, 333, 1000, 556, 333, 944, 750, 500, 667, 278, 333, 556, 556, 556, 556, 280, 556, 333, 737, 370, 556, 584, 333, 737, 552, 400, 549, 333, 333, 333, 576, 556, 278, 333, 333, 365, 556, 834, 834, 834, 611, 722, 722, 722, 722, 722, 722, 1000, 722, 667, 667, 667, 667, 278, 278, 278, 278, 722, 722, 778, 778, 778, 778, 778, 584, 778, 722, 722, 722, 722, 667, 667, 611, 556, 556, 556, 556, 556, 556, 889, 556, 556, 556, 556, 556, 278, 278, 278, 278, 611, 611, 611, 611, 611, 611, 611, 549, 611, 611, 611, 611, 611, 556, 611, 556};
-        	fontDesc.setFontName("TT_ArialBoldItalic");
+        	fontDesc.setFontName("ArialBoldItalic");
         	fontDesc.setFlags("16480");
         	fontDesc.setFontBBox(-250, -212, 1120, 1000);
         	fontDesc.setMissingWidth("311");
@@ -1368,13 +1368,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("933");
         	fontDesc.setAvgWidth("479");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNew")){
-        	type1FontDic.setBaseFont("TT_CourierNew");
+        	type1FontDic.setBaseFont("CourierNewPSMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-        	fontDesc.setFontName("TT_CourierNew");
+        	fontDesc.setFontName("CourierNewPSMT");
         	fontDesc.setFlags("34");
         	fontDesc.setFontBBox(-250, -300, 720, 1000);
         	fontDesc.setMissingWidth("600");
@@ -1389,13 +1389,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBold")){
-        	type1FontDic.setBaseFont("TT_CourierNewBold");
+        	type1FontDic.setBaseFont("CourierNewBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-        	fontDesc.setFontName("TT_CourierNewBold");
+        	fontDesc.setFontName("CourierNewBold");
         	fontDesc.setFlags("16418");
         	fontDesc.setFontBBox(-250, -300, 720, 1000);
         	fontDesc.setMissingWidth("600");
@@ -1410,13 +1410,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewItalic")){
-        	type1FontDic.setBaseFont("TT_CourierNewItalic");
+        	type1FontDic.setBaseFont("CourierNewItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-        	fontDesc.setFontName("TT_CourierNewItalic");
+        	fontDesc.setFontName("CourierNewItalic");
         	fontDesc.setFlags("98");
         	fontDesc.setFontBBox(-250, -300, 720, 1000);
         	fontDesc.setMissingWidth("600");
@@ -1431,13 +1431,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBoldItalic")){
-        	type1FontDic.setBaseFont("TT_CourierNewBoldItalic");
+        	type1FontDic.setBaseFont("CourierNewBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("32");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600};
-        	fontDesc.setFontName("TT_CourierNewBoldItalic");
+        	fontDesc.setFontName("CourierNewBoldItalic");
         	fontDesc.setFlags("16482");
         	fontDesc.setFontBBox(-250, -300, 720, 1000);
         	fontDesc.setMissingWidth("600");
@@ -1452,13 +1452,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Symbol")){
-        	type1FontDic.setBaseFont("TT_Symbol");
+        	type1FontDic.setBaseFont("Symbol");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-        	fontDesc.setFontName("TT_Symbol");
+        	fontDesc.setFontName("Symbol");
         	fontDesc.setFlags("6");
         	fontDesc.setFontBBox(-250, -220,1246, 1005);
         	fontDesc.setMissingWidth("332");
@@ -1473,13 +1473,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("601");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBold")){
-        	type1FontDic.setBaseFont("TT_SymbolBold");
+        	type1FontDic.setBaseFont("SymbolMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-        	fontDesc.setFontName("TT_SymbolBold");
+        	fontDesc.setFontName("SymbolMT");
         	fontDesc.setFlags("16390");
         	fontDesc.setFontBBox(-250, -220, 1246, 1005);
         	fontDesc.setMissingWidth("332");
@@ -1494,13 +1494,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolItalic")){
-        	type1FontDic.setBaseFont("TT_SymbolItalic");
+        	type1FontDic.setBaseFont("SymbolMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-        	fontDesc.setFontName("TT_SymbolItalic");
+        	fontDesc.setFontName("SymbolMT");
         	fontDesc.setFlags("70");
         	fontDesc.setFontBBox(-250, -220, 1246, 1005);
         	fontDesc.setMissingWidth("332");
@@ -1515,13 +1515,13 @@ public class clsPdfWriter {
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("600");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBoldItalic")){
-        	type1FontDic.setBaseFont("TT_SymbolBoldItalic");
+        	type1FontDic.setBaseFont("Symbol");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
         	type1FontDic.setFirstChar("30");
         	type1FontDic.setLastChar("255");
         	type1FontDic.setEncoding("WinAnsiEncoding");
         	GlyphWidths = new int[]{600, 600, 250, 333, 713, 500, 549, 833, 778, 439, 333, 333, 500, 549, 250, 549, 250, 278, 500, 500, 500, 500, 500, 500, 500, 500, 500, 500, 278, 278, 549, 549, 549, 444, 549, 722, 667, 722, 612, 611, 763, 603, 722, 333, 631, 722, 686, 889, 722, 722, 768, 741, 556, 592, 611, 690, 439, 768, 645, 795, 611, 333, 863, 333, 658, 500, 500, 631, 549, 549, 494, 439, 521, 411, 603, 329, 603, 549, 549, 576, 521, 549, 549, 521, 549, 603, 439, 576, 713, 686, 493, 686, 494, 480, 200, 480, 549, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600, 620, 247, 549, 167, 713, 500, 753, 753, 753, 753, 1042, 987, 603, 987, 603, 400, 549, 411, 549, 549, 713, 494, 460, 549, 549, 549, 549, 1000, 603, 1000, 658, 823, 686, 795, 987, 768, 768, 823, 768, 768, 713, 713, 713, 713, 713, 713, 713, 768, 713, 790, 790, 890, 823, 549, 250, 713, 603, 603, 1042, 987, 603, 987, 603, 494, 329, 790, 790, 786, 713, 384, 384, 384, 384, 384, 384, 494, 494, 494, 494, 600, 329, 274, 686, 686, 686, 384, 384, 384, 384, 384, 384, 494, 494, 494, 600};
-        	fontDesc.setFontName("TT_SymbolBoldItalic");
+        	fontDesc.setFontName("Symbol");
         	fontDesc.setFlags("16454");
         	fontDesc.setFontBBox(-250, -220, 1246, 1005);
         	fontDesc.setMissingWidth("332");
@@ -1535,8 +1535,19 @@ public class clsPdfWriter {
         	fontDesc.setLeading("225");
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("600");
-
+        	// Just trying this.          
+        }else if(strFontName.equals("pdfTrueTypeFonts.TT_MalgunGothic")){
+        	type1FontDic.setBaseFont("MalgunGothic");
+        	type1FontDic.setFirstChar("0");
+        	type1FontDic.setLastChar("28");
+        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
+        			353, 602, 344, 700, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+        	fontDesc.setMissingWidth("662");
+        //	TT_Font.Parameters = "/Flags 4 /FontBBox [-976 -248 1198 932] /MissingWidth 662 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 718 /XHeight 512 /Ascent 1088 /Descent -241 /Leading 0 /MaxWidth 1238 /AvgWidth 463";
         }
+
+
             // Set the rest of the Font Dictionary properties
             type1FontDic.setWidths(GlyphWidths);
             type1FontDic.setFontDescriptor( String.valueOf(intpdfObjectCount + 1) + " 0 R ");
