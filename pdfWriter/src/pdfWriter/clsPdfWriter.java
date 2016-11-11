@@ -150,6 +150,7 @@ public class clsPdfWriter {
     private Integer intDrawImagesCount; //-- Keep up with the Draw Images in the file/page
     private Integer intXObjectCount; //-- Keep up with the XObject in the file
     private Integer intFontDescriptorCount; //-- Keep up with Font Descriptors
+    private Integer intDynamicObjectCount;//-- Keep up with Dynamic Objects
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
   
@@ -683,7 +684,7 @@ public class clsPdfWriter {
 		
 	 
 	//...Region "Helper Subs"
-    private void upDateReffenceTable(){
+    private void upDateRefernceTable(){
         //-- This just keep up with each pdf obj that is created an added to the cross reference table at the
         //-- end of the file.
         intpdfObjectCount += 1;
@@ -718,7 +719,7 @@ public class clsPdfWriter {
 
     private String pdfFileInfo() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment  = "";
         if (_pdfCommentFile){
             strComment = "% Comment- Call to pdfFileInfo " + PDFCRLF;
@@ -757,14 +758,14 @@ public class clsPdfWriter {
         //strFileInfo += "/ModDate (D:" & Format(Now, "yyyymmddhhmmss") & "-05'00')" +  PDFCRLF;
         strFileInfo += ">>" +  PDFCRLF;
         strFileInfo += "endobj" +  PDFCRLF;
-
+        intDynamicObjectCount = 1;
         return strFileInfo;
         //-- After this function is called you must call the rootCatalog function
     }
 
     private String rootCatalog(){
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to rootCatalog " +  PDFCRLF;
@@ -825,14 +826,14 @@ public class clsPdfWriter {
         strRoot += ">>" +  PDFCRLF;
         strRoot += "endobj" +  PDFCRLF;
 
-
+        intDynamicObjectCount +=1;
         return strRoot;
         //-- After this function is called you must call the OutLines function
     }
 
     private String OutLines() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to OutLines " +  PDFCRLF;
@@ -849,7 +850,7 @@ public class clsPdfWriter {
 
     private String PageTree() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment  = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to PageTree " +  PDFCRLF;
@@ -892,7 +893,7 @@ public class clsPdfWriter {
 
     private String Resources() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to Resources " +  PDFCRLF;
@@ -944,7 +945,7 @@ public class clsPdfWriter {
 
     private String Page() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment  = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to Page " +  PDFCRLF;
@@ -970,7 +971,7 @@ public class clsPdfWriter {
 
     private String ContentStream() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to ContentStream " +  PDFCRLF;
@@ -1030,7 +1031,7 @@ public class clsPdfWriter {
 
     private String StreamLengthObj() {
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to StreamLengthObj " +  PDFCRLF;
@@ -1102,8 +1103,8 @@ public class clsPdfWriter {
         //-- It not required to have a Info Dictionary object but I think it best to have it.
         //-- It ok to hard code this pdf object because it never changes.
         strTrailer += "/Info 1 0 R" +  PDFCRLF;
-        //-- Need to add one for the Info object and one for root object
-        Integer intRootObject  = intFontCount + 2 + intXObjectCount + intFontDescriptorCount;
+        //-- Need to keep up with all the objects to know where to point to root object
+        Integer intRootObject  = intFontCount + intDynamicObjectCount + intXObjectCount + intFontDescriptorCount;
         strTrailer += "/Root " + intRootObject.toString() + " 0 R" +  PDFCRLF;
         strTrailer += ">>" +  PDFCRLF;
         strTrailer += "startxref" +  PDFCRLF;
@@ -1128,7 +1129,7 @@ public class clsPdfWriter {
             strComment = "% Comment- Call to LoadStandardFont " + PDFCRLF;
         }
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- Keep our collection up to date
@@ -1182,7 +1183,7 @@ public class clsPdfWriter {
         if( _pdfCommentFile == true){strComment = "% Comment- Call to LoadTrueTypeFont " + PDFCRLF; }
        
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- Keep our collection up to date
@@ -1213,7 +1214,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("149");
         	fontDesc.setMaxWidth("1000");
         	fontDesc.setAvgWidth("401");
-
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Bold")){
         	type1FontDic.setBaseFont("TimesNewRomanBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1235,6 +1236,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("149");
         	fontDesc.setMaxWidth("1001");
         	fontDesc.setAvgWidth("401");
+        	fontDesc.setFontWeight("700");
 
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_Italic")){
         	type1FontDic.setBaseFont("TimesNewRomanItalic");
@@ -1257,7 +1259,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("149");
         	fontDesc.setMaxWidth("1000");
         	fontDesc.setAvgWidth("402");
-
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Times_BoldItalic")){
         	type1FontDic.setBaseFont("TimesNewRomanBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1279,7 +1281,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("149");
         	fontDesc.setMaxWidth("1000");
         	fontDesc.setAvgWidth("412");
-
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial")){
         	type1FontDic.setBaseFont("Arial");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1301,7 +1303,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("150");
         	fontDesc.setMaxWidth("992");
         	fontDesc.setAvgWidth("441");
-
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Bold")){
         	type1FontDic.setBaseFont("ArialBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1323,7 +1325,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("150");
         	fontDesc.setMaxWidth("933");
         	fontDesc.setAvgWidth("479");
-
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_Italic")){
         	type1FontDic.setBaseFont("ArialItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1345,7 +1347,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("150");
         	fontDesc.setMaxWidth("945");
         	fontDesc.setAvgWidth("441");
-
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Arial_BoldItalic")){
         	type1FontDic.setBaseFont("ArialBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1367,6 +1369,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("150");
         	fontDesc.setMaxWidth("933");
         	fontDesc.setAvgWidth("479");
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNew")){
         	type1FontDic.setBaseFont("CourierNewPSMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1388,6 +1391,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("133");
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBold")){
         	type1FontDic.setBaseFont("CourierNewBold");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1409,6 +1413,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("133");
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewItalic")){
         	type1FontDic.setBaseFont("CourierNewItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1430,6 +1435,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("133");
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_CourierNewBoldItalic")){
         	type1FontDic.setBaseFont("CourierNewBoldItalic");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1451,6 +1457,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("133");
         	fontDesc.setMaxWidth("600");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_Symbol")){
         	type1FontDic.setBaseFont("Symbol");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1472,6 +1479,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("225");
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("601");
+        	fontDesc.setFontWeight("400");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolBold")){
         	type1FontDic.setBaseFont("SymbolMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1493,6 +1501,7 @@ public class clsPdfWriter {
         	fontDesc.setLeading("225");
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("700");
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_SymbolItalic")){
         	type1FontDic.setBaseFont("SymbolMT");
         	type1FontDic.setName(String.valueOf(intpdfObjectCount - 1));
@@ -1535,16 +1544,33 @@ public class clsPdfWriter {
         	fontDesc.setLeading("225");
         	fontDesc.setMaxWidth("1038");
         	fontDesc.setAvgWidth("600");
+        	fontDesc.setFontWeight("700");
         	// Just trying this.          
         }else if(strFontName.equals("pdfTrueTypeFonts.TT_MalgunGothic")){
         	type1FontDic.setBaseFont("MalgunGothic");
         	type1FontDic.setFirstChar("0");
         	type1FontDic.setLastChar("28");
-        	type1FontDic.setEncoding("WinAnsiEncoding");
+        	type1FontDic.setEncoding("Identity-H");
+        	type1FontDic.setToUnicode(String.valueOf(intpdfObjectCount + 2) + " 0 R ");
         	GlyphWidths = new int[]{662,517,464,520,879,600,246,535,351,472,599,578,492,953, 246, 461,
         			353, 602, 344, 700, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000, 1000};
+        	fontDesc.setFontName("MalgunGothic");
+        	fontDesc.setFlags("4");
+        	fontDesc.setFontBBox(-976, -248, 1198, 932);
         	fontDesc.setMissingWidth("662");
-        //	TT_Font.Parameters = "/Flags 4 /FontBBox [-976 -248 1198 932] /MissingWidth 662 /StemV 80 /StemH 80 /ItalicAngle 0 /CapHeight 718 /XHeight 512 /Ascent 1088 /Descent -241 /Leading 0 /MaxWidth 1238 /AvgWidth 463";
+        	fontDesc.setStemV("282");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("718");
+        	fontDesc.setXHeight("512");
+        	fontDesc.setAscent("1088");
+        	fontDesc.setDescent("-241");
+        	fontDesc.setLeading("0");
+        	fontDesc.setMaxWidth("1238");
+        	fontDesc.setAvgWidth("463");
+        	fontDesc.setFontWeight("400");
+        	fontDesc.setCIDSet(String.valueOf(intpdfObjectCount + 3) + " 0 R ");
+        	
         }
 
 
@@ -1556,11 +1582,27 @@ public class clsPdfWriter {
 
             //-- The Font Descriptor - A font descriptor is a dictionary whose entries specify various font attributes
             //-- Need to set our Collection for this object 
-            upDateReffenceTable();
+            upDateRefernceTable();
             intFontDescriptorCount += 1;
             strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
             strFont += fontDesc.toString();
             strFont += "endobj" + PDFCRLF;
+            // Check to see if we need a ToUnicode table
+            if (type1FontDic.getToUnicode().length()>0){
+            	  upDateRefernceTable();
+            	  intDynamicObjectCount +=1;
+            	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+            	  strFont += "Put the Unicode table here ";
+            	  strFont += "endobj" + PDFCRLF;
+            }
+         // Check to see if we need a CIDset
+            if(fontDesc.getCIDSet().length()>0){
+            	  upDateRefernceTable();
+            	  intDynamicObjectCount +=1;
+            	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+            	  strFont += "Put the CIDset stuff here ";
+            	  strFont += "endobj" + PDFCRLF;
+            }
           return strFont;
     }
 
@@ -1753,7 +1795,7 @@ public class clsPdfWriter {
         }
 
         //-- Need to set our Collection for this object 
-        upDateReffenceTable();
+        upDateRefernceTable();
         String strComment  = "";
         if (_pdfCommentFile == true) {
             strComment = "% Comment- Call to LoadImgFromJPEGFile " + PDFCRLF;
