@@ -22,6 +22,7 @@ import javax.swing.JOptionPane;
 
 import pdfCmaps.identityH;
 import pdfObjects.FontDescriptor;
+import pdfObjects.Type0FontDictionary;
 import pdfObjects.Type1FontDictionary;
 
 public class clsPdfWriter {
@@ -88,9 +89,11 @@ public class clsPdfWriter {
 	    TT_SymbolBold ,
 	    TT_SymbolItalic ,
 	    TT_SymbolBoldItalic ,
-	    TT_MalgunGothic,
 	}
 	
+	public enum pdfType0Fonts{
+		T0_MalgunGothic
+	}
 	public enum pdfColorSpace{
 	    //-- Some color spaces are related to device color representation (grayscale, RGB, CMYK)
 	    pdfRGB ,
@@ -159,10 +162,7 @@ public class clsPdfWriter {
 	public clsPdfWriter() {
 		
 		super();
-		// TODO Auto-generated constructor stub
-		
-		//ownerShell = _ownerShell;
-		 
+	
 		dicFontsUsed = new Hashtable<String, Integer>(); 
 		colCrossReferenceTable = new NameValueCollection();
 	    colFonts= new NameValueCollection(); 
@@ -483,7 +483,85 @@ public class clsPdfWriter {
       intStringCount += 1;
       colPageText.add(intPage.toString() + "." + intStringCount.toString(), strCodeText);
 	}
+
+	public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, pdfType0Fonts FontName, 
+		 	Integer FontSize , Color color, pdfTextAlign Align , Integer Rotate){
+	
+  //-- This is using the Type 0 Fonts 
+	Double sngLength ;
+	
+  switch(Align){
+      case pdfAlignLeft:
+          //-- The default showing.
+    	  break;
+      case pdfAlignRight:
+          //TODO: Need to switch this to type 0 fonts later
+          sngLength = TT_StringLength(strTextToShow, FontName.toString(), FontSize);
+          sngHorzOffSet =(int)(intPageWidth - (sngLength + sngHorzOffSet));
+          break;
+
+      case pdfCenter:
+         
+          sngLength = TT_StringLength(strTextToShow, FontName.toString(), FontSize);
+          //-- When Center forget about the offset to make the text center
+          //-- This could be overloaded to allow center plus offset
+          sngHorzOffSet = (int)((intPageWidth / 2) - (sngLength / 2)); //'+ sngHorzOffSet
+          break;
+          
+  }
   
+  //-- Keep Up with our fonts that are used in the program
+  //-- Test if the Font key exists, and then add it if it doesn't.
+  
+  if (dicFontsUsed.get("pdfType0Fonts." + FontName.toString())==null){
+      intFontCount += 1;
+      dicFontsUsed.put("pdfType0Fonts." + FontName.toString(), intFontCount);
+  }
+  String strCodeText  = "";
+
+  //-- rg- Set RGB color for nonstroking operations
+  
+  strCodeText += color.getRed() + " " + color.getGreen() + " " + color.getBlue() + " rg"+PDFCRLF;
+
+  //-- BT- Begin text object
+  strCodeText += "BT" +PDFCRLF;
+  //-- Tf - Set text font and size
+  strCodeText += "/F" + dicFontsUsed.get("pdfType0Fonts." + FontName.toString()).toString() + " " + FontSize.toString() + " Tf" +PDFCRLF;
+  //-- Now do we need to rotate it
+  if (Rotate != 0) {
+      //-- System.Math.Sin and System.Math.Cos is in radians. we need to convert to degrees
+	  Double dblDegrees  = Math.PI / 180.0;
+      //-- Little Math reminder long time ago since I study math 30plus years
+      //-- There is 360 degrees in a circle and we will pivot around the start point of the text.
+      //-- The ratio of the height to the hypotenuse is called the sine
+      
+      Double sngSinAngle  = Math.sin(dblDegrees * Rotate);
+      //-- The ratio of the base to the hypotenuse is called the cosine 
+      Double sngCosAngle  = Math.cos(dblDegrees * Rotate);
+      String fmt = "%03.3f";
+      //-- Tm- Set text matrix and text line matrix
+          	  
+      strCodeText += String.format(fmt, sngCosAngle) + " " + String.format(fmt, sngSinAngle) + " " + String.format(fmt, -sngSinAngle) + " " +
+ 	        		 String.format(fmt, sngCosAngle) + " " + sngHorzOffSet + " " + sngVertOffSet + " Tm" + PDFCRLF;
+      
+  }else{
+      //-- 
+      //-- Where to place the string on the page                               Td- Move text position
+      strCodeText += sngHorzOffSet.toString() + " " + sngVertOffSet.toString() + " Td" +PDFCRLF;
+  }
+
+
+  //-- Text to display on page
+  strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" +PDFCRLF;
+
+
+  //-- End the Text block
+  strCodeText += "ET" +PDFCRLF;
+  //-- Need to keep keys unique
+  intStringCount += 1;
+  colPageText.add(intPage.toString() + "." + intStringCount.toString(), strCodeText);
+}
+
 	private String CheckReserveChar(String strValue){
      //-- Ok PDF Files have reserve meaning for the above character so proceed them with the back slash.
      //-- Look for the \ in the Temp String and Replace it with \\
@@ -1177,7 +1255,42 @@ public class clsPdfWriter {
         strFont += "endobj" + PDFCRLF;
         return strFont;
     }
+    
+    private String LoadType0Font(String strFontName){
+    	String strComment  = "";
+        if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
+       
+        //-- Need to set our Collection for this object 
+        upDateRefernceTable();
+        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
+        //-- Keep our collection up to date
+        colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
+        Type0FontDictionary type0FontDic = new Type0FontDictionary();
+        
+        if(strFontName.equals("pdfType0Fonts.T0_MalgunGothic")){
+        	type0FontDic.setBaseFont("MalgunGothic");
+        	type0FontDic.setEncoding("Identity-H");
+        	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+        	type0FontDic.setToUnicode(String.valueOf(intpdfObjectCount + 2) + " 0 R");
+        }
+        strFont += type0FontDic.toString();
+        strFont += "endobj" + PDFCRLF;
+        
+     	  upDateRefernceTable();
+    	  intDynamicObjectCount +=1;
+    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	  strFont += "Put the DescendantFonts here ";
+    	  strFont += "endobj" + PDFCRLF;
+        
+     	  upDateRefernceTable();
+    	  intDynamicObjectCount +=1;
+    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	  strFont += "Put the Unicode table here ";
+    	  strFont += "endobj" + PDFCRLF;
+        
+    	 return strFont;
+    }
     private String LoadTrueTypeFont(String strFontName ) {
     	String strComment  = "";
         if( _pdfCommentFile == true){strComment = "% Comment- Call to LoadTrueTypeFont " + PDFCRLF; }
@@ -2333,7 +2446,10 @@ public class clsPdfWriter {
 	            writeString(writer, LoadStandardFont(key));
 	        }
 	        if (key.startsWith("pdfTrueTypeFonts") ) { //-- Check to see if we need to load any True Type fonts
-	            writeString(writer, LoadTrueTypeFont(key));
+	        	writeString(writer, LoadTrueTypeFont(key));
+	        }
+	        if (key.startsWith("pdfType0Fonts") ) { //-- Check to see if we need to load any Type 0 fonts
+	        	writeString(writer, LoadType0Font(key));
 	        }
 	    }
 	    
