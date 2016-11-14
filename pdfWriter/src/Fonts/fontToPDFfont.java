@@ -13,7 +13,7 @@ public class fontToPDFfont {
 	private static String OS = null;
 	private static int intUnitsPerEM; 
 	private static ChcFont myChcFont;
-	
+	private final static String  PDFCRLF = "\r\n";
 	enum  State
     {
         FIRST, BRACKET, SERIAL
@@ -141,6 +141,7 @@ public class fontToPDFfont {
     }
 
     private static String getWEntry(){
+    	/** The W Entry array allows the definition of widths for individual CIDs */
     	
     	  int cidMax = ChcFont.intGlyphCount;
           int[] gidwidths = new int[cidMax * 2];
@@ -158,36 +159,43 @@ public class fontToPDFfont {
           ArrayList<String> outer = new ArrayList<String>();
          
           outer.add(String.valueOf(lastCid));
-          
+         
           State state = State.FIRST;
 
-          for (int i = 2; i < gidwidths.length; i += 2)
-          {
+          for (int i = 2; i < gidwidths.length; i += 2){
+        	  
               long cid   = gidwidths[i];
               long value = Math.round(gidwidths[i + 1] * scaling);
 
               switch (state){
               case FIRST:
+            	  
             	  if (cid == lastCid + 1 && value == lastValue){state = State.SERIAL;}
-            	  else if (cid == lastCid + 1){state = State.BRACKET;
-            	  		inner = new ArrayList<String>();
-            	  		inner.add(String.valueOf(lastValue));}
+            	  else if (cid == lastCid + 1){
+            		  state = State.BRACKET;
+            		  inner = new ArrayList<String>();
+            		  inner.add(String.valueOf(lastValue));
+            	  }
+
             	  else{
-            		  	inner = new ArrayList<String>();
-            		  	inner.add(String.valueOf(lastValue));
-            		  	outer.addAll(inner);
-            		  	outer.add(String.valueOf(cid));
+            		  inner = new ArrayList<String>();
+            		  inner.add(String.valueOf(lastValue));
+            		  outer.add(inner.toString());
+            		  outer.add(String.valueOf(cid));
             	  }
             	  break;
               case BRACKET:
-            	  if (cid == lastCid + 1 && value == lastValue){state = State.SERIAL;
-            	  		outer.addAll(inner);
-            	  		outer.add(String.valueOf(lastCid));}
+            	 
+            	  if (cid == lastCid + 1 && value == lastValue){
+            		  state = State.SERIAL;
+            		  outer.add(inner.toString());
+            		  outer.add(String.valueOf(lastCid)); }
             	  else if (cid == lastCid + 1){inner.add(String.valueOf(lastValue));}
-            	  else{state = State.FIRST;
-            	  		inner.add(String.valueOf(lastValue));
-            	  		outer.addAll(inner);
-            	  		outer.add(String.valueOf(cid));}
+            	  else{
+            		  state = State.FIRST;
+            		  inner.add(String.valueOf(lastValue));
+            		  outer.add(inner.toString());
+            		  outer.add(String.valueOf(cid));}
             	  break;
               case SERIAL:
             	  if (cid != lastCid + 1 || value != lastValue){
@@ -207,18 +215,19 @@ public class fontToPDFfont {
           case FIRST:
         	  inner =  new ArrayList<String>();
         	  inner.add(String.valueOf(lastValue));
-        	  outer.addAll(inner);
+        	  outer.add(inner.toString());
         	  break;
           case BRACKET:
         	  inner.add(String.valueOf(lastValue));
-        	  outer.addAll(inner);
+        	  outer.add(inner.toString());
         	  break;
           case SERIAL:
         	  outer.add(String.valueOf(lastCid));
         	  outer.add(String.valueOf(lastValue));
         	  break;
           }
-          return outer.toString();
+           // Now return it without the comma and make it readable for humans.
+          return outer.toString().replace(",", "").replace("]", "]" + PDFCRLF);
     }
  	public static String getOsName(){
 		// The operating system of the host that my Java program is running 
