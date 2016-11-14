@@ -87,8 +87,10 @@ public class FrmTestCode extends JFrame {
 		btnPDFFontDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
-				
+				System.out.println(fileName);
 				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
+				
+				
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
 				System.out.println("The Font Family Names is " + myPDFFont.getFontFamilyName());

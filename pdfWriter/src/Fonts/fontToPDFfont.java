@@ -1,5 +1,6 @@
 package Fonts;
 
+import java.util.ArrayList;
 import Fonts.table.CmapFormat0;
 import Fonts.table.CmapFormat2;
 import Fonts.table.CmapFormat4;
@@ -13,6 +14,10 @@ public class fontToPDFfont {
 	private static int intUnitsPerEM; 
 	private static ChcFont myChcFont;
 	
+	enum  State
+    {
+        FIRST, BRACKET, SERIAL
+    }
 	public static ChcFont getMyChcFont() {
 		return myChcFont;
 	}
@@ -119,6 +124,10 @@ public class fontToPDFfont {
 		myPDFFont.setFirstChar(0);
 		myPDFFont.setLastChar(myChcFont.getNumGlyphs());
 		myPDFFont.setPdfWidth(pdfScalingFormula(myChcFont.getGlyph(11).getAdvanceWidth(),intUnitsPerEM));
+		myPDFFont.setWEntry(getWEntry());
+		// TODO: Need an if statement here later but just for testing right now. myPDFFont.setToUnicodeCMAP("identityH");
+		myPDFFont.setToUnicodeCMAP("identityH");
+		
 		// If we make it here return the converted file object
 		return myPDFFont;
 		
@@ -131,8 +140,87 @@ public class fontToPDFfont {
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
 
-    
-	public static String getOsName(){
+    private static String getWEntry(){
+    	
+    	  int cidMax = ChcFont.intGlyphCount;
+          int[] gidwidths = new int[cidMax * 2];
+          
+          for (int cid = 0; cid < cidMax; cid++){
+              gidwidths[cid * 2] = cid;
+              gidwidths[cid * 2 + 1] =  myChcFont.getHmtxTable().getAdvanceWidth(cid);
+          }
+          float scaling = 1000f / intUnitsPerEM;
+          
+          long lastCid = gidwidths[0];
+          long lastValue = Math.round(gidwidths[1] * scaling);
+        
+          ArrayList<String> inner = null;
+          ArrayList<String> outer = new ArrayList<String>();
+         
+          outer.add(String.valueOf(lastCid));
+          
+          State state = State.FIRST;
+
+          for (int i = 2; i < gidwidths.length; i += 2)
+          {
+              long cid   = gidwidths[i];
+              long value = Math.round(gidwidths[i + 1] * scaling);
+
+              switch (state){
+              case FIRST:
+            	  if (cid == lastCid + 1 && value == lastValue){state = State.SERIAL;}
+            	  else if (cid == lastCid + 1){state = State.BRACKET;
+            	  		inner = new ArrayList<String>();
+            	  		inner.add(String.valueOf(lastValue));}
+            	  else{
+            		  	inner = new ArrayList<String>();
+            		  	inner.add(String.valueOf(lastValue));
+            		  	outer.addAll(inner);
+            		  	outer.add(String.valueOf(cid));
+            	  }
+            	  break;
+              case BRACKET:
+            	  if (cid == lastCid + 1 && value == lastValue){state = State.SERIAL;
+            	  		outer.addAll(inner);
+            	  		outer.add(String.valueOf(lastCid));}
+            	  else if (cid == lastCid + 1){inner.add(String.valueOf(lastValue));}
+            	  else{state = State.FIRST;
+            	  		inner.add(String.valueOf(lastValue));
+            	  		outer.addAll(inner);
+            	  		outer.add(String.valueOf(cid));}
+            	  break;
+              case SERIAL:
+            	  if (cid != lastCid + 1 || value != lastValue){
+            		  outer.add(String.valueOf(lastCid));
+            		  outer.add(String.valueOf(lastValue));
+            		  outer.add(String.valueOf(cid));
+            		  state = State.FIRST;
+            	  }
+            	  break;
+              }
+              lastValue = value;
+              lastCid = cid;
+          }
+
+          switch (state)
+          {
+          case FIRST:
+        	  inner =  new ArrayList<String>();
+        	  inner.add(String.valueOf(lastValue));
+        	  outer.addAll(inner);
+        	  break;
+          case BRACKET:
+        	  inner.add(String.valueOf(lastValue));
+        	  outer.addAll(inner);
+        	  break;
+          case SERIAL:
+        	  outer.add(String.valueOf(lastCid));
+        	  outer.add(String.valueOf(lastValue));
+        	  break;
+          }
+          return outer.toString();
+    }
+ 	public static String getOsName(){
 		// The operating system of the host that my Java program is running 
 		if(OS == null) { OS = System.getProperty("os.name"); }
 	      return OS;

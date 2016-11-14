@@ -20,6 +20,10 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import Fonts.PDFFont;
+import Fonts.fontToPDFfont;
+import cidObjects.CIDFontDictionary;
+import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfCmaps.identityH;
 import pdfObjects.FontDescriptor;
 import pdfObjects.Type0FontDictionary;
@@ -1258,18 +1262,22 @@ public class clsPdfWriter {
     
     private String LoadType0Font(String strFontName){
     	String strComment  = "";
-        if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
+        String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
+        PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
+        
+    	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        
         //-- Need to set our Collection for this object 
         upDateRefernceTable();
         String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-
+        
         //-- Keep our collection up to date
         colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
         Type0FontDictionary type0FontDic = new Type0FontDictionary();
+        FontDescriptor fontDesc = new FontDescriptor();
         
         if(strFontName.equals("pdfType0Fonts.T0_MalgunGothic")){
-        	type0FontDic.setBaseFont("MalgunGothic");
+        	type0FontDic.setBaseFont(myPDFFont.getFontBaseName());
         	type0FontDic.setEncoding("Identity-H");
         	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
         	type0FontDic.setToUnicode(String.valueOf(intpdfObjectCount + 2) + " 0 R");
@@ -1280,15 +1288,53 @@ public class clsPdfWriter {
      	  upDateRefernceTable();
     	  intDynamicObjectCount +=1;
     	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-    	  strFont += "Put the DescendantFonts here ";
+    	  
+    	  CIDFontDictionary cidFontDic = new CIDFontDictionary();
+    	  cidFontDic.setSubType(CIDFontTypes.CIDFontType2);
+    	  cidFontDic.setBaseFont(type0FontDic.getBaseFont());
+    	  cidFontDic.setCIDSystemInfo(String.valueOf(intpdfObjectCount + 2) + " 0 R");
+    	  cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");
+    	  cidFontDic.setW(myPDFFont.getWEntry()); 
+    	  cidFontDic.setCIDToGIDMap("/Identity");
+    	  strFont += cidFontDic.toString();
     	  strFont += "endobj" + PDFCRLF;
         
      	  upDateRefernceTable();
     	  intDynamicObjectCount +=1;
     	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-    	  strFont += "Put the Unicode table here ";
+    	  strFont += myPDFFont.getToUnicodeCMAP();
     	  strFont += "endobj" + PDFCRLF;
-        
+    	  
+    	  upDateRefernceTable();
+    	  intDynamicObjectCount +=1;
+    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	  strFont += myPDFFont.getCIDSystemInfoDictionary();
+    	  strFont += "endobj" + PDFCRLF;
+    	
+    	  // Just Hard code for now.  
+    	  fontDesc.setFontName("MalgunGothic");
+    	  fontDesc.setFlags("4");
+    	  fontDesc.setFontBBox(-976, -248, 1198, 932);
+    	  fontDesc.setMissingWidth("662");
+    	  fontDesc.setStemV("282");
+    	  fontDesc.setStemH("191");
+    	  fontDesc.setItalicAngle("0");
+    	  fontDesc.setCapHeight("718");
+    	  fontDesc.setXHeight("512");
+    	  fontDesc.setAscent("1088");
+    	  fontDesc.setDescent("-241");
+    	  fontDesc.setLeading("0");
+    	  fontDesc.setMaxWidth("1238");
+    	  fontDesc.setAvgWidth("463");
+    	  fontDesc.setFontWeight("400");
+
+    	  upDateRefernceTable();
+    	  intDynamicObjectCount +=1;
+    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	  strFont += fontDesc.toString();
+    	  strFont += "endobj" + PDFCRLF;
+    	  
+    
     	 return strFont;
     }
     private String LoadTrueTypeFont(String strFontName ) {

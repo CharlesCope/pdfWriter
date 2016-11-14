@@ -50,9 +50,9 @@ public class CIDFontDictionary {
 	
 	public String toString(){
 		sbCIDFontDict.append("<< " );// Start of dictionary
-		sbCIDFontDict.append(strType + PDFCRLF );
-		sbCIDFontDict.append("/Subtype / " + strSubType + PDFCRLF );
-		sbCIDFontDict.append("/BaseFont / " + strBaseFont+ PDFCRLF );
+		sbCIDFontDict.append(strType);
+		sbCIDFontDict.append("/Subtype /" + strSubType + PDFCRLF );
+		sbCIDFontDict.append("/BaseFont /" + strBaseFont+ PDFCRLF );
 		sbCIDFontDict.append("/CIDSystemInfo " + strCIDSystemInfo + PDFCRLF );
 		sbCIDFontDict.append("/FontDescriptor " + strFontDescriptor + PDFCRLF );
 		if(strDW.length()>0){sbCIDFontDict.append("/ DW " + strDW + PDFCRLF );}//Optional

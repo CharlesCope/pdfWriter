@@ -9,7 +9,9 @@ package pdfCmaps;
 public class identityH {
 	final private String JavaNewLine = System.getProperty("line.separator");
 	private StringBuilder sbCmap = new StringBuilder();
-
+	private String strRegistry = "";
+	private String strOrdering = "";
+	private int intSupplement;
 	/**
 	 * The constructors  for the class
 	 */
@@ -145,8 +147,14 @@ public class identityH {
 		 */
 		sbCmap.append("/CIDSystemInfo 3 dict dup begin"+ JavaNewLine);
 		sbCmap.append("/Registry (Adobe) def"+ JavaNewLine);
+		// Set our Registry property.
+		strRegistry = "(Adobe)";
 		sbCmap.append("/Ordering (Identity) def"+ JavaNewLine);
+		// Set our Ordering property
+		strOrdering = "(Identity)";
 		sbCmap.append("/Supplement 0 def"+ JavaNewLine);
+		// Set our Supplement property
+		intSupplement = 0;
 		sbCmap.append("end def"+ JavaNewLine);
 		// Keep it human readable
 		sbCmap.append(""+ JavaNewLine);
@@ -534,10 +542,14 @@ public class identityH {
 		sbCmap.append("%%EOF"+ JavaNewLine);
 	}
 	
-	public int Length(){
-		return sbCmap.length();
-		
-	}
+	public int Length(){	return sbCmap.length();}
+	
+	public String getRegistry(){return strRegistry;}
+	
+	public String getOrdering(){return strOrdering;}
+	
+	public int getSupplement(){return intSupplement;}
+	
 	public String toString(){
 		// Use this method to return the CMap File.
 		return sbCmap.toString();

@@ -1,6 +1,8 @@
 package Fonts;
 
 import Fonts.table.CmapFormat;
+import cidObjects.CIDSystemInfo;
+import pdfCmaps.identityH;
 
 /** Notes on Java Data Types.
  * byte: Byte data type is an 8-bit signed,Minimum value is -128, Maximum value is 127 (inclusive) 
@@ -8,10 +10,12 @@ import Fonts.table.CmapFormat;
  * int:Int data type is a 32-bit signed,Minimum value is - 2,147,483,648, Maximum value is 2,147,483,647(inclusive) 
  * */
 public class PDFFont {
-	
+	private final String  PDFCRLF = "\r\n";
 	private String strBaseFontName = "";
 	private String strFontFamilyName = "";
 	private String strFontBBox = "";
+	private String strWEntry ="";
+	private String strToUnicodeCMAP ="";
 	private boolean blnFixedPitchFlag = false;
 	private boolean blnSerifFlag = false;
 	private boolean blnSymbolicFlag = false;
@@ -40,10 +44,40 @@ public class PDFFont {
 	private int intAvgWidth = 0;
 	private int pdfWidth = 0;
 	private CmapFormat cmapFormat = null;
+	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
+	
 	String JavaNewLine = System.getProperty("line.separator");
 	
 	/**The Constructor*/
 	public PDFFont(){}
+	public String getToUnicodeCMAP(){return strToUnicodeCMAP;}
+	public void setToUnicodeCMAP(String strPdfCmapName){ 
+		String strTemp = ""; 
+		
+		if (strPdfCmapName == "identityH"){
+			// Create the Cmap object
+		    identityH CmapH = new identityH();
+		    strTemp = "<< /Length " + CmapH.Length() + " >>" + PDFCRLF;
+		    strTemp += "stream" + PDFCRLF;
+		    strTemp += CmapH.toString() + PDFCRLF;
+		    strTemp += "endstream" + PDFCRLF;
+		    
+		    // set the values of the CIDdSystemInfo based on CMAP DATA
+		    cidSystemInfo.setRegistry(CmapH.getRegistry());
+		    cidSystemInfo.setOrdering(CmapH.getOrdering());
+		    cidSystemInfo.setSupplement(CmapH.getSupplement());
+		 }
+		
+		     
+		            
+		            
+		strToUnicodeCMAP = strTemp;}
+
+	public String getCIDSystemInfoDictionary(){ return cidSystemInfo.toString();}
+	
+	public String getWEntry(){ return strWEntry;}
+	public void setWEntry(String WEntry){strWEntry = WEntry;}	 
+	
 	/** PDF Notes On Subject. 
 	 * The PostScript name for the value of BaseFont is determined in one of two ways:
 	 *  Use the PostScript name that is an optional entry in the “name” table of the TrueType font. 
