@@ -1,5 +1,8 @@
 package Fonts;
 
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 import Fonts.table.CmapFormat;
 import cidObjects.CIDSystemInfo;
 import pdfCmaps.identityH;
@@ -339,6 +342,8 @@ public class PDFFont {
 	}
 	public int getPdfWidth() {return pdfWidth;}
 	
+	public int getCharacterCodeToGlyphId(int intCharCode){return cmapFormat.mapCharCode(intCharCode);	}
+	
 	public void setPdfWidth(int pdfWidth) {this.pdfWidth = pdfWidth;}
 	
 	public CmapFormat getCmapFormat() {return cmapFormat;}
@@ -348,8 +353,28 @@ public class PDFFont {
 	public String getUnicodeEscapeString(int intValue){return "\\u"+ addZeros(Integer.toHexString(intValue));}
 	
 	public String getUnicodeString(int intValue){return "U+"+addZeros(Integer.toHexString(intValue));}
+
+	public String getEncodedString(String strToConvert){
+		// This encodes the  unicode string to Hex Values instead of ASCII values for the pdf CID to work.
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+		for (int offset = 0; offset < strToConvert.length(); ){
+			int codePoint = strToConvert.codePointAt(offset);
+			// Next get the character identifier (CID) numbers  for the CodePoint
+			int intCID = this.getCharacterCodeToGlyphId(codePoint);
+
+			// multi-byte encoding with 1 to 4 bytes
+			byte[] bytes = new byte[] { (byte)(intCID >> 8 & 0xff), (byte)(intCID & 0xff) } ;
+
+			try {out.write(bytes);} catch (IOException e) {e.printStackTrace();}
+
+			offset += Character.charCount(codePoint);
+		}
 	
-	private String addZeros(String a){
+		return Hex.getString(out.toByteArray());
+		
+	}
+ 	private String addZeros(String a){
 		int i = 0;
 		i = a.length();
 		if ( i == 4 ){return a;}

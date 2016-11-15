@@ -87,13 +87,11 @@ public class FrmTestCode extends JFrame {
 		btnPDFFontDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
-				System.out.println(fileName);
 				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
 				
 				
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
-				System.out.println("The Font Family Names is " + myPDFFont.getFontFamilyName());
 				fontTable.setFont(font);
 				
 				txtDisplayResults.setText(myPDFFont.toString());
@@ -170,7 +168,7 @@ public class FrmTestCode extends JFrame {
 		CharCode = myPDFFont.getCmapFormat().mapCharCode(0);
 		int pdfwidth = myPDFFont.getGlyphWidthToPDFWidth(CharCode);
 		model.addRow(new Object[]{unicode,0,symbol,CharCode,pdfwidth});
-		String strTest = null;
+		
 		for(int i= 1 ; i < 65535 ; i++){
 			temp = myPDFFont.getUnicodeEscapeString(i);
 			symbol = (char) Integer.parseInt( temp.substring(2), 16 );
@@ -180,12 +178,10 @@ public class FrmTestCode extends JFrame {
 				// Deal with the space
 				if (i == 32){pdfwidth = myPDFFont.getSpaceWidthToPDFWidth();}
 				else{pdfwidth = myPDFFont.getGlyphWidthToPDFWidth(CharCode);}
-				strTest+= pdfwidth +",";
 				model.addRow(new Object[]{unicode,i,symbol,CharCode,pdfwidth});
 			}
 		}
-		System.out.println("The Table has " + model.getRowCount()+ " Rows");
-		//System.out.print(strTest);
+		
 	}
 	
 	public void listFonts(){

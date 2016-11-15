@@ -554,9 +554,14 @@ public class clsPdfWriter {
       strCodeText += sngHorzOffSet.toString() + " " + sngVertOffSet.toString() + " Td" +PDFCRLF;
   }
 
-
+//TODO  Okay Hard coded for right now but later reference it.
+  String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
+  PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
+  // For testing my encoding.
+  String strTemp = myPDFFont.getEncodedString(strTextToShow );
+  
   //-- Text to display on page
-  strCodeText += "<" + CheckReserveChar(strTextToShow) + "> Tj" +PDFCRLF;
+  strCodeText += "<" + strTemp + "> Tj" +PDFCRLF;
 
 
   //-- End the Text block
@@ -1265,7 +1270,7 @@ public class clsPdfWriter {
         String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
         PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
         
-    	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
+        if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        
         //-- Need to set our Collection for this object 
         upDateRefernceTable();

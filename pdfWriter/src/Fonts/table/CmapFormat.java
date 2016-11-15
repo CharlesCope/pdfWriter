@@ -28,7 +28,6 @@ public abstract class CmapFormat {
             case 2:
             return new CmapFormat2(raf);
             case 4:
-            	System.out.println("Called Here");
             return new CmapFormat4(raf);
             case 6:
             return new CmapFormat6(raf);

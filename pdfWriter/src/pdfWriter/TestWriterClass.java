@@ -20,7 +20,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import pdfCmaps.identityH;
 
 
 public class TestWriterClass extends JDialog {
@@ -87,7 +86,6 @@ public class TestWriterClass extends JDialog {
 	    Border border = BorderFactory.createLineBorder(Color.BLUE, 2);
 
 		lblMessage = new JLabel("Message");
-		//lblMessage.setIcon(new ImageIcon(TestWriterClass.class.getResource("/resources/images/pencil.png")));
 		lblMessage.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		lblMessage.setBorder(border);
 		lblMessage.setBounds(10, 85, 414, 85);
@@ -97,19 +95,6 @@ public class TestWriterClass extends JDialog {
 		btnPDF.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		btnPDF.setBounds(156, 197, 122, 23);
 		contentPanel.add(btnPDF);
-		
-		JButton btnCmap = new JButton("Test Cmap Class");
-		btnCmap.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent arg0) {
-				// Just testing the class as I create it.
-				identityH testCmap = new identityH();
-				System.out.println("The file Length is " +testCmap.Length());
-				System.out.println(testCmap.toString());
-				
-			}
-		});
-		btnCmap.setBounds(10, 198, 135, 23);
-		contentPanel.add(btnCmap);
 	}
 	private void setUpEvents(){
 		btnPDF.addActionListener(new ActionListener() {
@@ -125,12 +110,8 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.pdfProducer("pdfWritter");
 				myPDFClass.PageCount(1);
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
-				// Just Checking.
-				// TODO: Will need to change Showing Text Method
-			//	String strTemp = "<00030028005B004400500053004F00480003004600520050005300440051005C0003003A004C005D004400550047000300570048005B00570003002000030B6306CC0B0E053B0AB3088A0003086208950496>";
-					String strTemp = "00030028005B004400500053004F00480003004600520050005300440051005C0003003A004C005D004400550047000300570048005B00570003002000030B6306CC0B0E053B0AB3088A0003086208950496";
-				//String strTemp = "<A>";
-				myPDFClass.ShowingText(1, 100, 720, strTemp, clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+			// Write the data..
+				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
@@ -162,7 +143,7 @@ public class TestWriterClass extends JDialog {
 		         case "Korean":
 		        	 lblMessage.setFont(fontMalgun);
 		        	 // Should look like this Korean 여보세요
-		        	 lblMessage.setText("Example company Wizard text = \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC");
+		        	 lblMessage.setText("Example New Stuff company Wizard text = \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC");
 		        	 break;
 		         case "Spanish":
 		        	 lblMessage.setFont(fontTimes);

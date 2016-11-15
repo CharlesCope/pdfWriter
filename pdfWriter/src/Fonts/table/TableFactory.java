@@ -44,8 +44,7 @@ public class TableFactory {
         case Table.VDMX:
             break;
         case Table.cmap:
-        	System.out.println("Called From Table Factory class creating the Cmap Table");
-            t = new CmapTable(de, raf);
+        	t = new CmapTable(de, raf);
             break;
         case Table.cvt:
             t = new CvtTable(de, raf);

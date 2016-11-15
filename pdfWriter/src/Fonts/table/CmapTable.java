@@ -24,13 +24,9 @@ public class CmapTable implements Table {
          * and then by platform-specific encoding identifier. 
          */
         
-        System.out.println("Called From CmapTable class");
-        System.out.println("Number of Sub Tables " + numTables);
-        
         // Get each of the index entries
         for (int i = 0; i < numTables; i++) {
             entries[i] = new CmapIndexEntry(raf);
-            System.out.println(entries[i].toString());
         }
 
    

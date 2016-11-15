@@ -109,7 +109,6 @@ public class fontToPDFfont {
 		}
 		/** NOTE: These are just rule-of-thumb values,in case the xHeight and CapHeight fields aren't available.*/
 		else{
-			System.out.println("Got Here");
 			myPDFFont.setCapHeight((int) (.7 * intUnitsPerEM));
 			myPDFFont.setXHeight((int) (.5 * intUnitsPerEM));
 		}
