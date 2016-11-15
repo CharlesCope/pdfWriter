@@ -112,7 +112,7 @@ public class FontDescriptor {
 	
 	
 	public String toString(){
-		sbFontDescriptorDic.append("<< " );// Start of dictionary
+		sbFontDescriptorDic.append("<< " + PDFCRLF);// Start of dictionary
 		sbFontDescriptorDic.append(strType);
 		sbFontDescriptorDic.append("/FontName /"+strFontName + PDFCRLF );
 		if(strFontFamily.length()>0){sbFontDescriptorDic.append("/FontFamily "+strFontFamily+ PDFCRLF );}//Optional

@@ -49,7 +49,7 @@ public class CIDFontDictionary {
 	public CIDFontDictionary(){}
 	
 	public String toString(){
-		sbCIDFontDict.append("<< " );// Start of dictionary
+		sbCIDFontDict.append("<< " + PDFCRLF);// Start of dictionary
 		sbCIDFontDict.append(strType);
 		sbCIDFontDict.append("/Subtype /" + strSubType + PDFCRLF );
 		sbCIDFontDict.append("/BaseFont /" + strBaseFont+ PDFCRLF );

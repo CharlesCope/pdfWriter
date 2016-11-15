@@ -127,7 +127,10 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
 				// Just Checking.
 				// TODO: Will need to change Showing Text Method
-				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+			//	String strTemp = "<00030028005B004400500053004F00480003004600520050005300440051005C0003003A004C005D004400550047000300570048005B00570003002000030B6306CC0B0E053B0AB3088A0003086208950496>";
+					String strTemp = "00030028005B004400500053004F00480003004600520050005300440051005C0003003A004C005D004400550047000300570048005B00570003002000030B6306CC0B0E053B0AB3088A0003086208950496";
+				//String strTemp = "<A>";
+				myPDFClass.ShowingText(1, 100, 720, strTemp, clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";

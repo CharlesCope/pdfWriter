@@ -556,7 +556,7 @@ public class clsPdfWriter {
 
 
   //-- Text to display on page
-  strCodeText += "(" + CheckReserveChar(strTextToShow) + ") Tj" +PDFCRLF;
+  strCodeText += "<" + CheckReserveChar(strTextToShow) + "> Tj" +PDFCRLF;
 
 
   //-- End the Text block
@@ -1295,7 +1295,7 @@ public class clsPdfWriter {
     	  cidFontDic.setCIDSystemInfo(String.valueOf(intpdfObjectCount + 2) + " 0 R");
     	  cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");
     	  cidFontDic.setW(myPDFFont.getWEntry()); 
-    	  cidFontDic.setCIDToGIDMap("/Identity");
+    	 // cidFontDic.setCIDToGIDMap("/Identity");
     	  strFont += cidFontDic.toString();
     	  strFont += "endobj" + PDFCRLF;
         

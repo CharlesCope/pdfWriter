@@ -21,7 +21,7 @@ public class CIDSystemInfo {
 	public void setSupplement(int intSupplement) {this.intSupplement = intSupplement;}
 
 	public String toString(){
-		sbCIDSystemInfoDic.append("<< " );// Start of dictionary
+		sbCIDSystemInfoDic.append("<< " + PDFCRLF);// Start of dictionary
 		sbCIDSystemInfoDic.append("/Registry " + strRegistry + PDFCRLF);
 		sbCIDSystemInfoDic.append("/Ordering " + strOrdering+ PDFCRLF);
 		sbCIDSystemInfoDic.append("/Supplement " + Integer.toString(intSupplement)+ PDFCRLF);
