@@ -45,7 +45,9 @@ public class PDFFont {
 	private int intStemV = 0;
 	private int intMaxWidth = 0;
 	private int intAvgWidth = 0;
+	private int intWeight = 0;
 
+	
 	private CmapFormat cmapFormat = null;
 	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
 	
@@ -272,6 +274,9 @@ public class PDFFont {
 	public void setAvgWidth(int AvgWidth){intAvgWidth = AvgWidth;}
 	public String getAvgWidth(){return "/AvgWidth " + intAvgWidth;}
 	
+	public String getFontWeight() {return "/FontWeight " +  intWeight;}
+	public void setFontWeight(int intWeight) {	this.intWeight = intWeight * 100;}
+	
 	public int getBoundingBoxLowerLeftx() {return BBoxLowerLeftx;}
 	public int getBoundingBoxLowerLefty() {return BBoxLowerLefty;}
 	public int getBoundingBoxUpperRightx() {return BBoxUpperRightx;}
@@ -331,6 +336,7 @@ public class PDFFont {
 		strToString += "Character Missing Width >> " + getMissingWidth() + JavaNewLine;
 		strToString += "Capital letters Height >> " + getCapHeight() + JavaNewLine;
 		strToString += "Lower case x Height >> " + getXHeight() + JavaNewLine;
+		strToString += "The  Font Weight >>" + getFontWeight() + JavaNewLine;
 		strToString += "Italic Angle Slope Right neg number >> " + getItalicAngle() + JavaNewLine;
 		strToString += "Ascent maximum height above baseline >> " + getAscent() + JavaNewLine;
 		strToString += "Descent maximum depth below baseline >> " + getDescent() + JavaNewLine;

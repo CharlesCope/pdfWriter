@@ -106,6 +106,7 @@ public class fontToPDFfont {
 		if(intVersion >= 2){
 			myPDFFont.setCapHeight(pdfScalingFormula(myChcFont.getOS2Table().getCapHeight(),intUnitsPerEM));
 			myPDFFont.setXHeight(pdfScalingFormula(myChcFont.getOS2Table().getXHeight(),intUnitsPerEM));
+			myPDFFont.setFontWeight(myChcFont.getOS2Table().getWeightClass());
 		}
 		/** NOTE: These are just rule-of-thumb values,in case the xHeight and CapHeight fields aren't available.*/
 		else{
