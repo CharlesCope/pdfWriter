@@ -45,7 +45,7 @@ public class PDFFont {
 	private int intStemV = 0;
 	private int intMaxWidth = 0;
 	private int intAvgWidth = 0;
-	private int pdfWidth = 0;
+
 	private CmapFormat cmapFormat = null;
 	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
 	
@@ -173,6 +173,7 @@ public class PDFFont {
 		else{ return fontToPDFfont.pdfScalingFormula((int) (intUnitsPerEm * .5),intUnitsPerEm);}
 		
 	}
+	
 	public int getGlyphWidthToPDFWidth(int CharCode){
 		
 		try {
@@ -340,11 +341,8 @@ public class PDFFont {
 		return strToString;
 		
 	}
-	public int getPdfWidth() {return pdfWidth;}
 	
 	public int getCharacterCodeToGlyphId(int intCharCode){return cmapFormat.mapCharCode(intCharCode);	}
-	
-	public void setPdfWidth(int pdfWidth) {this.pdfWidth = pdfWidth;}
 	
 	public CmapFormat getCmapFormat() {return cmapFormat;}
 	
@@ -353,7 +351,35 @@ public class PDFFont {
 	public String getUnicodeEscapeString(int intValue){return "\\u"+ addZeros(Integer.toHexString(intValue));}
 	
 	public String getUnicodeString(int intValue){return "U+"+addZeros(Integer.toHexString(intValue));}
+	
+	public Double getStringWidth(String strToMeasure, int intFontSize){
+		//-- Make sure we have something before checking it length
+		if (strToMeasure == null){return 0.0;}
+		if(strToMeasure == ""){return 0.0;}
+		if(intFontSize ==0){return 0.0;}
 
+		Integer intWidth = 0;
+		int intTemp = 0;
+
+		for (int offset = 0; offset < strToMeasure.length(); ){
+			int codePoint = strToMeasure.codePointAt(offset);
+			int intGlyphID = this.getCharacterCodeToGlyphId(codePoint);
+
+			// deal with the space
+			if(codePoint == 32){intTemp = this.getSpaceWidthToPDFWidth();}
+			// Get the width for the Glyph
+			else{intTemp = this.getGlyphWidthToPDFWidth(intGlyphID);}
+			// Deal with missing data
+			if (intTemp == 0){ intTemp = intMissingWidth;}
+
+			intWidth += intTemp;
+			offset += Character.charCount(codePoint);
+		}
+
+		return intWidth * intFontSize / 1000.0;
+
+	}
+	
 	public String getEncodedString(String strToConvert){
 		// This encodes the  unicode string to Hex Values instead of ASCII values for the pdf CID to work.
 		ByteArrayOutputStream out = new ByteArrayOutputStream();

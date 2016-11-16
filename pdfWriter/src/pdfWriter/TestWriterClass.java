@@ -20,6 +20,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
+import Fonts.PDFFont;
+import Fonts.fontToPDFfont;
+
 
 
 public class TestWriterClass extends JDialog {
@@ -95,6 +98,20 @@ public class TestWriterClass extends JDialog {
 		btnPDF.setFont(new Font("Times New Roman", Font.PLAIN, 14));
 		btnPDF.setBounds(156, 197, 122, 23);
 		contentPanel.add(btnPDF);
+		
+		JButton btnTest = new JButton("Test");
+		btnTest.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				// Just Testing my Code.
+				String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
+		        PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
+		        String strTemp = "Hello \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC";
+		        System.out.println("The Width of the String " + myPDFFont.getStringWidth(strTemp, 14));
+		    	JOptionPane.showMessageDialog(null, "Done with test ");
+			}
+		});
+		btnTest.setBounds(23, 198, 89, 23);
+		contentPanel.add(btnTest);
 	}
 	private void setUpEvents(){
 		btnPDF.addActionListener(new ActionListener() {

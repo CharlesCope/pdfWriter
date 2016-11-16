@@ -122,7 +122,6 @@ public class fontToPDFfont {
 		myPDFFont.setAvgWidth(pdfScalingFormula(myChcFont.getOS2Table().getAvgCharWidth(),intUnitsPerEM));
 		myPDFFont.setFirstChar(0);
 		myPDFFont.setLastChar(myChcFont.getNumGlyphs());
-		myPDFFont.setPdfWidth(pdfScalingFormula(myChcFont.getGlyph(11).getAdvanceWidth(),intUnitsPerEM));
 		myPDFFont.setWEntry(getWEntry());
 		// TODO: Need an if statement here later but just for testing right now. myPDFFont.setToUnicodeCMAP("identityH");
 		myPDFFont.setToUnicodeCMAP("identityH");
