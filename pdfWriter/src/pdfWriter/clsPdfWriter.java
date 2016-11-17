@@ -96,7 +96,8 @@ public class clsPdfWriter {
 	}
 	
 	public enum pdfType0Fonts{
-		T0_MalgunGothic
+		T0_MalgunGothic,
+		T0_Times
 	}
 	public enum pdfColorSpace{
 	    //-- Some color spaces are related to device color representation (grayscale, RGB, CMYK)
@@ -158,6 +159,9 @@ public class clsPdfWriter {
     private Integer intXObjectCount; //-- Keep up with the XObject in the file
     private Integer intFontDescriptorCount; //-- Keep up with Font Descriptors
     private Integer intDynamicObjectCount;//-- Keep up with Dynamic Objects
+    private Integer intToUnicodeObject = 0; //-- Keep up with the Unicode Cmap file;
+    private Boolean blnToUnicodeNeeded = true; // Keep only one copy of unicode Cmap in file.
+    
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
   
@@ -1267,8 +1271,7 @@ public class clsPdfWriter {
     
     private String LoadType0Font(String strFontName){
     	String strComment  = "";
-        String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
-        PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
+        PDFFont myPDFFont = null;
         
         if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        
@@ -1282,11 +1285,58 @@ public class clsPdfWriter {
         FontDescriptor fontDesc = new FontDescriptor();
         
         if(strFontName.equals("pdfType0Fonts.T0_MalgunGothic")){
+        	String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
+        	myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
         	type0FontDic.setBaseFont(myPDFFont.getFontBaseName());
         	type0FontDic.setEncoding("Identity-H");
-        	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
-        	type0FontDic.setToUnicode(String.valueOf(intpdfObjectCount + 2) + " 0 R");
+        	
+        	// Just Hard code for now.  
+        	fontDesc.setFontName("MalgunGothic");
+        	fontDesc.setFlags("4");
+        	fontDesc.setFontBBox(-976, -248, 1198, 932);
+        	fontDesc.setMissingWidth("662");
+        	fontDesc.setStemV("282");
+        	fontDesc.setStemH("191");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("718");
+        	fontDesc.setXHeight("512");
+        	fontDesc.setAscent("1088");
+        	fontDesc.setDescent("-241");
+        	fontDesc.setLeading("0");
+        	fontDesc.setMaxWidth("1238");
+        	fontDesc.setAvgWidth("463");
+        	fontDesc.setFontWeight("400");
         }
+        
+        else if(strFontName.equals("pdfType0Fonts.T0_Times")){
+        	String strFile = "C:/WINDOWS/Fonts/times.ttf";
+        	myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
+        	type0FontDic.setBaseFont(myPDFFont.getFontBaseName());
+        	type0FontDic.setEncoding("Identity-H");
+        	
+        	fontDesc.setFontName("TimesNewRomanPSMT");
+        	fontDesc.setFlags("34");
+        	fontDesc.setFontBBox(-250, -216, 1200, 1000);
+        	fontDesc.setMissingWidth("333");
+        	fontDesc.setStemV("73");
+        	fontDesc.setStemH("73");
+        	fontDesc.setItalicAngle("0");
+        	fontDesc.setCapHeight("891");
+        	fontDesc.setXHeight("446");
+        	fontDesc.setAscent("891");
+        	fontDesc.setDescent("-216");
+        	fontDesc.setLeading("149");
+        	fontDesc.setMaxWidth("1000");
+        	fontDesc.setAvgWidth("401");
+        	fontDesc.setFontWeight("400");
+        }
+        
+        // Point to our supporting Font Dictionary objects
+        type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+        // Keep up with the Unicode Cmap location.
+        if (intToUnicodeObject == 0){ intToUnicodeObject =  intpdfObjectCount + 2;}
+    	type0FontDic.setToUnicode(intToUnicodeObject.toString() + " 0 R");
+        
         strFont += type0FontDic.toString();
         strFont += "endobj" + PDFCRLF;
         
@@ -1297,41 +1347,35 @@ public class clsPdfWriter {
     	  CIDFontDictionary cidFontDic = new CIDFontDictionary();
     	  cidFontDic.setSubType(CIDFontTypes.CIDFontType2);
     	  cidFontDic.setBaseFont(type0FontDic.getBaseFont());
-    	  cidFontDic.setCIDSystemInfo(String.valueOf(intpdfObjectCount + 2) + " 0 R");
-    	  cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");
+    	 
+    	  if(blnToUnicodeNeeded == true){
+        	  cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");  
+    	  }
+    	  else if (blnToUnicodeNeeded == false){
+        	  cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+    	  }
+
+    	  cidFontDic.setCIDSystemInfo(String.valueOf(intToUnicodeObject + 1) + " 0 R");
     	  cidFontDic.setW(myPDFFont.getWEntry()); 
     	 // cidFontDic.setCIDToGIDMap("/Identity");
     	  strFont += cidFontDic.toString();
     	  strFont += "endobj" + PDFCRLF;
         
-     	  upDateRefernceTable();
-    	  intDynamicObjectCount +=1;
-    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-    	  strFont += myPDFFont.getToUnicodeCMAP();
-    	  strFont += "endobj" + PDFCRLF;
-    	  
-    	  upDateRefernceTable();
-    	  intDynamicObjectCount +=1;
-    	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-    	  strFont += myPDFFont.getCIDSystemInfoDictionary();
-    	  strFont += "endobj" + PDFCRLF;
-    	
-    	  // Just Hard code for now.  
-    	  fontDesc.setFontName("MalgunGothic");
-    	  fontDesc.setFlags("4");
-    	  fontDesc.setFontBBox(-976, -248, 1198, 932);
-    	  fontDesc.setMissingWidth("662");
-    	  fontDesc.setStemV("282");
-    	  fontDesc.setStemH("191");
-    	  fontDesc.setItalicAngle("0");
-    	  fontDesc.setCapHeight("718");
-    	  fontDesc.setXHeight("512");
-    	  fontDesc.setAscent("1088");
-    	  fontDesc.setDescent("-241");
-    	  fontDesc.setLeading("0");
-    	  fontDesc.setMaxWidth("1238");
-    	  fontDesc.setAvgWidth("463");
-    	  fontDesc.setFontWeight("400");
+    	  // Check to see if we need to add cmap
+    	  if(blnToUnicodeNeeded == true){
+    		  upDateRefernceTable();
+        	  intDynamicObjectCount +=1;
+        	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+        	  strFont += myPDFFont.getToUnicodeCMAP();
+        	  strFont += "endobj" + PDFCRLF;
+        	  
+        	  upDateRefernceTable();
+        	  intDynamicObjectCount +=1;
+        	  strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+        	  strFont += myPDFFont.getCIDSystemInfoDictionary();
+        	  strFont += "endobj" + PDFCRLF;	  
+        	  blnToUnicodeNeeded = false;
+    	  }
 
     	  upDateRefernceTable();
     	  intDynamicObjectCount +=1;

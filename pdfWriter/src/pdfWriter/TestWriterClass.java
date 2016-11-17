@@ -127,9 +127,13 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.pdfProducer("pdfWritter");
 				myPDFClass.PageCount(1);
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
-			// Write the data..
-				myPDFClass.ShowingText(1, 100, 720, lblMessage.getText(), clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
-
+				// Now I want to try two fonts
+				String strFontOne ="Line One ";
+				String strFontTwo = "Japanese Hello " + "\u3053\u3093\u306B\u3061\u306F"; 
+				// Write the data..
+				myPDFClass.ShowingText(1, 100, 720, strFontOne, clsPdfWriter.pdfType0Fonts.T0_Times, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 700, strFontTwo, clsPdfWriter.pdfType0Fonts.T0_MalgunGothic, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+			
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
 				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;
