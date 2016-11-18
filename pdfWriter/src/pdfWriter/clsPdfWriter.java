@@ -406,13 +406,13 @@ public class clsPdfWriter {
 			String strFilePath = "";
 			System.out.println("The Showing Text Font Name is " + font.getName());
 		
-			// TODO Need to fix this bug getFontPath is not working on all fonts.
-			if(font.getName().equals("TimesRoman")){
-				strFilePath ="C:/WINDOWS/Fonts/times.ttf";
-			}
-			else{
+//			// TODO Need to fix this bug getFontPath is not working on all fonts.
+//			if(font.getName().equals("TimesRoman")){
+//				strFilePath ="C:/WINDOWS/Fonts/times.ttf";
+//			}
+//			else{
 				strFilePath = getFontPath(font);
-			}
+	//		}
 		
 		
 			PDFFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 

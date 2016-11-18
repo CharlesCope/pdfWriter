@@ -132,7 +132,7 @@ public class TestWriterClass extends JDialog {
 				String strFontTwo = "Japanese Hello " + "\u3053\u3093\u306B\u3061\u306F"; 
 				// Write the data..
 				Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
-				Font fontTimes = new Font ("TimesRoman", Font.TRUETYPE_FONT, 14);
+				Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
 				
 				myPDFClass.ShowingText(1, 100, 720, strFontOne, fontTimes, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				myPDFClass.ShowingText(1, 100, 700, strFontTwo, fontMalgun, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
