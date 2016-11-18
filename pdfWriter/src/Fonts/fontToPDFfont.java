@@ -119,6 +119,7 @@ public class fontToPDFfont {
 		myPDFFont.setDescent(pdfScalingFormula(myChcFont.getHheaTable().getDescender(),intUnitsPerEM));
 		myPDFFont.setLeading(pdfScalingFormula(myChcFont.getHheaTable().getLineGap(),intUnitsPerEM));
 		myPDFFont.setStemV(myChcFont.getOS2Table().getWeightClass());
+		myPDFFont.setStemH(190); // Just hard code it for now look for it later.
 		myPDFFont.setMaxWidth(pdfScalingFormula(myChcFont.getHheaTable().getAdvanceWidthMax(),intUnitsPerEM));
 		myPDFFont.setAvgWidth(pdfScalingFormula(myChcFont.getOS2Table().getAvgCharWidth(),intUnitsPerEM));
 		myPDFFont.setFirstChar(0);

@@ -83,12 +83,7 @@ public class FontDescriptor {
 	}
 	public void setFontWeight(String strFontWeight) {this.strFontWeight = strFontWeight;}
 	public void setFlags(String strFlags) {this.strFlags = strFlags;}
-	public void setFontBBox(int intLowerLeftX, int intLowerLeftY,int intUpperRightX,int intUpperRightY) {
-		String strReturn = String.valueOf(intLowerLeftX);
-		strReturn+= " " + String.valueOf(intLowerLeftY);
-		strReturn+= " " + String.valueOf(intUpperRightX);
-		strReturn+= " " + String.valueOf(intUpperRightY);
-		this.strFontBBox = strReturn;}
+	public void setFontBBox( String strBox) {	this.strFontBBox = strBox;}
 	public void setItalicAngle(String strItalicAngle) {this.strItalicAngle = strItalicAngle;}
 	public void setAscent(String strAscent) {this.strAscent = strAscent;	}
 	public void setDescent(String strDescent) {this.strDescent = strDescent;}

@@ -28,24 +28,25 @@ public class PDFFont {
 	private boolean blnAllCapFlag = false;
 	private boolean blnSmallCapFlag = false;
 	private boolean blnForceBoldFlag = false;
-	private int intFirstChar = 0;
-	private int intLastChar = 0;
-	private int intUnitsPerEm = 0;
-	private int BBoxLowerLeftx = 0;
-	private int BBoxLowerLefty = 0;
-	private int BBoxUpperRightx = 0;
-	private int BBoxUpperRighty = 0;
-	private int intMissingWidth = 0;
-	private int intCapHeight = 0;
-	private int intXHeight = 0;
-	private int intItalicAngle = 0;
-	private int intAscent = 0;
-	private int intDescent = 0;
-	private int intLeading = 0;
-	private int intStemV = 0;
-	private int intMaxWidth = 0;
-	private int intAvgWidth = 0;
-	private int intWeight = 0;
+	private Integer intFirstChar = 0;
+	private Integer intLastChar = 0;
+	private Integer intUnitsPerEm = 0;
+	private Integer BBoxLowerLeftx = 0;
+	private Integer BBoxLowerLefty = 0;
+	private Integer BBoxUpperRightx = 0;
+	private Integer BBoxUpperRighty = 0;
+	private Integer intMissingWidth = 0;
+	private Integer intCapHeight = 0;
+	private Integer intXHeight = 0;
+	private Integer intItalicAngle = 0;
+	private Integer intAscent = 0;
+	private Integer intDescent = 0;
+	private Integer intLeading = 0;
+	private Integer intStemV = 0;
+	private Integer intStemH = 0;
+	private Integer intMaxWidth = 0;
+	private Integer intAvgWidth = 0;
+	private Integer intWeight = 0;
 
 	
 	private CmapFormat cmapFormat = null;
@@ -120,8 +121,8 @@ public class PDFFont {
 		str32Flag.setCharAt(14, Character.forDigit(Boolean.compare(blnSmallCapFlag,false), RADIX));
 		str32Flag.setCharAt(13, Character.forDigit(Boolean.compare(blnForceBoldFlag,false), RADIX));
 		// 12 to 0 Flags not Used
-		int intFlagsVaule = Integer.parseUnsignedInt(str32Flag.toString(), 2);
-		return "/Flags " + intFlagsVaule;
+		Integer intFlagsVaule = Integer.parseUnsignedInt(str32Flag.toString(), 2);
+		return  intFlagsVaule.toString();
 		
 	}
 	/** Sources for the code I used...
@@ -136,21 +137,20 @@ public class PDFFont {
 	 * */
 	public String getFontBBox(){
 		// Results not matching data in file
-		int lowerLeftx = 0;
-		int lowerLefty = 0;
-		int upperRightx = 0;
-		int upperRighty =0;
+		Integer lowerLeftx = 0;
+		Integer lowerLefty = 0;
+		Integer upperRightx = 0;
+		Integer upperRighty =0;
 		
 		lowerLeftx = (int) toEmSpace(BBoxLowerLeftx);
 		lowerLefty = (int) toEmSpace(BBoxLowerLefty);
 		upperRightx = (int) toEmSpace(BBoxUpperRightx);
 		upperRighty= (int) toEmSpace(BBoxUpperRighty);
 		
-		strFontBBox = "/FontBBox [";
-		strFontBBox += String.valueOf(lowerLeftx) + " ";
-		strFontBBox += String.valueOf(lowerLefty) + " ";
-		strFontBBox += String.valueOf(upperRightx) + " ";
-		strFontBBox += String.valueOf(upperRighty) + "] ";
+		strFontBBox = lowerLeftx.toString() + " ";
+		strFontBBox += lowerLefty.toString() + " ";
+		strFontBBox += upperRightx.toString() + " ";
+		strFontBBox += upperRighty.toString() + " ";
 		
 		return strFontBBox;
 		
@@ -215,31 +215,31 @@ public class PDFFont {
 	public void setUnitsPerEm(int UnitsPerEm) {intUnitsPerEm = UnitsPerEm;}
 	
 	public void setFirstChar(int FirstChar){intFirstChar = FirstChar;}
-	public String getFirstChar(){return "/FirstChar " + intFirstChar;}
+	public String getFirstChar(){return  intFirstChar.toString();}
 	
 	public void setLastChar(int LastChar){intLastChar = LastChar;}
-	public String getLastChar(){return "/LastChar " + intLastChar;}
+	public String getLastChar(){return  intLastChar.toString();}
 	
 	public void setMissingWidth(int missingWidth){intMissingWidth = missingWidth;}
-	public String getMissingWidth(){return "/MissingWidth " + intMissingWidth;}
+	public String getMissingWidth(){return intMissingWidth.toString();}
 	
 	public void setCapHeight(int capHeight){intCapHeight = capHeight;}
-	public String getCapHeight(){return "/CapHeight " + intCapHeight;}
+	public String getCapHeight(){return intCapHeight.toString();}
 	
 	public void setXHeight(int xHeight){intXHeight  = xHeight;}
-	public String getXHeight(){return "/XHeight " + intXHeight;}
+	public String getXHeight(){return intXHeight.toString();}
 	
 	public void setItalicAngle(int italicAngle){intItalicAngle = italicAngle;}
-	public String getItalicAngle(){return "/ItalicAngle " + intItalicAngle;}
+	public String getItalicAngle(){return intItalicAngle.toString();}
 
 	public void setAscent(int Ascent){ intAscent = Ascent;}
-	public String getAscent(){return "/Ascent " + intAscent;}
+	public String getAscent(){return intAscent.toString();}
 	
 	public void setDescent(int Descent){intDescent = Descent;}
-	public String getDescent(){return "/Descent " + intDescent;}
+	public String getDescent(){return intDescent.toString();}
 	
 	public void setLeading(int Leading){intLeading = Leading;}
-	public String getLeading(){return "/Leading " + intLeading;}
+	public String getLeading(){return intLeading.toString();}
 	
 	public void setStemV(int StemV){intStemV = StemV;}
 	public String getStemV(){
@@ -252,7 +252,7 @@ public class PDFFont {
 		final int BOLD = 7;
 		final int EXTRA_BOLD = 8;
 		final int ULTRA_BOLD = 9;
-		int intReturnValue = 50;
+		Integer intReturnValue = 50;
 		
 		switch (intStemV) {
 		case ULTRA_LIGHT:  intReturnValue = 50;		break;
@@ -266,15 +266,18 @@ public class PDFFont {
 		case ULTRA_BOLD:  intReturnValue = 241;		break;
 		default: intReturnValue = 50;				break;}
 
-		return "/StemV " + intReturnValue;}
+		return  intReturnValue.toString();}
 
+	public void setStemH(int StemH){intStemH = StemH;}
+	public String getStemH(){ return  intStemH.toString();} 
+	
 	public void setMaxWidth(int MaxWidth){intMaxWidth = MaxWidth;}
-	public String getMaxWidth(){return "/MaxWidth " + intMaxWidth;}
+	public String getMaxWidth(){return  intMaxWidth.toString();}
 	
 	public void setAvgWidth(int AvgWidth){intAvgWidth = AvgWidth;}
-	public String getAvgWidth(){return "/AvgWidth " + intAvgWidth;}
+	public String getAvgWidth(){return intAvgWidth.toString();}
 	
-	public String getFontWeight() {return "/FontWeight " +  intWeight;}
+	public String getFontWeight() {return  intWeight.toString();}
 	public void setFontWeight(int intWeight) {	this.intWeight = intWeight * 100;}
 	
 	public int getBoundingBoxLowerLeftx() {return BBoxLowerLeftx;}

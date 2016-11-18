@@ -92,6 +92,8 @@ public class FrmTestCode extends JFrame {
 				
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
+				
+				
 				fontTable.setFont(font);
 				
 				txtDisplayResults.setText(myPDFFont.toString());
