@@ -10,6 +10,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Properties;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -20,8 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.border.Border;
 
-import Fonts.PDFFont;
-import Fonts.fontToPDFfont;
+import Fonts.FontManager;
 
 
 
@@ -102,11 +102,14 @@ public class TestWriterClass extends JDialog {
 		JButton btnTest = new JButton("Test");
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				// Just Testing my Code.
-				String strFile = "C:/WINDOWS/Fonts/malgun.ttf";
-		        PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(strFile);
-		        String strTemp = "Hello \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC";
-		        System.out.println("The Width of the String " + myPDFFont.getStringWidth(strTemp, 14));
+			
+				Properties fontProperties = FontManager.getInstance().getFontProperties(false);
+				System.out.println("The Foninfo we need is " + fontProperties.get("malgun gothic"));
+				
+//				for (Object value : fontProperties.values()) {
+//					
+//					System.out.println(value);
+//				}
 		    	JOptionPane.showMessageDialog(null, "Done with test ");
 			}
 		});
@@ -130,12 +133,16 @@ public class TestWriterClass extends JDialog {
 				// Now I want to try two fonts
 				String strFontOne ="Line One ";
 				String strFontTwo = "Japanese Hello " + "\u3053\u3093\u306B\u3061\u306F"; 
+				String strFontThree ="Line Three ";
+				
 				// Write the data..
 				Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
 				Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
+				Font fontCourier = new Font("Courier New", Font.PLAIN, 14);
 				
 				myPDFClass.ShowingText(1, 100, 720, strFontOne, fontTimes, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				myPDFClass.ShowingText(1, 100, 700, strFontTwo, fontMalgun, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 680, strFontThree, fontCourier, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
 				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;

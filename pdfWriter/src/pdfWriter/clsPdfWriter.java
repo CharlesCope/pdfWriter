@@ -12,7 +12,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Dictionary;
@@ -20,20 +19,18 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import Fonts.FontManager;
 import Fonts.PDFFont;
 import Fonts.fontToPDFfont;
 import cidObjects.CIDFontDictionary;
 import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfObjects.FontDescriptor;
 import pdfObjects.Type0FontDictionary;
-import sun.font.Font2D;
-import sun.font.FontManager;
-import sun.font.FontManagerFactory;
-import sun.font.PhysicalFont;
 
 public class clsPdfWriter {
 
@@ -400,22 +397,12 @@ public class clsPdfWriter {
 	public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, Font font,Integer intFontSize , Color color, pdfTextAlign Align , Integer Rotate){
 		//-- Keep Up with our fonts that are used in the program
 		//-- Test if the Font key exists, and then add it if it doesn't.
-		// This is the ShowingText needed Now..
+
 		if (dicFontsUsed.get( font.getFontName())==null){
 			intFontCount += 1;
 			
 			dicFontsUsed.put(font.getName(), intFontCount);
-			String strFilePath = "";
-			System.out.println("The Showing Text Font Name is " + font.getName());
-		
-//			// TODO Need to fix this bug getFontPath is not working on all fonts.
-//			if(font.getName().equals("TimesRoman")){
-//				strFilePath ="C:/WINDOWS/Fonts/times.ttf";
-//			}
-//			else{
-				strFilePath = getFontPath(font);
-	//		}
-		
+			String strFilePath = getFontPath(font);
 		
 			PDFFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 
 			PDFFontList.add(pdfFont);
@@ -1843,17 +1830,15 @@ public class clsPdfWriter {
     }
 
     private String getFontPath(Font font){
-		// uses reflection  not tested on OSX yet works on Window
-		Font2D f2d =  sun.font.FontUtilities.getFont2D(font);
-		Field platName = null;
-		String fontPath = null;
-		try {
-			platName = PhysicalFont.class.getDeclaredField("platName");
-			platName.setAccessible(true);
-			fontPath = (String)platName.get(f2d);
-			platName.setAccessible(false);
-		} catch (NoSuchFieldException | SecurityException  | IllegalArgumentException | IllegalAccessException e) {e.printStackTrace();}
-		return fontPath;
+    	String strFontName = font.getName().toLowerCase();
+    	String strFilePath = "";
+    	Properties fontProperties = FontManager.getInstance().getFontProperties(false);
+    	strFilePath = (String) fontProperties.get(strFontName);
+    	if(strFilePath==null || strFilePath.isEmpty()){
+    		// No Physical Font found default to  "Times New Roman" 	
+    		strFilePath = (String) fontProperties.get("times new roman" );
+    	}
+    	return strFilePath;
 	}
 //End Region    
 	 

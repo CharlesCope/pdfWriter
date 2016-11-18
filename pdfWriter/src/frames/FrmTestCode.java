@@ -3,6 +3,7 @@ package frames;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
+import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -187,14 +188,22 @@ public class FrmTestCode extends JFrame {
 	}
 	
 	public void listFonts(){
-		path = System.getenv("WINDIR");
-		File directory =  new File(path, "Fonts");
-		//get all the files from a directory
-		File[] fList = directory.listFiles();
-		for (File file : fList){
-			if (file.isFile()){
-				if(file.getName().endsWith("ttf")){cboFonts.addItem(file.getName());}
-			}
-		}
+		
+		
+		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+		
+			    for ( int i = 0; i < fonts.length; i++ )
+			    {
+			      System.out.println(fonts[i]);
+			    }
+//		path = System.getenv("WINDIR");
+//		File directory =  new File(path, "Fonts");
+//		//get all the files from a directory
+//		File[] fList = directory.listFiles();
+//		for (File file : fList){
+//			if (file.isFile()){
+//				if(file.getName().endsWith("ttf")){cboFonts.addItem(file.getName());}
+//			}
+//		}
 	}
 }
