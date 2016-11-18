@@ -31,6 +31,8 @@ import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfObjects.FontDescriptor;
 import pdfObjects.Type0FontDictionary;
 import sun.font.Font2D;
+import sun.font.FontManager;
+import sun.font.FontManagerFactory;
 import sun.font.PhysicalFont;
 
 public class clsPdfWriter {
