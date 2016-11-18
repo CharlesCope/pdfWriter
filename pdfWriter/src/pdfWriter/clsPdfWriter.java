@@ -31,6 +31,8 @@ import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfObjects.FontDescriptor;
 import pdfObjects.Type0FontDictionary;
 import sun.font.Font2D;
+import sun.font.FontManager;
+import sun.font.FontManagerFactory;
 import sun.font.PhysicalFont;
 
 public class clsPdfWriter {
@@ -413,7 +415,7 @@ public class clsPdfWriter {
 			else{
 				strFilePath = getFontPath(font);
 			}
-		
+			System.out.println(strFilePath);
 		
 			PDFFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 
 			PDFFontList.add(pdfFont);
@@ -1842,14 +1844,15 @@ public class clsPdfWriter {
 
     private String getFontPath(Font font){
 		// uses reflection  not tested on OSX yet works on Window
-		Font2D f2d =  sun.font.FontUtilities.getFont2D(font);
-		Field platName = null;
-		String fontPath = null;
-		try {
-			platName = PhysicalFont.class.getDeclaredField("platName");
-			platName.setAccessible(true);
-			fontPath = (String)platName.get(f2d);
-			platName.setAccessible(false);
+    	String fontPath = "";
+    	try{
+    	Font2D f2d = FontManagerFactory.getInstance().findFont2D(font.getFontName(), font.getStyle(),      
+                FontManager.LOGICAL_FALLBACK).handle.font2D;
+
+    			Field platName = PhysicalFont.class.getDeclaredField("platName");
+    			platName.setAccessible(true);
+    			fontPath = (String)platName.get(f2d);
+    			platName.setAccessible(false);
 		} catch (NoSuchFieldException | SecurityException  | IllegalArgumentException | IllegalAccessException e) {e.printStackTrace();}
 		return fontPath;
 	}
