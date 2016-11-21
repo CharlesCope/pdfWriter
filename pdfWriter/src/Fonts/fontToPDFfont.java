@@ -74,7 +74,18 @@ public class fontToPDFfont {
 			}
 		}
 		if(isMac() == true){
+			// TODO Mac has a lot of encoding do we need to deal with all of them?
 			if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman)!= null){
+				if (myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 4) {
+					myPDFFont.setCmapFormat((CmapFormat4) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+				} else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 2){
+					myPDFFont.setCmapFormat((CmapFormat2) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 0){
+					myPDFFont.setCmapFormat((CmapFormat0) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 6){
+					myPDFFont.setCmapFormat((CmapFormat6) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+				}
+				
 				myPDFFont.setNonsymbolicFlag(true);
 				myPDFFont.setSymbolicFlag(false);
 			}

@@ -136,13 +136,13 @@ public class TestWriterClass extends JDialog {
 				String strFontThree ="Line Three ";
 				
 				// Write the data..
-				Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
+				//Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
 				Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
-				Font fontCourier = new Font("Courier New", Font.PLAIN, 14);
+				//Font fontCourier = new Font("Courier New", Font.PLAIN, 14);
 				
 				myPDFClass.ShowingText(1, 100, 720, strFontOne, fontTimes, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
-				myPDFClass.ShowingText(1, 100, 700, strFontTwo, fontMalgun, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
-				myPDFClass.ShowingText(1, 100, 680, strFontThree, fontCourier, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				//myPDFClass.ShowingText(1, 100, 700, strFontTwo, fontMalgun, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				//myPDFClass.ShowingText(1, 100, 680, strFontThree, fontCourier, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
 				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;
