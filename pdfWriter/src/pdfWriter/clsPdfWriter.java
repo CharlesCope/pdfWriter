@@ -1198,7 +1198,9 @@ public class clsPdfWriter {
     	fontDesc.setMaxWidth(curPDFFont.getMaxWidth());
     	fontDesc.setAvgWidth(curPDFFont.getAvgWidth());
     	fontDesc.setFontWeight(curPDFFont.getFontWeight());
-
+  //  	fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+    	
+    
     	// Point to our supporting Font Dictionary objects
     	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
     	// Keep up with the Unicode Cmap location.
@@ -1223,7 +1225,6 @@ public class clsPdfWriter {
 
     	cidFontDic.setCIDSystemInfo(String.valueOf(intToUnicodeObject + 1) + " 0 R");
     	cidFontDic.setW(curPDFFont.getWEntry()); 
-    	// cidFontDic.setCIDToGIDMap("/Identity");
     	strFont += cidFontDic.toString();
     	strFont += "endobj" + PDFCRLF;
 
@@ -1856,7 +1857,6 @@ public class clsPdfWriter {
       try {
 		writer = new BufferedWriter(new FileWriter(file));
 		writeString(writer, FileHeader());
-		
 		writeString(writer, pdfFileInfo());
 		
 	
@@ -1872,8 +1872,7 @@ public class clsPdfWriter {
 	        
 	    }
 	    
-	    writer.close();
-	
+		
 	    //-- Load up any Images into our XObject 
 	    Set<String> keys = colImages.keySet();
 	    
@@ -1886,23 +1885,21 @@ public class clsPdfWriter {
 	        if (colImages.get(key).toString().toUpperCase().endsWith("JPG") == true || colImages.get(key).toString().toUpperCase().endsWith("JPEG") == true ) {
 	            //-- Load up any Jpeg Images in the Collection
 	        	//...
-	            //FileText.append(LoadImgFromJPEGFile(key, colImages.get(key).toString()));
 	        	LoadImgFromJPEGFile(key, colImages.get(key).toString(), file);
 	        }
         }
 	    
-	    BufferedWriter	writer2 = new BufferedWriter(new FileWriter(file, true));
-	
-	    writeString(writer2, rootCatalog());
-	    writeString(writer2, OutLines());
-	    writeString(writer2, PageTree());
-	    writeString(writer2, Resources());
+		
+	    writeString(writer, rootCatalog());
+	    writeString(writer, OutLines());
+	    writeString(writer, PageTree());
+	    writeString(writer, Resources());
 	
 	    //-- Need to call page for every page of the count
 	    for(int intCounter = 1; intCounter <= _pdfPageCount; intCounter++){
-	    	writeString(writer2, Page());
-	    	writeString(writer2, ContentStream());
-	    	writeString(writer2, StreamLengthObj());
+	    	writeString(writer, Page());
+	    	writeString(writer, ContentStream());
+	    	writeString(writer, StreamLengthObj());
 	    }
 	
 	
@@ -1911,10 +1908,10 @@ public class clsPdfWriter {
 	    //-- to point to the cross reference table start point.
 	    intCrossRefOffSet +=   1;
 	    //-- Now build or cross reference table
-	    writeString(writer2, buildCrossReferenceTable());
-	    writeString(writer2, FileTrailer(intCrossRefOffSet));
+	    writeString(writer, buildCrossReferenceTable());
+	    writeString(writer, FileTrailer(intCrossRefOffSet));
 	    
-	    writer2.close();
+	    writer.close();
 	    }catch (Exception e) {e.printStackTrace();}
 	  
 	
