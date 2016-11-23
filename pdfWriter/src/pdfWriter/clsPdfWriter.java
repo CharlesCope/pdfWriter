@@ -13,6 +13,8 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
@@ -1062,18 +1064,22 @@ public class clsPdfWriter {
         //-- n is a literal keyword identifying this as an in-use entry
         //-- eol is a 2-character end-of-line sequence
 
-        Integer	intPad   = 0;
-        //-- Need 10 elements for the offset use the built in format for interger method.
+        //-- Need 10 elements for the offset use the built in format for integer method.
         String fmt  = "%010d";
 
-        //-- Loop through our collection of PDF Objects
-        Set<String> keys = colCrossReferenceTable.keySet();
-        for (String key: keys){
-        	intPad = Integer.parseInt(colCrossReferenceTable.get(key));
-        	strCrossReffence += String.format(fmt,  intPad) + " 00000 n" +  PDFCRLF;
+        //-- Just keeping the xref table in order not needed but nice to have.
+        List<Integer> list = new ArrayList<>();
+        for (String str : colCrossReferenceTable.keySet()) {
+         list.add(Integer.parseInt(colCrossReferenceTable.get(str)));
+        }
+        Collections.sort(list);
+        
+        for (Integer value : list) {
+        	strCrossReffence += String.format(fmt,  value) + " 00000 n" +  PDFCRLF;
         }
         
-        //-- Now return our Cross reffence table
+     
+        //-- Now return our Cross reference table
         return strCrossReffence;
         //-- After this function is called you must call the FileTrailer Function to end the file.
     }
@@ -1209,7 +1215,9 @@ public class clsPdfWriter {
 
     	strFont += type0FontDic.toString();
     	strFont += "endobj" + PDFCRLF;
-
+    	
+    	FileText.append(strFont);
+    	strFont = "";
     	upDateRefernceTable();
     	intDynamicObjectCount +=1;
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
@@ -1230,12 +1238,16 @@ public class clsPdfWriter {
 
     	// Check to see if we need to add cmap
     	if(blnToUnicodeNeeded == true){
+    		FileText.append(strFont);
+        	strFont = "";
     		upDateRefernceTable();
     		intDynamicObjectCount +=1;
     		strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     		strFont += curPDFFont.getToUnicodeCMAP();
     		strFont += "endobj" + PDFCRLF;
-
+    		
+    		FileText.append(strFont);
+        	strFont = "";
     		upDateRefernceTable();
     		intDynamicObjectCount +=1;
     		strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
@@ -1243,7 +1255,8 @@ public class clsPdfWriter {
     		strFont += "endobj" + PDFCRLF;	  
     		blnToUnicodeNeeded = false;
     	}
-
+    	FileText.append(strFont);
+    	strFont = "";
     	upDateRefernceTable();
     	intDynamicObjectCount +=1;
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
@@ -1303,17 +1316,16 @@ public class clsPdfWriter {
         //-- Just check to see if it's a jpeg format file
         if( FileName.toLowerCase().endsWith("jpg") || FileName.toLowerCase().endsWith("jpeg")) {
         	Boolean blnPDFParse ; 
-            //-- This will assing the data from the file to a structure define by me.
+            //-- This will assign the data from the file to a structure define by me.
             blnPDFParse = LawJPG(FileName);
             //-- Check to see if the Parsing failed
             if (blnPDFParse == false) {
                 return "";
         	}
         }else{
-        	//...msg
-            //MsgBox("Image format not supported." & vbNewLine & "Only jpg or jpeg images are supported." & vbNewLine & "Impossible to include image in PDF file.", MsgBoxStyle.Critical, "Image File - PDFSimple")
+       
         	
-        	JOptionPane.showMessageDialog(null, "Image File - PDFSimple", 
+        	JOptionPane.showMessageDialog(null, "Image File - PdfWriter", 
         			"Image format not supported. Only jpg or jpeg images are supported. Impossible to include image in PDF file.", 0);
             return "";
         }
@@ -1355,29 +1367,20 @@ public class clsPdfWriter {
         //-- Sample data is represented as a stream of bytes, interpreted as 8-bit unsigned integers in the range 0 to 255.
         strImage += "stream" + PDFCRLF;
         
-        BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-        writeString(writer, strImage);
-        writer.close();
-        
-        
-        
+        //TODO : Okay I just think this will be a problem how is the cross reference table going to be correct?
+        // If the file text can't keep up the the data.
         DataOutputStream dis;
 		dis = new DataOutputStream(new FileOutputStream(file, true));
 		byte[] bytes = (byte[]) strImageJPEG.ImgDicDataStream;
 		dis.write(bytes);
 		dis.close();
 		intCrossRefOffSet  += bytes.length;
-	        
          
         
         strImage=PDFCRLF;
         strImage += "endstream" + PDFCRLF;
         strImage += "endobj" + PDFCRLF;
-
-        BufferedWriter writer2 = new BufferedWriter(new FileWriter(file, true));
-        writeString(writer2, strImage);
-        writer2.close();
-        
+   
         //-- Add it to the Resource Dic        
         colXobjectImages.add(Name, intpdfObjectCount.toString() + " 0 R ");
         return strImage;
@@ -1584,7 +1587,7 @@ public class clsPdfWriter {
 
         sIMG = file.length();
         if (sIMG < 250 ){
-            //-- Testing to see if the file is large enought to be a jpeg            
+            //-- Testing to see if the file is large enough to be a jpeg            
         	JOptionPane.showMessageDialog(null, "File Image - clsPdfWriter", "File Image is non JPEG Cannot add image to PDF file.", 0);
             //-- Setting a Flag to show parsing failure
             return false;
@@ -1843,79 +1846,76 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
-    
-    public void writeString(BufferedWriter writer, String str) throws IOException{
-    	writer.write(str);
-    	intCrossRefOffSet += str.length();
-    }
+ 
 	 
     public void WritePDF(String strFilePath){
-	    //-- Here we will write the PDF File to a string Builder string first then write the file
-	    //-- once we know we have the file built.
-      File file = new File(strFilePath);
-      BufferedWriter writer = null;
-      try {
-		writer = new BufferedWriter(new FileWriter(file));
-		writeString(writer, FileHeader());
-		writeString(writer, pdfFileInfo());
-		
-	
-	    Enumeration<String> keyFonts = dicFontsUsed.keys();
-	  //-- Load only the font in use by the application to keep file size small and easy to read.
-	    while(keyFonts.hasMoreElements()){
-	    	String key = keyFonts.nextElement();
-	    	if (key.startsWith("pdfStandardFonts") ) {//-- Check to see if we need to load any standard fonts
-	            writeString(writer, LoadStandardFont(key));
-	        }
-	        // Else just load everything else as Type 0 Font.	        
-	        writeString(writer, LoadType0Font(key));
-	        
-	    }
-	    
-		
-	    //-- Load up any Images into our XObject 
-	    Set<String> keys = colImages.keySet();
-	    
-	    for (String key: keys){
-	    	if (colImages.get(key).toString().toUpperCase().endsWith("BMP") == true ) {
-	            //-- Load up any Bit Map Images in the Collection
-	            //...writeString(writer, LoadImgFromBMPFile(key, colImages.get(key).toString(), pdfColorSpace.pdfRGB));
-	        }
-	
-	        if (colImages.get(key).toString().toUpperCase().endsWith("JPG") == true || colImages.get(key).toString().toUpperCase().endsWith("JPEG") == true ) {
-	            //-- Load up any Jpeg Images in the Collection
-	        	//...
-	        	LoadImgFromJPEGFile(key, colImages.get(key).toString(), file);
-	        }
-        }
-	    
-		
-	    writeString(writer, rootCatalog());
-	    writeString(writer, OutLines());
-	    writeString(writer, PageTree());
-	    writeString(writer, Resources());
-	
-	    //-- Need to call page for every page of the count
-	    for(int intCounter = 1; intCounter <= _pdfPageCount; intCounter++){
-	    	writeString(writer, Page());
-	    	writeString(writer, ContentStream());
-	    	writeString(writer, StreamLengthObj());
-	    }
-	
-	
-	    //-- Need to know where the reference table starts
-	    //-- The next entry is the cross reference table so add one to the length of the string
-	    //-- to point to the cross reference table start point.
-	    intCrossRefOffSet +=   1;
-	    //-- Now build or cross reference table
-	    writeString(writer, buildCrossReferenceTable());
-	    writeString(writer, FileTrailer(intCrossRefOffSet));
-	    
-	    writer.close();
-	    }catch (Exception e) {e.printStackTrace();}
-	  
-	
-	}		 
+    	//-- Here we will write the PDF File to a string Builder string first then write the file
+    	//-- once we know we have the file built.
+    	File file = new File(strFilePath);
+    	BufferedWriter writer = null;
+    	try {
+    		writer = new BufferedWriter(new FileWriter(file));
+    		FileText.append(FileHeader());
+    		FileText.append(pdfFileInfo());
+
+    		Enumeration<String> keyFonts = dicFontsUsed.keys();
+    		//-- Load only the font in use by the application to keep file size small and easy to read.
+    		while(keyFonts.hasMoreElements()){
+    			String key = keyFonts.nextElement();
+    			if (key.startsWith("pdfStandardFonts") ) {//-- Check to see if we need to load any standard fonts
+    				FileText.append(LoadStandardFont(key));
+    			}
+    			// Else just load everything else as Type 0 Font.	 
+    			FileText.append(LoadType0Font(key));
+
+    		}
+
+
+    		//-- Load up any Images into our XObject 
+    		Set<String> keys = colImages.keySet();
+
+    		for (String key: keys){
+    			if (colImages.get(key).toString().toUpperCase().endsWith("BMP") == true ) {
+    				//-- Load up any Bit Map Images in the Collection
+    				//...writeString(writer, LoadImgFromBMPFile(key, colImages.get(key).toString(), pdfColorSpace.pdfRGB));
+    			}
+
+    			if (colImages.get(key).toString().toUpperCase().endsWith("JPG") == true || colImages.get(key).toString().toUpperCase().endsWith("JPEG") == true ) {
+    				//-- Load up any Jpeg Images in the Collection
+    				//...
+    				LoadImgFromJPEGFile(key, colImages.get(key).toString(), file);
+    			}
+    		}
+
+    		FileText.append(rootCatalog());
+    		FileText.append(OutLines());
+    		FileText.append(PageTree());
+    		FileText.append(Resources());
+
+
+    		//-- Need to call page for every page of the count
+    		for(int intCounter = 1; intCounter <= _pdfPageCount; intCounter++){
+    			FileText.append(Page());
+    			FileText.append(ContentStream());
+    			FileText.append(StreamLengthObj());
+    		}
+
+
+    		//-- Need to know where the reference table starts
+    		//-- The next entry is the cross reference table so add one to the length of the string
+    		//-- to point to the cross reference table start point.
+    		intCrossRefOffSet += FileText.length();
+    		intCrossRefOffSet +=   1;
+    		//-- Now build or cross reference table
+    		FileText.append(buildCrossReferenceTable());
+    		FileText.append(FileTrailer(intCrossRefOffSet));
+
+    		writer.write(FileText.toString());
+    		writer.close();
+    	}catch (Exception e) {e.printStackTrace();}
+
+
+    }		 
 	    
 	 
 	 
