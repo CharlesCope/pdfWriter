@@ -131,7 +131,7 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.PageCount(1);
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
 				// Now I want to try two fonts
-				String strFontOne ="Line One ";
+				String strFontOne ="After the Change to file Test ";
 				String strFontTwo = "Japanese Hello " + "\u3053\u3093\u306B\u3061\u306F"; 
 				String strFontThree ="Line Three ";
 				

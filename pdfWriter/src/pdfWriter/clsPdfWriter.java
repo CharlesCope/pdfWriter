@@ -114,8 +114,7 @@ public class clsPdfWriter {
     public NameValueCollection colImages;
     //-- Keep up with the fonts used in the program.
     private Dictionary<String, Integer>	dicFontsUsed;
-
-    private StringBuilder	FileText;
+   
     private Integer intpdfObjectCount= 0;
     private Integer intFontCount  = 0;
     private Integer intStreamLength  = 0;
@@ -164,8 +163,7 @@ public class clsPdfWriter {
 	    colXobjectImages= new NameValueCollection();
 	    colImages= new NameValueCollection();
 
-	    FileText = new StringBuilder();
-	    
+	  	    
 	    intpdfObjectCount= 0;
 	    intFontCount  = 0;
 	    intStreamLength  = 0;
@@ -678,7 +676,7 @@ public class clsPdfWriter {
         //-- This just keep up with each pdf obj that is created an added to the cross reference table at the
         //-- end of the file.
         intpdfObjectCount += 1;
-        colCrossReferenceTable.add(intpdfObjectCount.toString() + " 0 obj", FileText.length()+"");
+        colCrossReferenceTable.add(intpdfObjectCount.toString() + " 0 obj", intCrossRefOffSet +"");
 	}
     //...End Region
 
@@ -1172,7 +1170,7 @@ public class clsPdfWriter {
         return strFont;
     }
     
-    private String LoadType0Font(String strFontName){
+    private String LoadType0Font(String strFontName, BufferedWriter writer) throws IOException{
     	String strComment  = "";
     	PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
 
@@ -1215,8 +1213,9 @@ public class clsPdfWriter {
 
     	strFont += type0FontDic.toString();
     	strFont += "endobj" + PDFCRLF;
+    	    	
+    	writeString(writer,strFont);
     	
-    	FileText.append(strFont);
     	strFont = "";
     	upDateRefernceTable();
     	intDynamicObjectCount +=1;
@@ -1238,7 +1237,7 @@ public class clsPdfWriter {
 
     	// Check to see if we need to add cmap
     	if(blnToUnicodeNeeded == true){
-    		FileText.append(strFont);
+    		writeString(writer,strFont);
         	strFont = "";
     		upDateRefernceTable();
     		intDynamicObjectCount +=1;
@@ -1246,7 +1245,7 @@ public class clsPdfWriter {
     		strFont += curPDFFont.getToUnicodeCMAP();
     		strFont += "endobj" + PDFCRLF;
     		
-    		FileText.append(strFont);
+    		writeString(writer,strFont);
         	strFont = "";
     		upDateRefernceTable();
     		intDynamicObjectCount +=1;
@@ -1255,7 +1254,7 @@ public class clsPdfWriter {
     		strFont += "endobj" + PDFCRLF;	  
     		blnToUnicodeNeeded = false;
     	}
-    	FileText.append(strFont);
+    	writeString(writer,strFont);
     	strFont = "";
     	upDateRefernceTable();
     	intDynamicObjectCount +=1;
@@ -1846,7 +1845,10 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
- 
+    public void writeString(BufferedWriter writer, String str) throws IOException{
+		writer.write(str);
+		intCrossRefOffSet += str.length();
+	}
 	 
     public void WritePDF(String strFilePath){
     	//-- Here we will write the PDF File to a string Builder string first then write the file
@@ -1855,21 +1857,22 @@ public class clsPdfWriter {
     	BufferedWriter writer = null;
     	try {
     		writer = new BufferedWriter(new FileWriter(file));
-    		FileText.append(FileHeader());
-    		FileText.append(pdfFileInfo());
+    		writeString(writer, FileHeader());
+
+			writeString(writer, pdfFileInfo());
 
     		Enumeration<String> keyFonts = dicFontsUsed.keys();
     		//-- Load only the font in use by the application to keep file size small and easy to read.
     		while(keyFonts.hasMoreElements()){
     			String key = keyFonts.nextElement();
     			if (key.startsWith("pdfStandardFonts") ) {//-- Check to see if we need to load any standard fonts
-    				FileText.append(LoadStandardFont(key));
+    				writeString(writer, LoadStandardFont(key));
     			}
     			// Else just load everything else as Type 0 Font.	 
-    			FileText.append(LoadType0Font(key));
-
+    			writeString(writer, LoadType0Font(key,writer));
     		}
-
+    		// Done with first writer
+    		writer.close();
 
     		//-- Load up any Images into our XObject 
     		Set<String> keys = colImages.keySet();
@@ -1886,32 +1889,33 @@ public class clsPdfWriter {
     				LoadImgFromJPEGFile(key, colImages.get(key).toString(), file);
     			}
     		}
+    		
+    		
+    		BufferedWriter	writer2 = new BufferedWriter(new FileWriter(file, true));
 
-    		FileText.append(rootCatalog());
-    		FileText.append(OutLines());
-    		FileText.append(PageTree());
-    		FileText.append(Resources());
+			writeString(writer2, rootCatalog());
+			writeString(writer2, OutLines());
+			writeString(writer2, PageTree());
+			writeString(writer2, Resources());
 
 
     		//-- Need to call page for every page of the count
     		for(int intCounter = 1; intCounter <= _pdfPageCount; intCounter++){
-    			FileText.append(Page());
-    			FileText.append(ContentStream());
-    			FileText.append(StreamLengthObj());
+    			writeString(writer2, Page());
+				writeString(writer2, ContentStream());
+				writeString(writer2, StreamLengthObj());
     		}
 
 
     		//-- Need to know where the reference table starts
     		//-- The next entry is the cross reference table so add one to the length of the string
     		//-- to point to the cross reference table start point.
-    		intCrossRefOffSet += FileText.length();
     		intCrossRefOffSet +=   1;
-    		//-- Now build or cross reference table
-    		FileText.append(buildCrossReferenceTable());
-    		FileText.append(FileTrailer(intCrossRefOffSet));
+    		//-- Now build or cross reffernce table
+			writeString(writer2, buildCrossReferenceTable());
+			writeString(writer2, FileTrailer(intCrossRefOffSet));
 
-    		writer.write(FileText.toString());
-    		writer.close();
+			writer2.close();
     	}catch (Exception e) {e.printStackTrace();}
 
 
