@@ -837,47 +837,53 @@ public class clsPdfWriter {
 //    }
 
     private String PageTree() {
-        //-- Need to set our Collection for this object 
-        upDateReferenceTable();
-        String strComment  = "";
-        if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to PageTree " +  PDFCRLF;
-        }
-        //-- The pages of a document are accessed through a structure known as the page tree, 
-        //-- which defines the ordering of pages in the document
-        //-- The tree contains nodes of two types—intermediate nodes, called page tree nodes, 
-        //-- and leaf nodes, called page objects
-        String strPageTree = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
-        intPageTree = intpdfObjectCount;
-        //-- The simplest structure would consist of a single page tree node that references all 
-        //-- of the document’s page objects directly.
-        //-- *Required* The type of PDF object that this dictionary describes; must be Pages for a page tree node.
-        strPageTree += "<< /Type /Pages" +  PDFCRLF;
-        //-- *Required* Kids -  An array of indirect references to the immediate children of this node. The children may
-        //-- be page objects or other page tree nodes.
-        Integer intKids  = intpdfObjectCount;
-        //-- We must have at least one page in the file
-        //-- The 2 comes from 1 for the PageTree object and 1 for the Resources object
-        intKids += 2;
-        strPageTree += "/Kids [ " +  PDFCRLF;
-        strPageTree += intKids + " 0 R " +  PDFCRLF;
-        //-- if (there is more than one page add there objects here.
-        for(int intCounter = 2 ; intCounter<= _pdfPageCount; intCounter++){
-            intKids += 3;
-            strPageTree += intKids + " 0 R " +  PDFCRLF;
-        }
+		//-- Need to set our Collection for this object 
+		upDateReferenceTable();
+		String strComment  = "";
+		if (_pdfCommentFile == true ) {
+			strComment = "% Comment- Call to PageTree " +  PDFCRLF;
+		}
+		//-- The pages of a document are accessed through a structure known as the page tree, 
+		//-- which defines the ordering of pages in the document
+		//-- The tree contains nodes of two typesâ€”intermediate nodes, called page tree nodes, 
+		//-- and leaf nodes, called page objects
+		String strPageTree = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
+		intPageTree = intpdfObjectCount;
+		//-- The simplest structure would consist of a single page tree node that references all 
+		//-- of the documentâ€™s page objects directly.
+		//-- *Required* The type of PDF object that this dictionary describes; must be Pages for a page tree node.
+		strPageTree += "<< /Type /Pages" +  PDFCRLF;
+		//-- *Required* Kids -  An array of indirect references to the immediate children of this node. The children may
+		//-- be page objects or other page tree nodes.
+		Integer intKids  = intpdfObjectCount;
+		//-- We must have at least one page in the file
+		//-- The 2 comes from 1 for the PageTree object and 1 for the Resources object
+		intKids += 2;
+		strPageTree += "/Kids [ " +  PDFCRLF;
+		strPageTree += intKids + " 0 R " +  PDFCRLF;
+		//-- if (there is more than one page add there objects here.
+		for(int intCounter = 2 ; intCounter<= _pdfPageCount; intCounter++){
+			intKids += 3;
+			strPageTree += intKids + " 0 R " +  PDFCRLF;
+		}
 
-        strPageTree += "]" +  PDFCRLF;
-        //-- *Required* Count - The number of leaf nodes (page objects) that are descendants of this node within the page tree.
-        strPageTree += "/Count " + _pdfPageCount.toString() +  PDFCRLF;
-        Integer intResources   = intpdfObjectCount;
-        intResources += 1;
-        strPageTree += "/Resources " + intResources.toString() + " 0 R " +  PDFCRLF;
-        strPageTree += ">>" +  PDFCRLF;
-        strPageTree += "endobj" +  PDFCRLF;
-        return strPageTree;
-        //-- After this function is called you must call the Resources function
-    }
+		strPageTree += "]" +  PDFCRLF;
+		//-- *Required* Count - The number of leaf nodes (page objects) that are descendants of this node within the page tree.
+		strPageTree += "/Count " + _pdfPageCount.toString() +  PDFCRLF;
+		
+		//-- *Required* MediaBox- Defining the boundaries of the physical medium on which the page is intended to be displayed or printed
+		strPageTree += "/MediaBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
+		//-- *Optional* CropBox - Its contents are to be clipped (cropped) to this rectangle
+		strPageTree += "/CropBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
+		
+		Integer intResources   = intpdfObjectCount;
+		intResources += 1;
+		strPageTree += "/Resources " + intResources.toString() + " 0 R " +  PDFCRLF;
+		strPageTree += ">>" +  PDFCRLF;
+		strPageTree += "endobj" +  PDFCRLF;
+		return strPageTree;
+		//-- After this function is called you must call the Resources function
+	}
 
     private String Resources() {
         //-- Need to set our Collection for this object 
@@ -1831,7 +1837,7 @@ public class clsPdfWriter {
 	 
     public void writeString(BufferedWriter writer, String str) throws IOException{
 		writer.write(str);
-		intCrossRefOffSet += str.length();
+		intCrossRefOffSet += str.getBytes().length;
 	}
 	 
     public void WritePDF(String strFilePath){
