@@ -146,8 +146,8 @@ public class clsPdfWriter {
 
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
-  
     private Integer intCrossRefOffSet;
+    private Integer intStartXref;
     
 	public clsPdfWriter() {
 		
@@ -671,8 +671,8 @@ public class clsPdfWriter {
 	
 		
 	 
-	//...Region "Helper Subs"
-    private void upDateRefernceTable(){
+	//...Region "Helper Subs" 
+    private void upDateReferenceTable(){
         //-- This just keep up with each pdf obj that is created an added to the cross reference table at the
         //-- end of the file.
         intpdfObjectCount += 1;
@@ -693,12 +693,12 @@ public class clsPdfWriter {
         //-- %PDF−1.6
         //-- %PDF-1.7 This is the Refernce I used to create the file but only using version 1.3
         //-- of the Features so I am hard coding it for now maybe later pass in the values
-    	String strFileHeader  = "%PDF-1.4";
+    	String strFileHeader  = "%PDF-1.3"+ PDFCRLF;;
         //-- Note: if (a PDF file contains binary data, as most do (see Section 3.1, “Lexical Conventions”),
         //-- it is recommended that the header line be immediately followed by a comment line containing at 
         //-- least four binary characters—that is, characters whose codes are 128 or greater 
         //-- %âãÏÓ these seem to be the standard on files I have tested.
-        strFileHeader += "%aaIO" + PDFCRLF;
+        //strFileHeader += "%aaIO" + PDFCRLF;
         //-- Now give it back
 
         return strFileHeader;
@@ -707,7 +707,7 @@ public class clsPdfWriter {
 
     private String pdfFileInfo() {
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strComment  = "";
         if (_pdfCommentFile){
             strComment = "% Comment- Call to pdfFileInfo " + PDFCRLF;
@@ -753,7 +753,7 @@ public class clsPdfWriter {
 
     private String rootCatalog(){
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to rootCatalog " +  PDFCRLF;
@@ -769,8 +769,8 @@ public class clsPdfWriter {
         strRoot += "<< /Type /Catalog" +  PDFCRLF;
         //-- Hard Coding does not work break ever time I change code...........
         Integer intAvailableObject  = intpdfObjectCount + 1;
-        strRoot += "/Outlines " + intAvailableObject + " 0 R" +  PDFCRLF;
-        intAvailableObject += 1;
+        //  strRoot += "/Outlines " + intAvailableObject + " 0 R" +  PDFCRLF;
+        // intAvailableObject += 1;
         //-- *Required* The page tree node that is the root of the document’s page tree.
         strRoot += "/Pages " + intAvailableObject + " 0 R" +  PDFCRLF;
         //-- *Optional* A name object specifying the page layout to be used when the document is opened
@@ -781,7 +781,7 @@ public class clsPdfWriter {
         //-- TwoPageLeft(PDF 1.5) Display the pages two at a time, with odd-numbered pages on the left
         //-- TwoPageRight(PDF 1.5) Display the pages two at a time, with odd-numbered pages on the right
         //--Default value: SinglePage.
-        // strRoot += "/PageLayout /SinglePage" +  PDFCRLF;
+    	strRoot += "/PageLayout /OneColumn" +  PDFCRLF;
         //-- *Optional* A name object specifying how the document should be displayed when opened
         //-- UseNone      Neither document outline nor thumbnail images visible
         //-- UseOutlines  Document outline visible
@@ -790,7 +790,7 @@ public class clsPdfWriter {
         //-- UseOC(PDF 1.5) Optional content group panel visible
         //-- UseAttachments(PDF 1.6) Attachments panel visible
         //-- Default value: UseNone
-        // strRoot += "/PageMode /UseNone" +  PDFCRLF;
+        strRoot += "/PageMode /UseNone" +  PDFCRLF;
         //-- *Optional* (PDF 1.4) A language identifier specifying the natural language for all text in the document
         //-- except where overridden by language specifications for structure element
         //-- ISO 639-1: two-letter codes, one per language or macrolanguage
@@ -799,7 +799,7 @@ public class clsPdfWriter {
         //-- español  - es
         //-- Japanese - ja
         //-- Korean   - ko
-        // strRoot += "/Lang (en)" +  PDFCRLF;
+        strRoot += "/Lang (en)" +  PDFCRLF;
         //-- *Optional*  A viewer preferences dictionary  specifying the way the document is to be displayed
         //-- on the screen. if (this entry is absent, applications should use their own current user preference settings.
         //-- *Optional* HideToolbar     - A flag specifying whether to hide the viewer application’s tool bars when the document is active. 
@@ -810,7 +810,7 @@ public class clsPdfWriter {
         //-- FitWindow    boolean/true false
         //-- CenterWindow boolean/true false
         //-- HideMenubar  boolean/true false
-        // strRoot += "/ViewerPreferences << /HideToolbar false /DisplayDocTitle true /HideWindowUI false >>" +  PDFCRLF;
+         strRoot += "/ViewerPreferences << /HideToolbar false /DisplayDocTitle true /HideWindowUI false >>" +  PDFCRLF;
         strRoot += ">>" +  PDFCRLF;
         strRoot += "endobj" +  PDFCRLF;
 
@@ -819,26 +819,26 @@ public class clsPdfWriter {
         //-- After this function is called you must call the OutLines function
     }
 
-    private String OutLines() {
-        //-- Need to set our Collection for this object 
-        upDateRefernceTable();
-        String strComment = "";
-        if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to OutLines " +  PDFCRLF;
-        }
-        //-- I have not implemented this yet but it needed so I left it in the code.
-        String strOutLine  = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
-        strOutLine += "<< /Type /Outlines" +  PDFCRLF;
-        strOutLine += "/Count 0" +  PDFCRLF;
-        strOutLine += ">>" +  PDFCRLF;
-        strOutLine += "endobj" +  PDFCRLF;
-        return strOutLine;
-        //-- After this function is called you must call the PageTree function
-    }
+//    private String OutLines() {
+//        //-- Need to set our Collection for this object 
+//        upDateRefernceTable();
+//        String strComment = "";
+//        if (_pdfCommentFile == true ) {
+//            strComment = "% Comment- Call to OutLines " +  PDFCRLF;
+//        }
+//        //-- I have not implemented this yet but it needed so I left it in the code.
+//        String strOutLine  = strComment + intpdfObjectCount + " 0 obj" +  PDFCRLF;
+//        strOutLine += "<< /Type /Outlines" +  PDFCRLF;
+//        strOutLine += "/Count 0" +  PDFCRLF;
+//        strOutLine += ">>" +  PDFCRLF;
+//        strOutLine += "endobj" +  PDFCRLF;
+//        return strOutLine;
+//        //-- After this function is called you must call the PageTree function
+//    }
 
     private String PageTree() {
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strComment  = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to PageTree " +  PDFCRLF;
@@ -881,7 +881,7 @@ public class clsPdfWriter {
 
     private String Resources() {
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strComment = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to Resources " +  PDFCRLF;
@@ -932,94 +932,85 @@ public class clsPdfWriter {
     }
 
     private String Page() {
-        //-- Need to set our Collection for this object 
-        upDateRefernceTable();
-        String strComment  = "";
-        if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to Page " +  PDFCRLF;
-        }
-        String strPage  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
-        strPage += "<< /Type /Page" +  PDFCRLF;
-        strPage += "/Parent " + intPageTree.toString() + " 0 R" +  PDFCRLF;
-        //-- *Required* MediaBox- Defining the boundaries of the physical medium on which the page is intended to be displayed or printed
-        strPage += "/MediaBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
-        //-- *Optional* CropBox - Its contents are to be clipped (cropped) to this rectangle
-        strPage += "/CropBox [ 0 0 " + intPageWidth.toString() + " " + intPageHeight.toString() + "]" +  PDFCRLF;
-
-        Integer intNextObjects  = intpdfObjectCount;
-        intNextObjects += 1;
-        strPage += "/Contents " + intNextObjects.toString() + " 0 R" +  PDFCRLF;
-        strPage += ">>" +  PDFCRLF;
-        strPage += "endobj" +  PDFCRLF;
-        //-- Keeps up with our human page count.
-        intPageCount += 1;
-        return strPage;
-        //-- After this function is called you must call the ContentStream function
-    }
+		//-- Need to set our Collection for this object 
+		upDateReferenceTable();
+		String strComment  = "";
+		if (_pdfCommentFile == true ) {
+			strComment = "% Comment- Call to Page " +  PDFCRLF;
+		}
+		String strPage  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
+		strPage += "<< /Type /Page" +  PDFCRLF;
+		strPage += "/Parent " + intPageTree.toString() + " 0 R" +  PDFCRLF;
+		Integer intNextObjects  = intpdfObjectCount;
+		intNextObjects += 1;
+		strPage += "/Contents " + intNextObjects.toString() + " 0 R" +  PDFCRLF;
+		strPage += ">>" +  PDFCRLF;
+		strPage += "endobj" +  PDFCRLF;
+		//-- Keeps up with our human page count.
+		intPageCount += 1;
+		return strPage;
+		//-- After this function is called you must call the ContentStream function
+	}
 
     private String ContentStream() {
-        //-- Need to set our Collection for this object 
-        upDateRefernceTable();
-        String strComment   = "";
-        if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to ContentStream " +  PDFCRLF;
-        }
-        String strContent  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
-        //-- *Required* Length - The number of bytes from the beginning of the line following
-        //-- the keyword stream to the last byte just before the keyword endstream.
-        //-- if (the length is not know before hand write the stream and set the length in another
-        //-- object and point to that object in the Length section.Example << /Length 15 0 R >>
-        Integer intNextObjNumber = intpdfObjectCount + 1;
+		//-- Need to set our Collection for this object 
+		upDateReferenceTable();
+		String strComment   = "";
+		if (_pdfCommentFile == true ) {
+			strComment = "% Comment- Call to ContentStream " +  PDFCRLF;
+		}
+		String strContent  = strComment + intpdfObjectCount.toString() + " 0 obj" +  PDFCRLF;
+		//-- *Required* Length - The number of bytes from the beginning of the line following
+		//-- the keyword stream to the last byte just before the keyword endstream.
+		//-- if (the length is not know before hand write the stream and set the length in another
+		//-- object and point to that object in the Length section.Example << /Length 15 0 R >>
+		Integer intNextObjNumber = intpdfObjectCount + 1;
 
-        strContent += "<< /Length " + intNextObjNumber.toString() + " 0 R" +  PDFCRLF + ">>" +  PDFCRLF;
-        strContent += "stream";
-        //-- Figure the stream length as per note above
-        Integer intStartOffSet  = strContent.length();
-        strContent += PDFCRLF;
-        //-- Draw any images on this page
-        Set<String> keys = colDrawImages.keySet();
-        for (String key: keys){
-        	if(key.startsWith(intPageCount.toString())){
-        		strContent += colDrawImages.get(key).toString();
-        	}
-        }
-        
-        //-- Write out the Text for this page
-        keys = colPageText.keySet();
-        for (String key: keys){
-        	if(key.startsWith(intPageCount.toString())){
-        		strContent += colPageText.get(key).toString();
-        	}
-        }
+		strContent += "<< /Length " + intNextObjNumber.toString() + " 0 R >>stream" + PDFCRLF;
+		String strContentCount = "";
+		strContentCount += "100 Tz"+  PDFCRLF;
+		strContentCount += "2 J"+  PDFCRLF;
+		//-- Draw any images on this page
+		Set<String> keys = colDrawImages.keySet();
+		for (String key: keys){
+			if(key.startsWith(intPageCount.toString())){
+				strContentCount += colDrawImages.get(key).toString();
+			}
+		}
 
-        //-- Write any lines for this page.
-        keys = colLineCode.keySet();
-        for (String key: keys){
-        	if(key.startsWith(intPageCount.toString())){
-        		strContent += colLineCode.get(key).toString();
-        	}
-        }
-      
-        //-- Write and Circles for this page.
-        keys = colCircles.keySet();
-        for (String key: keys){
-        	if(key.startsWith(intPageCount.toString())){
-        		strContent += colCircles.get(key).toString();
-        	}
-        }
+		//-- Write out the Text for this page
+		keys = colPageText.keySet();
+		for (String key: keys){
+			if(key.startsWith(intPageCount.toString())){
+				strContentCount += colPageText.get(key).toString();
+			}
+		}
 
-        
-          //-- Ok done writting the Content need to figure the length
-        intStreamLength = strContent.length() - intStartOffSet;
-        strContent += "endstream" +  PDFCRLF;
-        strContent += "endobj" +  PDFCRLF;
-        return strContent;
-        //-- After this function is called you must call the StreamLengthObj function
-    }
+		//-- Write any lines for this page.
+		keys = colLineCode.keySet();
+		for (String key: keys){
+			if(key.startsWith(intPageCount.toString())){
+				strContentCount += colLineCode.get(key).toString();
+			}
+		}
 
+		//-- Write and Circles for this page.
+		keys = colCircles.keySet();
+		for (String key: keys){
+			if(key.startsWith(intPageCount.toString())){
+				strContentCount += colCircles.get(key).toString();
+			}
+		}
+		intStreamLength = strContentCount.getBytes().length;
+		strContent += strContentCount + "endstream" +  PDFCRLF;
+		strContent += "endobj" +  PDFCRLF;
+		return strContent;
+		//-- After this function is called you must call the StreamLengthObj function
+	}
+    
     private String StreamLengthObj() {
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strComment   = "";
         if (_pdfCommentFile == true ) {
             strComment = "% Comment- Call to StreamLengthObj " +  PDFCRLF;
@@ -1028,44 +1019,45 @@ public class clsPdfWriter {
         strLength += intStreamLength.toString() +  PDFCRLF;
         strLength += "endobj" +  PDFCRLF;
         return strLength;
-        //-- After this function it can loop again or call the buildCrossReffenceTable
+        //-- After this function it can loop again or call the buildCrossReferenceTable
     }
 
     private String	buildCrossReferenceTable() {
-    	String strComment  = "";
-        if (_pdfCommentFile == true ) {
-            strComment = "% Comment- Call to buildCrossReffenceTable " +  PDFCRLF;
-        }
-        //-- Each cross-reference section begins with a line containing the keyword
-        //-- xref
-        String  strCrossReffence = strComment + "xref" +  PDFCRLF;
-        //-- For a file that has never been updated, the cross-reference section contains
-        //-- only one subsection, whose object numbering begins at 0.
-        strCrossReffence += "0 ";
-        //-- Each cross-reference subsection contains entries for a contiguous range of object
-        //-- numbers starting at 0
-        Integer intObjNumberCount   = 1;
-        //-- Our Collection count start at 1 so we need to add 1 to it for the zero base needed
-        intObjNumberCount += colCrossReferenceTable.size();
-        strCrossReffence += intObjNumberCount.toString() +  PDFCRLF;
-        //-- The first entry in the table (object number 0) is always free
-        //-- and has a generation number of 65,535;
-        strCrossReffence += "0000000000 65535 f" +  PDFCRLF;
-        //-- There are two kinds of cross-reference entries: one for objects that are in use and another
-        //-- for objects that have been deleted and therefore are free.
-        //-- Both types of entries have similar basic formats, distinguished by the keyword n (for an in-use entry)
-        //-- or f(for a free entry).
-        //-- The format of an in-use entry is
-        //-- nnnnnnnnnn ggggg n eol
-        //-- nnnnnnnnnn is a 10-digit byte offset
-        //-- ggggg is a 5-digit generation number
-        //-- n is a literal keyword identifying this as an in-use entry
-        //-- eol is a 2-character end-of-line sequence
+    	
+		intStartXref = intCrossRefOffSet;
+		String strComment  = "";
+		if (_pdfCommentFile == true ) {
+			strComment = "% Comment- Call to buildCrossReffenceTable " +  PDFCRLF;
+		}
+		//-- Each cross-reference section begins with a line containing the keyword
+		//-- xref
+		String  strCrossReference = strComment + "xref" +  PDFCRLF;
+		//-- For a file that has never been updated, the cross-reference section contains
+		//-- only one subsection, whose object numbering begins at 0.
+		strCrossReference += "0 ";
+		//-- Each cross-reference subsection contains entries for a contiguous range of object
+		//-- numbers starting at 0
+		Integer intObjNumberCount   = 0;
+		//-- Our Collection count start at 1 so we need to add 1 to it for the zero base needed
+		intObjNumberCount += colCrossReferenceTable.size() + 1;
+		strCrossReference += intObjNumberCount.toString() +  PDFCRLF;
+		//-- The first entry in the table (object number 0) is always free
+		//-- and has a generation number of 65,535;
+		strCrossReference += "0000000000 65535 f" +  PDFCRLF;
+		//-- There are two kinds of cross-reference entries: one for objects that are in use and another
+		//-- for objects that have been deleted and therefore are free.
+		//-- Both types of entries have similar basic formats, distinguished by the keyword n (for an in-use entry)
+		//-- or f(for a free entry).
+		//-- The format of an in-use entry is
+		//-- nnnnnnnnnn ggggg n eol
+		//-- nnnnnnnnnn is a 10-digit byte offset
+		//-- ggggg is a 5-digit generation number
+		//-- n is a literal keyword identifying this as an in-use entry
+		//-- eol is a 2-character end-of-line sequence
 
-        //-- Need 10 elements for the offset use the built in format for integer method.
-        String fmt  = "%010d";
-
-        //-- Just keeping the xref table in order not needed but nice to have.
+			//-- Need 10 elements for the offset use the built in format for interger method.
+		String fmt  = "%010d";
+		 //-- Just keeping the xref table in order not needed but nice to have.
         List<Integer> list = new ArrayList<>();
         for (String str : colCrossReferenceTable.keySet()) {
          list.add(Integer.parseInt(colCrossReferenceTable.get(str)));
@@ -1073,14 +1065,14 @@ public class clsPdfWriter {
         Collections.sort(list);
         
         for (Integer value : list) {
-        	strCrossReffence += String.format(fmt,  value) + " 00000 n" +  PDFCRLF;
+        	strCrossReference += String.format(fmt,  value) + " 00000 n" +  PDFCRLF;
         }
         
-     
-        //-- Now return our Cross reference table
-        return strCrossReffence;
-        //-- After this function is called you must call the FileTrailer Function to end the file.
-    }
+
+		//-- Now return our Cross reffence table
+		return strCrossReference;
+		//-- After this function is called you must call the FileTrailer Function to end the file.
+	}
 
     private String FileTrailer(Integer byteOfSet  ) { 
     	String strComment = "";
@@ -1100,13 +1092,13 @@ public class clsPdfWriter {
         strTrailer += "/Root " + intRootObject.toString() + " 0 R" +  PDFCRLF;
         strTrailer += ">>" +  PDFCRLF;
         strTrailer += "startxref" +  PDFCRLF;
-        //-- Need the starting point of the cross reffence table to be pass in.
+        //-- Need the starting point of the cross reference table to be pass in.
         strTrailer += byteOfSet.toString() +  PDFCRLF;
         //-- The two preceding lines contain the keyword startxref and the byte offset 
         //-- from the beginning of the file to the beginning of the xref keyword in the 
         //-- last cross-reference section
         //-- The last line of the file contains only the end-of-file marker, %%EOF
-        strTrailer += "%%EOF";
+        strTrailer += "%%EOF\r" +  PDFCRLF;;
         return strTrailer;
 
     }
@@ -1121,7 +1113,7 @@ public class clsPdfWriter {
             strComment = "% Comment- Call to LoadStandardFont " + PDFCRLF;
         }
         //-- Need to set our Collection for this object 
-        upDateRefernceTable();
+        upDateReferenceTable();
         String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
         //-- Keep our collection up to date
@@ -1177,7 +1169,7 @@ public class clsPdfWriter {
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
 
     	//-- Need to set our Collection for this object 
-    	upDateRefernceTable();
+    	upDateReferenceTable();
     	String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
     	//-- Keep our collection up to date
@@ -1217,7 +1209,7 @@ public class clsPdfWriter {
     	writeString(writer,strFont);
     	
     	strFont = "";
-    	upDateRefernceTable();
+    	upDateReferenceTable();
     	intDynamicObjectCount +=1;
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
 
@@ -1239,7 +1231,7 @@ public class clsPdfWriter {
     	if(blnToUnicodeNeeded == true){
     		writeString(writer,strFont);
         	strFont = "";
-    		upDateRefernceTable();
+    		upDateReferenceTable();
     		intDynamicObjectCount +=1;
     		strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     		strFont += curPDFFont.getToUnicodeCMAP();
@@ -1247,7 +1239,7 @@ public class clsPdfWriter {
     		
     		writeString(writer,strFont);
         	strFont = "";
-    		upDateRefernceTable();
+    		upDateReferenceTable();
     		intDynamicObjectCount +=1;
     		strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     		strFont += curPDFFont.getCIDSystemInfoDictionary();
@@ -1256,7 +1248,7 @@ public class clsPdfWriter {
     	}
     	writeString(writer,strFont);
     	strFont = "";
-    	upDateRefernceTable();
+    	upDateReferenceTable();
     	intDynamicObjectCount +=1;
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     	strFont += fontDesc.toString();
@@ -1303,87 +1295,93 @@ public class clsPdfWriter {
 
     private String LoadImgFromJPEGFile(String Name , String FileName, File file) throws IOException {
 
-        //-- Ok the first thing we need to do is parse the jpeg file.
-        //-- Just check the file name to see if it has extensions
-    	
-        if( FileName.contains(".") == false) {
-        	//...msg
-        	JOptionPane.showMessageDialog(null, "Image File - clsPdfWriter", "File " + FileName + " does not have an extension Invalid filename specified.", 0);
-            return "";
-        }
+		//-- Ok the first thing we need to do is parse the jpeg file.
+		//-- Just check the file name to see if it has extensions
 
-        //-- Just check to see if it's a jpeg format file
-        if( FileName.toLowerCase().endsWith("jpg") || FileName.toLowerCase().endsWith("jpeg")) {
-        	Boolean blnPDFParse ; 
-            //-- This will assign the data from the file to a structure define by me.
-            blnPDFParse = LawJPG(FileName);
-            //-- Check to see if the Parsing failed
-            if (blnPDFParse == false) {
-                return "";
-        	}
-        }else{
-       
-        	
-        	JOptionPane.showMessageDialog(null, "Image File - PdfWriter", 
-        			"Image format not supported. Only jpg or jpeg images are supported. Impossible to include image in PDF file.", 0);
-            return "";
-        }
+		if( FileName.contains(".") == false) {
+			//...msg
+			JOptionPane.showMessageDialog(null,"File " + FileName + " does not have an extension Invalid filename specified.","File Image - clsPdfWriter",JOptionPane.ERROR_MESSAGE);
+			return "";
+		}
 
-        //-- Need to set our Collection for this object 
-        upDateRefernceTable();
-        String strComment  = "";
-        if (_pdfCommentFile == true) {
-            strComment = "% Comment- Call to LoadImgFromJPEGFile " + PDFCRLF;
-        }
-        //-- The image dictionary specifies the width, height, and number of bits per component
-        //-- explicitly. The number of color components can be inferred from the color space specified in the dictionary
+		//-- Just check to see if it's a jpeg format file
+		if( FileName.toLowerCase().endsWith("jpg") || FileName.toLowerCase().endsWith("jpeg")) {
+			Boolean blnPDFParse ; 
+			//-- This will assing the data from the file to a structure define by me.
+			blnPDFParse = LawJPG(FileName);
+			//-- Check to see if the Parsing failed
+			if (blnPDFParse == false) {
+				return "";
+			}
+		}else{
+			//...msg
 
-        //-- Jpeg 
-        //<</Type /XObject
-        ///Subtype /Image
-        ///Filter [/DCTDecode ]
-        ///Width 75
-        ///Height 70
-        ///ColorSpace /DeviceRGB
-        ///BitsPerComponent 8
-        ///Length 2307
-        ///Name /ImgJPEG1>>
+			JOptionPane.showMessageDialog(null,"Image format not supported. Only jpg or jpeg images are supported. Impossible to include image in PDF file.","File Image - clsPdfWriter",JOptionPane.ERROR_MESSAGE);
+			return "";
+		}
 
-        //-- Set our Object number
-        String strImage  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+		//-- Need to set our Collection for this object 
+		upDateReferenceTable();
+		String strComment  = "";
+		if (_pdfCommentFile == true) {
+			strComment = "% Comment- Call to LoadImgFromJPEGFile " + PDFCRLF;
+		}
+		//-- The image dictionary specifies the width, height, and number of bits per component
+		//-- explicitly. The number of color components can be inferred from the color space specified in the dictionary
 
-        //-- This writes out the Xobject Dictionary
+		//-- Jpeg 
+		//<</Type /XObject
+		///Subtype /Image
+		///Filter [/DCTDecode ]
+		///Width 75
+		///Height 70
+		///ColorSpace /DeviceRGB
+		///BitsPerComponent 8
+		///Length 2307
+		///Name /ImgJPEG1>>
 
-        strImage += "<</Type /XObject" + PDFCRLF;
-        strImage += "/Subtype /Image" + PDFCRLF;
-        strImage += "/Filter [/" + strImageJPEG.ImgDicFilter.toString() + " ]" + PDFCRLF;
-        strImage += "/Width " + strImageJPEG.ImgDicWidth.toString() + PDFCRLF;
-        strImage += "/Height " + strImageJPEG.ImgDicHeight.toString() + PDFCRLF;
-        strImage += "/ColorSpace /" + strImageJPEG.ImgDicColorSpace.toString() + PDFCRLF;
-        strImage += "/BitsPerComponent " + strImageJPEG.ImgDicBitsPerComponent.toString() + PDFCRLF;
-        strImage += "/Length " + strImageJPEG.ImgDicFileSize.toString() + PDFCRLF;
-        strImage += "/Name /" + Name.toString() + ">>" + PDFCRLF;
-        //-- Sample data is represented as a stream of bytes, interpreted as 8-bit unsigned integers in the range 0 to 255.
-        strImage += "stream" + PDFCRLF;
-        
-        //TODO : Okay I just think this will be a problem how is the cross reference table going to be correct?
-        // If the file text can't keep up the the data.
-        DataOutputStream dis;
+		//-- Set our Object number
+		String strImage  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+
+		//-- This writes out the Xobject Dictionary
+
+		strImage += "<</Type /XObject" + PDFCRLF;
+		strImage += "/Subtype /Image" + PDFCRLF;
+		strImage += "/Filter [/" + strImageJPEG.ImgDicFilter.toString() + " ]" + PDFCRLF;
+		strImage += "/Width " + strImageJPEG.ImgDicWidth.toString() + PDFCRLF;
+		strImage += "/Height " + strImageJPEG.ImgDicHeight.toString() + PDFCRLF;
+		strImage += "/ColorSpace /" + strImageJPEG.ImgDicColorSpace.toString() + PDFCRLF;
+		strImage += "/BitsPerComponent " + strImageJPEG.ImgDicBitsPerComponent.toString() + PDFCRLF;
+		strImage += "/Length " + strImageJPEG.ImgDicFileSize.toString() + PDFCRLF;
+		strImage += "/Name /" + Name.toString() + ">>" + PDFCRLF;
+		//-- Sample data is represented as a stream of bytes, interpreted as 8-bit unsigned integers in the range 0 to 255.
+		strImage += "stream" + PDFCRLF;
+		//-- Write String data to purpose Pdf file.
+		BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+		writeString(writer, strImage);
+		writer.close();
+
+
+		//-- Write Binary data to purpose Pdf file.
+		DataOutputStream dis;
 		dis = new DataOutputStream(new FileOutputStream(file, true));
 		byte[] bytes = (byte[]) strImageJPEG.ImgDicDataStream;
 		dis.write(bytes);
 		dis.close();
 		intCrossRefOffSet  += bytes.length;
-         
-        
-        strImage=PDFCRLF;
-        strImage += "endstream" + PDFCRLF;
-        strImage += "endobj" + PDFCRLF;
-   
-        //-- Add it to the Resource Dic        
-        colXobjectImages.add(Name, intpdfObjectCount.toString() + " 0 R ");
-        return strImage;
-    }
+			
+		strImage = "endstream" + PDFCRLF;
+		strImage += "endobj" + PDFCRLF;
+
+		BufferedWriter writer2 = new BufferedWriter(new FileWriter(file, true));
+		writeString(writer2, strImage);
+		writer2.close();
+
+		//-- Add it to the Resource Dic        
+		colXobjectImages.add(Name, intpdfObjectCount.toString() + " 0 R ");
+		return strImage;
+	}
+
 
     private  Boolean LawBMP(String FileName , BMPPara p
     		/*Byte[] ImgBuf , Byte[] ImgColor, ByRef imgWidth As Integer, Integer ImgHeight , ByRef ImgBPP As Byte,
@@ -1548,155 +1546,142 @@ public class clsPdfWriter {
 
     }
 
-    private Boolean LawJPG(String pFileName){
-    	
+	private Boolean LawJPG(String pFileName){
 
-    	String str_TChar;
-    	Long	sIMG;
-    	Integer	inIMG;
+		Long	sIMG;
+		Long	in_PEnd;
+		Long	in_idx;
+		String	str_SegmMk;
+		Integer	in_SegmSz;
+		Byte	bChar;
+		Integer	in_TmpColor;
 
-    	Long	in_PEnd;
-    	Long	in_idx;
-    	String	str_SegmMk;
-    	Integer	in_SegmSz;
-    	Byte	bChar;
-    	Integer	in_TmpColor;
-    	Long	in_bpc;
-    	
-    	
+		//-- Force it to true just to be safe
+		Boolean LawJPG = true;
+		//-- Extract info from a JPEG file
 
-        //-- Force it to true just to be safe
-    	Boolean LawJPG = true;
-        //-- Extract info from a JPEG file
-    	
-    	File file = new File(pFileName);
-        byte[] ArrBFile = new byte[(int) file.length()];
-        
-        DataInputStream dis;
+		File file = new File(pFileName);
+		byte[] ArrBFile = new byte[(int) file.length()];
+
+		DataInputStream dis;
 		try {
 			dis = new DataInputStream(new FileInputStream(file));
-	        dis.readFully(ArrBFile);
-	        dis.close();
+			dis.readFully(ArrBFile);
+			dis.close();
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {e.printStackTrace();}
+
+
+		sIMG = file.length();
+		if (sIMG < 250 ){
+			//-- Testing to see if the file is large enough to be a jpeg            
+			JOptionPane.showMessageDialog(null,"File Image is non JPEG Cannot add image to PDF file.","File Image - clsPdfWriter",JOptionPane.ERROR_MESSAGE);
+			//-- Setting a Flag to show parsing failure
+			return false;
 		}
-        
+		//-- Ok passed the first size test of the jpeg file
+		strImageJPEG.ImgDicFileSize = sIMG;
 
-        sIMG = file.length();
-        if (sIMG < 250 ){
-            //-- Testing to see if the file is large enough to be a jpeg            
-        	JOptionPane.showMessageDialog(null, "File Image - clsPdfWriter", "File Image is non JPEG Cannot add image to PDF file.", 0);
-            //-- Setting a Flag to show parsing failure
-            return false;
-        }
-        //-- Ok passed the first size test of the jpeg file
-        strImageJPEG.ImgDicFileSize = sIMG;
 
-        
 
-        in_PEnd = sIMG - 2;	//	UBound(ArrBFile) - 1;
+		in_PEnd = sIMG - 2;	//	UBound(ArrBFile) - 1;
 
-        //-- Look for the ASCII Character(ÿØ) Dec (255,216)in the first byte in the File
-        //-- or the ASCII Character (ÿÙ) Dec (255,217)in the Last byte of the file
-        if (!PDFIntAsHex(ArrBFile, 0).equals("FFD8") || !PDFIntAsHex(ArrBFile, in_PEnd).equals("FFD9")){
-            //-- Setting a Flag to show parsing failure
-        	JOptionPane.showMessageDialog(null, "File Image - clsPdfWriter", "Invalid JPEG marker Cannot add iamge to PDF file.", 0);
-            return false;
-        }
-        //-- Ok Passed the first two test on the jpeg file so let parse it
+		//-- Look for the ASCII Character(Ã¿Ã˜) Dec (255,216)in the first byte in the File
+		//-- or the ASCII Character (Ã¿Ã™) Dec (255,217)in the Last byte of the file
+		if (!PDFIntAsHex(ArrBFile, 0).equals("FFD8") || !PDFIntAsHex(ArrBFile, in_PEnd).equals("FFD9")){
+			//-- Setting a Flag to show parsing failure
+			JOptionPane.showMessageDialog(null,"Invalid JPEG marker Cannot add iamge to PDF file.","File Image - clsPdfWriter",JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		//-- Ok Passed the first two test on the jpeg file so let parse it
 
-        in_idx = (long)2;
-        //-- Start at the begin of the file and loop until the end of the file
-        while( in_idx < in_PEnd-1){
+		in_idx = (long)2;
+		//-- Start at the begin of the file and loop until the end of the file
+		while( in_idx < in_PEnd-1){
 
-            //-- Get the Header Info
-            str_SegmMk = PDFIntAsHex(ArrBFile, in_idx);
+			//-- Get the Header Info
+			str_SegmMk = PDFIntAsHex(ArrBFile, in_idx);
 
-            in_SegmSz = PDFIntVal(ArrBFile, in_idx + 2);
+			in_SegmSz = PDFIntVal(ArrBFile, in_idx + 2);
 
-            //-- Look for ÿÿ if found we have thumbnails
-            if (str_SegmMk.equals("FFFF")){
-                while (Integer.toHexString(ArrBFile[(int)(in_idx + 1)]).equals("FF")){
-                    //-- Count as long as we find the ÿ how many thumbnails
-                    in_idx = in_idx + 1;
-                }
-                in_SegmSz = PDFIntVal(ArrBFile, in_idx + 2);
-            }
-            //-- A JFIF-standard file will start with the four bytes (hex) FF D8 FF E0,
-            //-- followed by two variable bytes (often hex 00 10), followed by 'JFIF'.
+			//-- Look for Ã¿Ã¿ if found we have thumbnails
+			if (str_SegmMk.equals("FFFF")){
+				while (Integer.toHexString(ArrBFile[(int)(in_idx + 1)]).equals("FF")){
+					//-- Count as long as we find the Ã¿ how many thumbnails
+					in_idx = in_idx + 1;
+				}
+				in_SegmSz = PDFIntVal(ArrBFile, in_idx + 2);
+			}
+			//-- A JFIF-standard file will start with the four bytes (hex) FF D8 FF E0,
+			//-- followed by two variable bytes (often hex 00 10), followed by 'JFIF'.
 
-            if(str_SegmMk.equals("FFE0")){
-                    //-- Get the resolution from the file
-                    bChar = ArrBFile[(int)(in_idx + 11)];
+			if(str_SegmMk.equals("FFE0")){
+				//-- Get the resolution from the file
+				bChar = ArrBFile[(int)(in_idx + 11)];
 
-                    if (bChar == 0) {
-                        strImageJPEG.ImgDicDots = "Dots";
-                    }else if( bChar == 1 ) {
+				if (bChar == 0) {
+					strImageJPEG.ImgDicDots = "Dots";
+				}else if( bChar == 1 ) {
 
-                        strImageJPEG.ImgDicDots = "Dots/inch (DPI)";
-            		}else if( bChar == 2 ) {
+					strImageJPEG.ImgDicDots = "Dots/inch (DPI)";
+				}else if( bChar == 2 ) {
 
-                        strImageJPEG.ImgDicDots = "Dots/cm";
-                        //-- Had a problem parsing the file tell the customer and exit
-        			}else {
-        				JOptionPane.showMessageDialog(null, "File Image - clsPdfWriter", "Invalid image resolution"+ bChar +"Valid resolution is: 0, 1, 2. Cannot add image to PDF file.", 0);
-                        return false;
-        			}
-            }else if(str_SegmMk.equals("FFC0") || str_SegmMk.equals("FFC1") || str_SegmMk.equals("FFC2") || str_SegmMk.equals("FFC3") || 
-            			str_SegmMk.equals("FFC5") || str_SegmMk.equals("FFC6") || str_SegmMk.equals("FFC7") ){
-                    //-- Get the Width
+					strImageJPEG.ImgDicDots = "Dots/cm";
+					//-- Had a problem parsing the file tell the customer and exit
+				}else {
+					JOptionPane.showMessageDialog(null,"Invalid image resolution"+ bChar +"Valid resolution is: 0, 1, 2. Cannot add image to PDF file.","File Image - clsPdfWriter",JOptionPane.ERROR_MESSAGE);
+					return false;
+				}
+			}else if(str_SegmMk.equals("FFC0") || str_SegmMk.equals("FFC1") || str_SegmMk.equals("FFC2") || str_SegmMk.equals("FFC3") || 
+					str_SegmMk.equals("FFC5") || str_SegmMk.equals("FFC6") || str_SegmMk.equals("FFC7") ){
+				//-- Get the Width
 
-                    strImageJPEG.ImgDicWidth =(long)PDFIntVal(ArrBFile, in_idx + 7);
-                    //-- Get the Height
+				strImageJPEG.ImgDicWidth =(long)PDFIntVal(ArrBFile, in_idx + 7);
+				//-- Get the Height
 
-                    strImageJPEG.ImgDicHeight = (long)PDFIntVal(ArrBFile, in_idx + 5);
-                    //-- Get the ColorSpace
-                    in_TmpColor = ArrBFile[(int)(in_idx + 9)] * 8;
+				strImageJPEG.ImgDicHeight = (long)PDFIntVal(ArrBFile, in_idx + 5);
+				//-- Get the ColorSpace
+				in_TmpColor = ArrBFile[(int)(in_idx + 9)] * 8;
 
-                    //-- Base on the Color Space set the Device
-                    if (in_TmpColor == 8) {
+				//-- Base on the Color Space set the Device
+				if (in_TmpColor == 8) {
 
-                        strImageJPEG.ImgDicColorSpace = "DeviceGray";
-                    }else if( in_TmpColor == 24) {
+					strImageJPEG.ImgDicColorSpace = "DeviceGray";
+				}else if( in_TmpColor == 24) {
 
-                        strImageJPEG.ImgDicColorSpace = "DeviceRGB";
-                    }else if( in_TmpColor == 32) {
+					strImageJPEG.ImgDicColorSpace = "DeviceRGB";
+				}else if( in_TmpColor == 32) {
 
-                        strImageJPEG.ImgDicColorSpace = "DeviceCMYK";
-            		}else {
+					strImageJPEG.ImgDicColorSpace = "DeviceCMYK";
+				}else {
 
-                        strImageJPEG.ImgDicBitsPerComponent = (long)in_TmpColor;
-            		}
-            }
-            
+					strImageJPEG.ImgDicBitsPerComponent = (long)in_TmpColor;
+				}
+			}
 
-            in_idx = in_idx + in_SegmSz + 2;
-        }
 
-        //-- Get the BitsPerComponent from file or set them to DeviceGray if file does not have it.
-        //-- Change the defaut type to long so had to check for zero instead of empty string here.
-        //-- seems to work.
-        if (strImageJPEG.ImgDicBitsPerComponent!=null){
-            in_bpc = strImageJPEG.ImgDicBitsPerComponent;
-        }else{
-            //-- Just set it to DeviceGray
-            in_bpc = (long)8;
-            strImageJPEG.ImgDicBitsPerComponent = (long)8;
-        }
+			in_idx = in_idx + in_SegmSz + 2;
+		}
 
-        //-- Hard Coded
+		//-- Get the BitsPerComponent from file or set them to DeviceGray if file does not have it.
+		//-- Change the defaut type to long so had to check for zero instead of empty string here.
+		//-- seems to work.
+		if (strImageJPEG.ImgDicBitsPerComponent!=null){
+		}else{
+			strImageJPEG.ImgDicBitsPerComponent = (long)8;
+		}
 
-        strImageJPEG.ImgDicFilter = "DCTDecode";
+		//-- Hard Coded
 
-        //-- Make sure the Data Stream is empty before writting to it
+		strImageJPEG.ImgDicFilter = "DCTDecode";
 
-        strImageJPEG.ImgDicDataStream = "";
-        
-        strImageJPEG.ImgDicDataStream = ArrBFile;
+		//-- Make sure the Data Stream is empty before writing to it
 
-        /*
+		strImageJPEG.ImgDicDataStream = "";
+
+		strImageJPEG.ImgDicDataStream = ArrBFile;
+
+		/*
         //-- Open the jpeg file and read the data into the variable str_TChar
 
         FileOpen(inIMG, pFileName, OpenMode.Binary)
@@ -1709,12 +1694,11 @@ public class clsPdfWriter {
         strImageJPEG.ImgDicDataStream = str_TChar
         //-- Close the File
         FileClose(inIMG)
-        */
-        
-          
-    	return LawJPG; //...test
-	}
-  
+		 */
+
+
+		return LawJPG; //...test
+	}    
 
     private  String LoadImgFromArray(String Name , BMPPara p
     		/*ByRef ImgBuf() As Byte, ByRef ImgColor() As Byte, ByRef imgWidth As Integer, ByRef ImgHeight As Integer, ByRef ImgBPP As Byte, Optional ByRef ColorSpace As pdfColorSpace = pdfColorSpace.pdfRGB*/) {
@@ -1894,7 +1878,7 @@ public class clsPdfWriter {
     		BufferedWriter	writer2 = new BufferedWriter(new FileWriter(file, true));
 
 			writeString(writer2, rootCatalog());
-			writeString(writer2, OutLines());
+			//writeString(writer2, OutLines());
 			writeString(writer2, PageTree());
 			writeString(writer2, Resources());
 
@@ -1906,16 +1890,10 @@ public class clsPdfWriter {
 				writeString(writer2, StreamLengthObj());
     		}
 
-
-    		//-- Need to know where the reference table starts
-    		//-- The next entry is the cross reference table so add one to the length of the string
-    		//-- to point to the cross reference table start point.
-    		intCrossRefOffSet +=   1;
-    		//-- Now build or cross reffernce table
-			writeString(writer2, buildCrossReferenceTable());
-			writeString(writer2, FileTrailer(intCrossRefOffSet));
-
+    		writeString(writer2, buildCrossReferenceTable());
+			writeString(writer2, FileTrailer(intStartXref));
 			writer2.close();
+			
     	}catch (Exception e) {e.printStackTrace();}
 
 
