@@ -51,7 +51,10 @@ public class PDFFont {
 	
 	private CmapFormat cmapFormat = null;
 	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
+	private ChcFont ChcFont = null;
 	
+	public ChcFont getFont() {return ChcFont;	}
+	public void setFont(ChcFont chcFont) {ChcFont = chcFont;}
 	String JavaNewLine = System.getProperty("line.separator");
 	
 	/**The Constructor*/
@@ -299,20 +302,20 @@ public class PDFFont {
 	
     public String getFontDictionary(){
     	
-    	String strResults = getFirstChar()+ JavaNewLine; 
-    	strResults += getLastChar()+ JavaNewLine;
-    	strResults += getFontDescriptorFlags() + " ";
-    	strResults += getFontBBox() + " ";
-    	strResults += getMissingWidth() + " ";
-    	strResults += getStemV() + " ";
-    	strResults += getItalicAngle() + " ";
-    	strResults += getCapHeight() + " ";
-    	strResults += getXHeight() + " ";
-    	strResults += getAscent() + " ";
-    	strResults += getDescent() + " ";
-    	strResults += getLeading()+ " ";
-    	strResults += getMaxWidth() + " "; 
-    	strResults += getAvgWidth() + " ";
+    	String strResults = "First Char >> "+ getFirstChar()+ JavaNewLine; 
+    	strResults += "Last Char >> " + getLastChar()+ JavaNewLine;
+    	strResults += "Font Descriptor Flags >> " + getFontDescriptorFlags() + " " + JavaNewLine;;
+    	strResults +="Font BBox >> [ " + getFontBBox() + " ]" + JavaNewLine;
+    	strResults += "Missing Width >> " +  getMissingWidth() + " " + JavaNewLine;
+    	strResults += "StemV >> " +getStemV() + " " + JavaNewLine;
+    	strResults += "Italic Angle >> " + getItalicAngle() + " " + JavaNewLine;
+    	strResults += "Cap Height >> " +getCapHeight() + " " + JavaNewLine;
+    	strResults += "X Height >> " + getXHeight() + " " + JavaNewLine;
+    	strResults += "Ascent >> " + getAscent() + " " + JavaNewLine;
+    	strResults += "Descent >> " + getDescent() + " " + JavaNewLine;
+    	strResults += "Leading >> " + getLeading()+ " " + JavaNewLine;
+    	strResults += "Max Width >> " + getMaxWidth() + " " + JavaNewLine; 
+    	strResults += "Avg Width >> " + getAvgWidth() + " " + JavaNewLine;
     	
     	return strResults;
     }
@@ -321,8 +324,8 @@ public class PDFFont {
 	
 	public String toString(){
 		
-		String strToString = "<< Start of PDF font dictionary >> " + JavaNewLine + JavaNewLine;
-		strToString += getFontDictionary()+ JavaNewLine + JavaNewLine;
+		String strToString = "<< Start of PDF font dictionary >> " + JavaNewLine;
+		strToString += getFontDictionary();
 		strToString += "<< End PDF Font Dictionary >>" + JavaNewLine;
 		strToString += "BaseFont Name >> " + strBaseFontName + JavaNewLine;
 		strToString += "Flags Values >> " + getFontDescriptorFlags() + JavaNewLine;

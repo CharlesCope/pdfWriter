@@ -3,7 +3,6 @@ package frames;
 import java.awt.Color;
 import java.awt.EventQueue;
 import java.awt.Font;
-import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -89,8 +88,7 @@ public class FrmTestCode extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
 				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
-				System.out.println(fileName);
-				
+						
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
 				

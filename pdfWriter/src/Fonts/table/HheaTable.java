@@ -18,24 +18,29 @@ public class HheaTable implements Table {
     private short caretSlopeRun;
     private short metricDataFormat;
     private int   numberOfHMetrics;
-
+    private byte[] byteTable;
+    
     protected HheaTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
-        version = raf.readInt();
-        ascender = raf.readShort();
-        descender = raf.readShort();
-        lineGap = raf.readShort();
-        advanceWidthMax = raf.readShort();
-        minLeftSideBearing = raf.readShort();
-        minRightSideBearing = raf.readShort();
-        xMaxExtent = raf.readShort();
-        caretSlopeRise = raf.readShort();
-        caretSlopeRun = raf.readShort();
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
+        raf.seek(de.getOffset());
+        
+        version = raf.readInt();//4
+        ascender = raf.readShort();//2
+        descender = raf.readShort();//2
+        lineGap = raf.readShort();//2
+        advanceWidthMax = raf.readShort();//2
+        minLeftSideBearing = raf.readShort();//2
+        minRightSideBearing = raf.readShort();//2
+        xMaxExtent = raf.readShort();//2
+        caretSlopeRise = raf.readShort();//2
+        caretSlopeRun = raf.readShort();//2
         for (int i = 0; i < 5; i++) {
-            raf.readShort();
+            raf.readShort();//2 x 5
         }
-        metricDataFormat = raf.readShort();
-        numberOfHMetrics = raf.readUnsignedShort();
+        metricDataFormat = raf.readShort();//2
+        numberOfHMetrics = raf.readUnsignedShort();//2
     }
 
     public short getAdvanceWidthMax() {return advanceWidthMax;}
@@ -61,4 +66,6 @@ public class HheaTable implements Table {
     public int getType() {return hhea;}
 
     public short getXMaxExtent() {return xMaxExtent;}
+    
+    public byte[] getAllBytes(){return byteTable;}
 }

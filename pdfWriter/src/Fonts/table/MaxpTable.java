@@ -21,8 +21,12 @@ public class MaxpTable implements Table {
     private int maxSizeOfInstructions;
     private int maxComponentElements;
     private int maxComponentDepth;
-
+    private byte[] byteTable;
+    
     protected MaxpTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+        raf.seek(de.getOffset());
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
         raf.seek(de.getOffset());
         versionNumber = raf.readInt();
         numGlyphs = raf.readUnsignedShort();
@@ -70,4 +74,6 @@ public class MaxpTable implements Table {
     public int getNumGlyphs() {return numGlyphs;}
 
     public int getType() {return maxp;}
+    
+    public byte[] getAllBytes(){return byteTable;}
 }

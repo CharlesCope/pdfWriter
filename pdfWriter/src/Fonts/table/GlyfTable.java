@@ -8,9 +8,14 @@ public class GlyfTable implements Table {
 
     private byte[] buf = null;
     private GlyfDescript[] descript;
-
+    private byte[] byteTable;
+    
     protected GlyfTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
+        raf.seek(de.getOffset());
+        
         buf = new byte[de.getLength()];
         raf.read(buf);
 /*
@@ -75,4 +80,6 @@ public class GlyfTable implements Table {
     public GlyfDescript getDescription(int i) {return descript[i];}
 
     public int getType() {return glyf;}
+    
+    public byte[] getAllBytes(){return byteTable;}
 }

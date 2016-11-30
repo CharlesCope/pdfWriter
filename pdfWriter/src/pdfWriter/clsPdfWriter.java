@@ -1177,9 +1177,10 @@ public class clsPdfWriter {
     private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
     	String strComment  = "";
     	PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
-
+    	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
-
+    	//curPDFFont.getFont().getHeadTable().getAllBytes();
+    	
     	//-- Need to set our Collection for this object 
     	upDateReferenceTable();
     	String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
@@ -1292,28 +1293,28 @@ public class clsPdfWriter {
         pdfColorSpace ColorSpace;        
     }
 
-    private String LoadImgFromBMPFile(String Name , String FileName , pdfColorSpace ColorSpace){  
-        //-- Byte
-    	BMPPara para = new BMPPara();
-    	para.ColorSpace = ColorSpace;
-    	
-    	
-        Boolean blnFlag;
-
-        blnFlag = LawBMP(FileName, para);
-        //-- ok if we have a bitmap the load image from array
-        if (blnFlag == true) {
-        	String strComment  = "";
-            if (_pdfCommentFile == true) {
-                strComment = "% Comment- Call to LoadImgFromBMPFile " + PDFCRLF;
-        	}
-            return strComment + LoadImgFromArray(Name, para);
-        }
-
-        //-- Set the Flag
-        return "";
-
-    }
+//    private String LoadImgFromBMPFile(String Name , String FileName , pdfColorSpace ColorSpace){  
+//        //-- Byte
+//    	BMPPara para = new BMPPara();
+//    	para.ColorSpace = ColorSpace;
+//    	
+//    	
+//        Boolean blnFlag;
+//
+//        blnFlag = LawBMP(FileName, para);
+//        //-- ok if we have a bitmap the load image from array
+//        if (blnFlag == true) {
+//        	String strComment  = "";
+//            if (_pdfCommentFile == true) {
+//                strComment = "% Comment- Call to LoadImgFromBMPFile " + PDFCRLF;
+//        	}
+//            return strComment + LoadImgFromArray(Name, para);
+//        }
+//
+//        //-- Set the Flag
+//        return "";
+//
+//    }
 
     private String LoadImgFromJPEGFile(String Name , String FileName, File file) throws IOException {
 
@@ -1405,39 +1406,39 @@ public class clsPdfWriter {
 	}
 
 
-    private  Boolean LawBMP(String FileName , BMPPara p
-    		/*Byte[] ImgBuf , Byte[] ImgColor, ByRef imgWidth As Integer, Integer ImgHeight , ByRef ImgBPP As Byte,
-    		pdfColorSpace ColorSpace*/){ 
+   // private  Boolean LawBMP(String FileName , BMPPara p
+    		///*Byte[] ImgBuf , Byte[] ImgColor, ByRef imgWidth As Integer, Integer ImgHeight , ByRef ImgBPP As Byte,
+    		//pdfColorSpace ColorSpace*/){ 
 
 
         // BITMAPFILEHEADER_Type
-    	String bfType  = "OO"; // The string “BM” (hex value &H424D).
-    	Integer bfSize ; // The size of the file, measured in [Bytes].
-    	Integer bfDummy ;// Not used, set to zero.
-    	Integer bfOffBits ;// The start offset of the bitmap data in the file.
-
-        // BITMAPINFOHEADER
-        Integer biSize; // 40 (the size of this structure).
-        Integer biWidth; // The width of the bitmap in pixels.
-        Integer biHeight; // The height of the bitmap in pixels.
-        Integer biPlanes; // 1 (DIBs always have one plane).
-        Integer biBitCount;// 1 for monochrome, 4 for 16 colors, 8 for 256 color, 24 for 24-bit RGB color.
-        Integer biCompression; // Specifies the type of compression for compressed
-        Integer biSizeImage; // The size of the image in bytes.
-        Integer biXPelsPerMeter; // Number of horizontal pixels per meter for
-        Integer biYPelsPerMeter; // Number of vertical pixels per meter for
-        Integer biClrUsed; // Number of entries in the DIB color table
-        Integer biClrImportant; // Number of entries in the DIB color table that
-
-
-        Integer fb ;
-        Integer XBMP ;
-        Byte BPP ;
-        Integer intCounterOuter = 0;
-        Boolean blnFlag;
-        Byte[] TempImg = null; 
-        Byte[] TempCol = null; // RGBQUAD_Type
-        Integer lngGray; 
+//    	String bfType  = "OO"; // The string “BM” (hex value &H424D).
+//    	Integer bfSize ; // The size of the file, measured in [Bytes].
+//    	Integer bfDummy ;// Not used, set to zero.
+//    	Integer bfOffBits ;// The start offset of the bitmap data in the file.
+//
+//        // BITMAPINFOHEADER
+//        Integer biSize; // 40 (the size of this structure).
+//        Integer biWidth; // The width of the bitmap in pixels.
+//        Integer biHeight; // The height of the bitmap in pixels.
+//        Integer biPlanes; // 1 (DIBs always have one plane).
+//        Integer biBitCount;// 1 for monochrome, 4 for 16 colors, 8 for 256 color, 24 for 24-bit RGB color.
+//        Integer biCompression; // Specifies the type of compression for compressed
+//        Integer biSizeImage; // The size of the image in bytes.
+//        Integer biXPelsPerMeter; // Number of horizontal pixels per meter for
+//        Integer biYPelsPerMeter; // Number of vertical pixels per meter for
+//        Integer biClrUsed; // Number of entries in the DIB color table
+//        Integer biClrImportant; // Number of entries in the DIB color table that
+//
+//
+//        Integer fb ;
+//        Integer XBMP ;
+//        Byte BPP ;
+//        Integer intCounterOuter = 0;
+//        Boolean blnFlag;
+//        Byte[] TempImg = null; 
+//        Byte[] TempCol = null; // RGBQUAD_Type
+//        Integer lngGray; 
 
         //-- Gets the next available free file
         /*InputStream in = new FileInputStream(FileName);
@@ -1564,9 +1565,9 @@ public class clsPdfWriter {
         */
         
         //...test
-        return false;
+       // return false;
 
-    }
+    //}
 
 	private Boolean LawJPG(String pFileName){
 
@@ -1706,8 +1707,8 @@ public class clsPdfWriter {
 		return LawJPG; //...test
 	}    
 
-    private  String LoadImgFromArray(String Name , BMPPara p
-    		/*ByRef ImgBuf() As Byte, ByRef ImgColor() As Byte, ByRef imgWidth As Integer, ByRef ImgHeight As Integer, ByRef ImgBPP As Byte, Optional ByRef ColorSpace As pdfColorSpace = pdfColorSpace.pdfRGB*/) {
+  //  private  String LoadImgFromArray(String Name , BMPPara p
+    		//*ByRef ImgBuf() As Byte, ByRef ImgColor() As Byte, ByRef imgWidth As Integer, ByRef ImgHeight As Integer, ByRef ImgBPP As Byte, Optional ByRef ColorSpace As pdfColorSpace = pdfColorSpace.pdfRGB*/) {
     	
     	
     	/*
@@ -1803,10 +1804,10 @@ public class clsPdfWriter {
     	return strImage;
     	*/
     	
-    	return "";//...test
+    //	return "";//...test
     	
     	
-    }
+  //  }
 
     private String PDFIntAsHex(byte[] ArrBF, long in_Index){
         // PDFIntAsHex = Right("00" & Hex(ArrBF[in_Index]), 2) & Right("00" & Hex(ArrBF[in_Index + 1]), 2)

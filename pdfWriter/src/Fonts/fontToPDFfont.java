@@ -12,7 +12,7 @@ import Fonts.table.NameTable;
 public class fontToPDFfont {
 	private static String OS = null;
 	private static int intUnitsPerEM; 
-	private static ChcFont myChcFont;
+	private static ChcFont myChcFont = null;
 	private final static String  PDFCRLF = "\r\n";
 	enum  State
     {
@@ -32,6 +32,7 @@ public class fontToPDFfont {
 		myChcFont = new ChcFont().create(strFile);
 		// Then create the PDFFont Object to get data from True Type Font Object
 		PDFFont myPDFFont = new PDFFont();
+		myPDFFont.setFont(myChcFont);
 		myPDFFont.setUnitsPerEm(myChcFont.getHeadTable().getUnitsPerEm());
 		intUnitsPerEM = myPDFFont.getUnitsPerEm();
 		myPDFFont.setBoundingBoxLowerLeftx(myChcFont.getHeadTable().getXMin());

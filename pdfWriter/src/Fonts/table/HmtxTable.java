@@ -10,9 +10,13 @@ public class HmtxTable implements Table {
     private byte[] buf = null;
     private int[] hMetrics = null;
     private short[] leftSideBearing = null;
-
+    private byte[] byteTable;
     protected HmtxTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
+        raf.seek(de.getOffset());
+        
         buf = new byte[de.getLength()];
         raf.read(buf);
 /*
@@ -63,4 +67,6 @@ public class HmtxTable implements Table {
     }
 
     public int getType() {return hmtx;}
+    
+    public byte[] getAllBytes(){return byteTable;}
 }

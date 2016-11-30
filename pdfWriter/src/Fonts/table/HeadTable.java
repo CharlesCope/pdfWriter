@@ -24,26 +24,31 @@ public class HeadTable implements Table {
     private short fontDirectionHint;
     private short indexToLocFormat;
     private short glyphDataFormat;
- 
+    private byte[] byteTable;
+    
     protected HeadTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
-        versionNumber = raf.readInt();
-        fontRevision = raf.readInt();
-        checkSumAdjustment = raf.readInt();
-        magicNumber = raf.readInt();
-        flags = raf.readShort();
-        unitsPerEm = raf.readShort();
-        created = raf.readLong();
-        modified = raf.readLong();
-        xMin = raf.readShort();
-        yMin = raf.readShort();
-        xMax = raf.readShort();
-        yMax = raf.readShort();
-        macStyle = raf.readShort();
-        lowestRecPPEM = raf.readShort();
-        fontDirectionHint = raf.readShort();
-        indexToLocFormat = raf.readShort();
-        glyphDataFormat = raf.readShort();
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
+        raf.seek(de.getOffset());
+
+        versionNumber = raf.readInt();//4
+        fontRevision = raf.readInt();//4
+        checkSumAdjustment = raf.readInt();//4
+        magicNumber = raf.readInt();//4
+        flags = raf.readShort();//2
+        unitsPerEm = raf.readShort();//2
+        created = raf.readLong();//8
+        modified = raf.readLong();//8
+        xMin = raf.readShort();//2
+        yMin = raf.readShort();//2
+        xMax = raf.readShort();//2
+        yMax = raf.readShort();//2
+        macStyle = raf.readShort();//2
+        lowestRecPPEM = raf.readShort();//2
+        fontDirectionHint = raf.readShort();//2
+        indexToLocFormat = raf.readShort();//2
+        glyphDataFormat = raf.readShort();//2
     }
 
     public int getCheckSumAdjustment() {return checkSumAdjustment;}
@@ -150,6 +155,8 @@ public class HeadTable implements Table {
 
     public short getYMin() {return yMin;}
 
+    public byte[] getAllBytes(){return byteTable;}
+    
     public String toString() {
         return new StringBuffer()
             .append("head\n\tversionNumber: ").append(versionNumber)

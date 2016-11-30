@@ -9,9 +9,14 @@ public class LocaTable implements Table {
     private byte[] buf = null;
     private int[] offsets = null;
     private short factor = 0;
-
+    private byte[] byteTable ;
+    
     protected LocaTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
+        byteTable = new byte[de.getLength()];
+        raf.read(byteTable, 0, de.getLength());
+        raf.seek(de.getOffset());
+        
         buf = new byte[de.getLength()];
         raf.read(buf);
     }
@@ -43,4 +48,6 @@ public class LocaTable implements Table {
     }
 
     public int getType() {return loca;}
+    
+    public byte[] getAllBytes(){return byteTable;}
 }
