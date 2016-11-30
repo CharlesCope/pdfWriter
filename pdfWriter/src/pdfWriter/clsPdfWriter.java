@@ -5,13 +5,18 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -142,6 +147,7 @@ public class clsPdfWriter {
     private Integer intDynamicObjectCount;//-- Keep up with Dynamic Objects
     private Integer intToUnicodeObject = 0; //-- Keep up with the Unicode Cmap file;
     private Boolean blnToUnicodeNeeded = true; // Keep only one copy of unicode Cmap in file.
+    private String strPDFilepath;// Used to write binary data to pdf file.
     private  List<PDFFont> PDFFontList = new LinkedList<>();
 
     //-- Used for our Jpeg files only.
@@ -1033,7 +1039,7 @@ public class clsPdfWriter {
 		intStartXref = intCrossRefOffSet;
 		String strComment  = "";
 		if (_pdfCommentFile == true ) {
-			strComment = "% Comment- Call to buildCrossReffenceTable " +  PDFCRLF;
+			strComment = "% Comment- Call to buildCrossReferenceTable " +  PDFCRLF;
 		}
 		//-- Each cross-reference section begins with a line containing the keyword
 		//-- xref
@@ -1168,7 +1174,7 @@ public class clsPdfWriter {
         return strFont;
     }
     
-    private String LoadType0Font(String strFontName, BufferedWriter writer) throws IOException{
+    private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
     	String strComment  = "";
     	PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
 
@@ -1200,8 +1206,7 @@ public class clsPdfWriter {
     	fontDesc.setMaxWidth(curPDFFont.getMaxWidth());
     	fontDesc.setAvgWidth(curPDFFont.getAvgWidth());
     	fontDesc.setFontWeight(curPDFFont.getFontWeight());
-  //  	fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 1) + " 0 R");
-    	
+        	
     
     	// Point to our supporting Font Dictionary objects
     	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
@@ -1257,11 +1262,22 @@ public class clsPdfWriter {
     	upDateReferenceTable();
     	intDynamicObjectCount +=1;
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	
+    	if(blnEmbedded == true){
+    		fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+    	}
+        	
     	strFont += fontDesc.toString();
     	strFont += "endobj" + PDFCRLF;
+    	
+    	writeString(writer,strFont);
+    	// Now write the Embedded font if needed.
+    	if(blnEmbedded == true){
+    		intDynamicObjectCount +=1;
+    		embedFontFile(writer, fontDesc.getFontName());
+    	}
 
-
-    	return strFont;
+    	
     }
     
     //Region "Images Function"
@@ -1686,23 +1702,7 @@ public class clsPdfWriter {
 		strImageJPEG.ImgDicDataStream = "";
 
 		strImageJPEG.ImgDicDataStream = ArrBFile;
-
-		/*
-        //-- Open the jpeg file and read the data into the variable str_TChar
-
-        FileOpen(inIMG, pFileName, OpenMode.Binary)
-        //-- returns a string of spaces that match the file size dont think I need this in VB.Net but for now leave it.
-        //-- This was because VB6 did not handle strings the same way c++ did.
-        str_TChar = New String(" ", sIMG)
-        //-- The number of bytes read equals the number of characters already in the string.
-        FileGet(inIMG, str_TChar)
-        //-- This just assignes it to the 6 element of our array
-        strImageJPEG.ImgDicDataStream = str_TChar
-        //-- Close the File
-        FileClose(inIMG)
-		 */
-
-
+	
 		return LawJPG; //...test
 	}    
 
@@ -1835,14 +1835,68 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
+    public void embedFontFile(BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
+    	// Only embed fonts from resource at this time
+    	upDateReferenceTable();
+    	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");
+    	InputStream inputFontFile = null;
+    	String strEmbedded= "";
+    	
+    	strEmbedded = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    	strEmbedded+="<< /Length1 ";
+    	
+    	switch (strFontName){
+    	case "MalgunGothic":
+    		inputFontFile = new URL(baseURL, "malgun.ttf").openStream();
+    		System.out.println("Got Here Malgun");
+    		break;
+    	case "James":// Just place holder till I get it working
+    		System.out.println("James");
+    	case "Chris": // More place holders
+    		System.out.println("Chris");
+
+    	}
+
+    	if(inputFontFile != null){
+    		try{		
+    			ByteArrayOutputStream baos = new ByteArrayOutputStream();				
+    			byte[] buffer = new byte[1024];
+    			int read = 0;
+    			while ((read = inputFontFile.read(buffer, 0, buffer.length)) != -1) {
+    				baos.write(buffer, 0, read);
+    			}		
+    			baos.flush();	
+    			strEmbedded +=	baos.toByteArray().length  + " >>" + PDFCRLF;
+    			strEmbedded += "stream";
+    			writeString(writer, strEmbedded);
+    			writer.close();
+    			intCrossRefOffSet+=	baos.toByteArray().length;
+    			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+    			dosFile.write(baos.toByteArray());
+    			dosFile.close();
+    			strEmbedded = "endstream" + PDFCRLF;
+    			strEmbedded+= "endobj"+ PDFCRLF;
+    			BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+    			writeString(writer2, strEmbedded);
+    			writer2.close();
+    			// Reopen it in case more fonts need to be created. 
+    			writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
+    			}
+    		catch (FileNotFoundException e1) {System.err.println("Cant find the file");	}
+    		catch (IOException e1) {e1.printStackTrace();}
+
+
+    	}
+    	
+
+    }
     public void writeString(BufferedWriter writer, String str) throws IOException{
 		writer.write(str);
 		intCrossRefOffSet += str.getBytes().length;
 	}
 	 
     public void WritePDF(String strFilePath){
-    	//-- Here we will write the PDF File to a string Builder string first then write the file
-    	//-- once we know we have the file built.
+    	strPDFilepath = strFilePath;
     	File file = new File(strFilePath);
     	BufferedWriter writer = null;
     	try {
@@ -1859,7 +1913,7 @@ public class clsPdfWriter {
     				writeString(writer, LoadStandardFont(key));
     			}
     			// Else just load everything else as Type 0 Font.	 
-    			writeString(writer, LoadType0Font(key,writer));
+    			 LoadType0Font(key,writer,false);
     		}
     		// Done with first writer
     		writer.close();

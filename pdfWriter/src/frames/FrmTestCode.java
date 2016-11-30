@@ -190,20 +190,21 @@ public class FrmTestCode extends JFrame {
 	public void listFonts(){
 		
 		
-		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
-		
-			    for ( int i = 0; i < fonts.length; i++ )
-			    {
-			      System.out.println(fonts[i]);
-			    }
-//		path = System.getenv("WINDIR");
-//		File directory =  new File(path, "Fonts");
-//		//get all the files from a directory
-//		File[] fList = directory.listFiles();
-//		for (File file : fList){
-//			if (file.isFile()){
-//				if(file.getName().endsWith("ttf")){cboFonts.addItem(file.getName());}
-//			}
-//		}
+//		String fonts[] = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+//		
+//			    for ( int i = 0; i < fonts.length; i++ )
+//			    {
+//			    	
+//			      System.out.println(fonts[i]);
+//			    }
+		path = System.getenv("WINDIR");
+		File directory =  new File(path, "Fonts");
+		//get all the files from a directory
+		File[] fList = directory.listFiles();
+		for (File file : fList){
+			if (file.isFile()){
+				if(file.getName().endsWith("ttf")){cboFonts.addItem(file.getName());}
+			}
+		}
 	}
 }
