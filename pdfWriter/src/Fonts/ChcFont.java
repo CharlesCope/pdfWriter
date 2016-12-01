@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import Fonts.table.CmapTable;
+import Fonts.table.CvtTable;
+import Fonts.table.FpgmTable;
 import Fonts.table.GlyfTable;
 import Fonts.table.HeadTable;
 import Fonts.table.HheaTable;
@@ -13,6 +15,7 @@ import Fonts.table.MaxpTable;
 import Fonts.table.NameTable;
 import Fonts.table.Os2Table;
 import Fonts.table.PostTable;
+import Fonts.table.PrepTable;
 import Fonts.table.Table;
 import Fonts.table.TableDirectory;
 import Fonts.table.TableFactory;
@@ -36,7 +39,10 @@ public class ChcFont {
     private MaxpTable maxp;
     private NameTable name;
     private PostTable post;
-
+    private CvtTable cvt;
+    private PrepTable prep;
+    private FpgmTable fpgm;
+    
     /** Constructor   */
     public ChcFont() {}
 
@@ -48,7 +54,14 @@ public class ChcFont {
         }
         return null;
     }
-
+    public FpgmTable getFpgmTable(){return fpgm;}
+    
+    public GlyfTable getGlyfTable(){return glyf;}
+    
+    public PrepTable getPrepTable(){return prep;}
+    
+    public CvtTable getCvtTable(){return cvt;}
+    
     public Os2Table getOS2Table() {return os2;}
     
     public CmapTable getCmapTable() {return cmap;}

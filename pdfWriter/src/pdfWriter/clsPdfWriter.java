@@ -5,18 +5,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -1179,8 +1175,7 @@ public class clsPdfWriter {
     	PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
     	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
-    	//curPDFFont.getFont().getHeadTable().getAllBytes();
-    	
+       	
     	//-- Need to set our Collection for this object 
     	upDateReferenceTable();
     	String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
@@ -1275,7 +1270,7 @@ public class clsPdfWriter {
     	// Now write the Embedded font if needed.
     	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
-    		embedFontFile(writer, fontDesc.getFontName());
+    		embedFontFile(curPDFFont, writer, fontDesc.getFontName());
     	}
 
     	
@@ -1836,58 +1831,106 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
-    public void embedFontFile(BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
+    public void embedFontFile(PDFFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
     	// Only embed fonts from resource at this time
     	upDateReferenceTable();
-    	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");
-    	InputStream inputFontFile = null;
+    //	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");
+   // 	InputStream inputFontFile = null;
     	String strEmbedded= "";
+    	
     	
     	strEmbedded = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     	strEmbedded+="<< /Length1 ";
     	
-    	switch (strFontName){
-    	case "MalgunGothic":
-    		inputFontFile = new URL(baseURL, "malgun.ttf").openStream();
-    		System.out.println("Got Here Malgun");
-    		break;
-    	case "James":// Just place holder till I get it working
-    		System.out.println("James");
-    	case "Chris": // More place holders
-    		System.out.println("Chris");
-
-    	}
-
-    	if(inputFontFile != null){
-    		try{		
-    			ByteArrayOutputStream baos = new ByteArrayOutputStream();				
-    			byte[] buffer = new byte[1024];
-    			int read = 0;
-    			while ((read = inputFontFile.read(buffer, 0, buffer.length)) != -1) {
-    				baos.write(buffer, 0, read);
-    			}		
-    			baos.flush();	
-    			strEmbedded +=	baos.toByteArray().length  + " >>" + PDFCRLF;
-    			strEmbedded += "stream";
-    			writeString(writer, strEmbedded);
-    			writer.close();
-    			intCrossRefOffSet+=	baos.toByteArray().length;
-    			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
-    			dosFile.write(baos.toByteArray());
-    			dosFile.close();
-    			strEmbedded = "endstream" + PDFCRLF;
-    			strEmbedded+= "endobj"+ PDFCRLF;
-    			BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
-    			writeString(writer2, strEmbedded);
-    			writer2.close();
-    			// Reopen it in case more fonts need to be created. 
-    			writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
-    			}
-    		catch (FileNotFoundException e1) {System.err.println("Cant find the file");	}
-    		catch (IOException e1) {e1.printStackTrace();}
-
-
-    	}
+//    	switch (strFontName){
+//    	case "MalgunGothic":
+//    //		inputFontFile = new URL(baseURL, "malgun.ttf").openStream();
+//    		System.out.println("Got Here Malgun");
+//    		break;
+//    	case "James":// Just place holder till I get it working
+//    		System.out.println("James");
+//    	case "Chris": // More place holders
+//    		System.out.println("Chris");
+//
+//    	}
+    	/** TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,”
+    	 *   “prep,” “glyf,” “hmtx,” and “fpgm.” If used with a simple font dictionary, the font
+    	 *   program must additionally contain a “cmap” table defining one or more encodings,
+    	 *   as discussed in “Encodings for TrueType Fonts” on page 429. If used with a
+    	 *   CIDFont dictionary, the “cmap” table is not needed, since the mapping from
+    	 *   character codes to glyph descriptions is provided separately.    
+    	 */
+    	Integer  intLength = 0;
+    	intLength = pffFont.getFont().getHeadTable().getAllBytes().length;
+    	intLength+= pffFont.getFont().getHheaTable().getAllBytes().length;
+    	intLength+= pffFont.getFont().getLocaTable().getAllBytes().length;
+    	intLength+= pffFont.getFont().getMaxpTable().getAllBytes().length;
+    	//The 'cvt ' table is optional
+    	if(pffFont.getFont().getCvtTable()!= null ){intLength+= pffFont.getFont().getCvtTable().getAllBytes().length;}
+    	//TODO: Nothing says this table is optional so why is it null?
+    	if(pffFont.getFont().getPrepTable()!= null ){intLength+= pffFont.getFont().getPrepTable().getAllBytes().length;}
+    	intLength+= pffFont.getFont().getGlyfTable().getAllBytes().length;
+    	intLength+= pffFont.getFont().getHmtxTable().getAllBytes().length;
+    	//The 'fpgm' table is optional.
+    	if(pffFont.getFont().getFpgmTable()!= null ){	intLength+= pffFont.getFont().getFpgmTable().getAllBytes().length;}
+    	
+    	strEmbedded +=	intLength.toString()  + " >>" + PDFCRLF;
+		strEmbedded += "stream";
+		writeString(writer, strEmbedded);
+		writer.close();
+		DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+		dosFile.write(pffFont.getFont().getHeadTable().getAllBytes());
+		dosFile.write(pffFont.getFont().getHheaTable().getAllBytes());
+		dosFile.write(pffFont.getFont().getLocaTable().getAllBytes());
+		dosFile.write(pffFont.getFont().getMaxpTable().getAllBytes());
+		//The 'cvt ' table is optional
+		if(pffFont.getFont().getCvtTable()!= null ){
+			dosFile.write(pffFont.getFont().getCvtTable().getAllBytes());}
+		if(pffFont.getFont().getPrepTable()!= null ){
+			dosFile.write(pffFont.getFont().getPrepTable().getAllBytes());}
+		dosFile.write(pffFont.getFont().getGlyfTable().getAllBytes());
+		dosFile.write(pffFont.getFont().getHmtxTable().getAllBytes());
+		//The 'fpgm' table is optional.
+		if(pffFont.getFont().getFpgmTable()!= null ){
+			dosFile.write(pffFont.getFont().getFpgmTable().getAllBytes());}
+		dosFile.close();
+		
+		strEmbedded = "endstream" + PDFCRLF;
+		strEmbedded+= "endobj"+ PDFCRLF;
+		BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+		writeString(writer2, strEmbedded);
+		writer2.close();
+		// Reopen it in case more fonts need to be created. 
+		writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
+		
+//    	if(inputFontFile != null){
+//    		try{		
+//    			ByteArrayOutputStream baos = new ByteArrayOutputStream();				
+//    			byte[] buffer = new byte[1024];
+//    			int read = 0;
+//    			while ((read = inputFontFile.read(buffer, 0, buffer.length)) != -1) {
+//    				baos.write(buffer, 0, read);
+//    			}		
+//    			baos.flush();	
+//    			strEmbedded +=	baos.toByteArray().length  + " >>" + PDFCRLF;
+//    			strEmbedded += "stream";
+//    			writeString(writer, strEmbedded);
+//    			writer.close();
+//    			intCrossRefOffSet+=	baos.toByteArray().length;
+//    			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+//    			dosFile.write(baos.toByteArray());
+//    			dosFile.close();
+//    			strEmbedded = "endstream" + PDFCRLF;
+//    			strEmbedded+= "endobj"+ PDFCRLF;
+//    			BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+//    			writeString(writer2, strEmbedded);
+//    			writer2.close();
+//    			// Reopen it in case more fonts need to be created. 
+//    			writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
+//    			}
+//    		catch (FileNotFoundException e1) {System.err.println("Cant find the file");	}
+//    		catch (IOException e1) {e1.printStackTrace();}
+//    	}
     	
 
     }
@@ -1914,7 +1957,7 @@ public class clsPdfWriter {
     				writeString(writer, LoadStandardFont(key));
     			}
     			// Else just load everything else as Type 0 Font.	 
-    			 LoadType0Font(key,writer,false);
+    			 LoadType0Font(key,writer,true);
     		}
     		// Done with first writer
     		writer.close();
