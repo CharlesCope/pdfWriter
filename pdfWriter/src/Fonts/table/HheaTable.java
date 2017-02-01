@@ -62,10 +62,16 @@ public class HheaTable implements Table {
     public short getMinRightSideBearing() {return minRightSideBearing;}
 
     public int getNumberOfHMetrics() {return numberOfHMetrics;}
+    public void setNumberOfHMetrics(int intSubsetNumberOfHMetrics) {
+    	numberOfHMetrics = intSubsetNumberOfHMetrics;}
 
     public int getType() {return hhea;}
 
     public short getXMaxExtent() {return xMaxExtent;}
     
-    public byte[] getAllBytes(){return byteTable;}
+    public byte[] getAllBytes(){
+    	// For subset we need to be able to adjust the number of glyphs.
+    	byteTable[34] = (byte) ((numberOfHMetrics >>> 8) & 0xff);
+    	byteTable[35] = (byte) (numberOfHMetrics & 0xff);
+    	return byteTable;}
 }

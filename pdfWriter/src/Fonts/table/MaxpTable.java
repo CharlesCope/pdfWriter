@@ -72,8 +72,14 @@ public class MaxpTable implements Table {
     public int getMaxZones() {return maxZones;}
 
     public int getNumGlyphs() {return numGlyphs;}
+    public void setNumGlyphs(int subSetNumGlyphs) {	numGlyphs = subSetNumGlyphs;}
 
     public int getType() {return maxp;}
     
-    public byte[] getAllBytes(){return byteTable;}
+    public byte[] getAllBytes(){
+    	// For subset we need to be able to adjust the number of glyphs.
+    	byteTable[4] = (byte) ((numGlyphs >>> 8) & 0xff);
+    	byteTable[5] = (byte) (numGlyphs & 0xff);
+    	
+    	return byteTable;}
 }

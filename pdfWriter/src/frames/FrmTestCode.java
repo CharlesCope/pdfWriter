@@ -88,7 +88,14 @@ public class FrmTestCode extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
 				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
-						
+				// Just testing here
+				// byte[] mydata = myPDFFont.getFont().getHeadTable().getAllBytes();
+				byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
+				//myPDFFont.getFont().getMaxpTable().setNumGlyphs(29);
+			//	byte[] mydata = myPDFFont.getFont().getMaxpTable().getAllBytes();
+				myPDFFont.getFont().getSubSetFontBytes(29);
+				System.out.println("the Length is " + mydata.length);
+				// End test here.
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
 				

@@ -38,7 +38,7 @@ public class CmapTable implements Table {
         
     }
 
-    public CmapFormat getCmapFormat(short platformId, short encodingId) {
+    public CmapFormat getCmapFormat(int platformId, int encodingId) {
     	// Find the requested format
         for (int i = 0; i < numTables; i++) {
             if (entries[i].getPlatformId() == platformId && entries[i].getEncodingId() == encodingId) {
