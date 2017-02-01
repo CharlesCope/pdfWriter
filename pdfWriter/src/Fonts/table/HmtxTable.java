@@ -1,8 +1,14 @@
 package Fonts.table;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.SortedSet;
+
 
 
 public class HmtxTable implements Table {
@@ -11,7 +17,9 @@ public class HmtxTable implements Table {
     private int[] hMetrics = null;
     private short[] leftSideBearing = null;
     private byte[] byteTable;
+    private int fileOffset;
     protected HmtxTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         byteTable = new byte[de.getLength()];
         raf.read(byteTable, 0, de.getLength());
@@ -69,4 +77,73 @@ public class HmtxTable implements Table {
     public int getType() {return hmtx;}
     
     public byte[] getAllBytes(){return byteTable;}
+    
+    public byte[] getSubSetBytes(byte[] data,SortedSet <Integer> ssGlyphIds, int NumberOfHMetrics){
+
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	InputStream is = new ByteArrayInputStream(data);
+
+    	// more info: https://developer.apple.com/fonts/TrueType-Reference-Manual/RM06/Chap6hmtx.html
+    	int lastgid = NumberOfHMetrics - 1;
+    	// true if lastgid is not in the set: we'll need its width (but not its left side bearing) later
+    	boolean needLastGidWidth = false;
+
+    	if (ssGlyphIds.last() > lastgid && !ssGlyphIds.contains(lastgid)){needLastGidWidth = true;}
+
+    	try {
+    		is.skip(fileOffset);
+    		long lastOffset = 0;
+    		for (Integer glyphId : ssGlyphIds){
+    			// offset in original file
+    			long offset;
+    			if (glyphId <= lastgid){
+    				// copy width and lsb
+    				offset = glyphId * 4;
+    				lastOffset = copyBytes(is, bos, offset, lastOffset, 4);
+    			}
+    			else{
+    				if (needLastGidWidth){
+    					// one time only: copy width from lastgid, whose width applies
+    					// to all later glyphs
+    					needLastGidWidth = false;
+    					offset = lastgid * 4;
+    					lastOffset = copyBytes(is, bos, offset, lastOffset, 2);
+
+    					// then go on with lsb from actual glyph (lsb are individual even in monotype fonts)
+    				}
+
+    				// copy lsb only, as we are beyond numOfHMetrics
+    				offset = NumberOfHMetrics * 4 + (glyphId - NumberOfHMetrics) * 2;
+    				lastOffset = copyBytes(is, bos, offset, lastOffset, 2);
+    			}
+    		}
+
+
+    	} 
+    	catch (IOException e) {e.printStackTrace();}
+    	finally{
+    		try {
+    			is.close();
+    		} catch (IOException e) {e.printStackTrace();}
+    	}
+    	return bos.toByteArray();
+    }
+    private long copyBytes(InputStream is, OutputStream os, long newOffset, long lastOffset, int count){
+    	// skip over from last original offset
+    	long nskip = newOffset - lastOffset;
+    	try {
+    		if (nskip != is.skip(nskip)){
+    			throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
+    		}
+
+    		byte[] buf = new byte[count];
+    		if (count != is.read(buf, 0, count)){
+    			throw new EOFException("Unexpected EOF exception parsing glyphId of hmtx table.");
+    		}
+    		os.write(buf, 0, count);
+
+    	} catch (IOException e) {e.printStackTrace();}
+
+    	return newOffset + count; 
+    }
 }
