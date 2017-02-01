@@ -279,11 +279,15 @@ public class ChcFont {
     		maxp.setNumGlyphs(intNumberGlyph);
     		tables.put("maxp", maxp.getAllBytes());
     	}
-    	// Work here when I return.
-    //	loca.getAllBytes()  loca
+      
     	if (glyf != null){
-            tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),byteOriginalData,glyphIds)); 
+            tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds)); 
         }
+    	
+    	if (loca != null){
+    		 tables.put("loca", loca.getSubSetBytes(newLoca));
+    	}
+    	
 
     	return null;
     }

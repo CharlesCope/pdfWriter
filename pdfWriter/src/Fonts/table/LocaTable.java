@@ -1,5 +1,7 @@
 package Fonts.table;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
@@ -51,4 +53,17 @@ public class LocaTable implements Table {
     public int getType() {return loca;}
     
     public byte[] getAllBytes(){return byteTable;}
+    
+    public byte[] getSubSetBytes(long[] newOffsets) {
+
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	DataOutputStream out = new DataOutputStream(bos);
+    	try {
+    		for (long offset : newOffsets) {
+    			out.writeInt((int)offset);}
+    		out.flush();
+    	}
+    	catch (IOException e) {	e.printStackTrace();}
+    	return bos.toByteArray();
+    }
 }

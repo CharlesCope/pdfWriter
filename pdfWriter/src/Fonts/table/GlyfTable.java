@@ -89,7 +89,7 @@ public class GlyfTable implements Table {
     public byte[] getAllBytes(){return byteTable;}
     
     public byte[] getSubSetBytes(long[] newOffsets, long[] oldOffsets, byte[] data, SortedSet <Integer> ssGlyphIds){
-    	// Ok I will try to work it out here.	
+    		
     	ByteArrayOutputStream bos = new ByteArrayOutputStream();
     	long[] offsets = oldOffsets;
     	InputStream is = new ByteArrayInputStream(data); 
