@@ -94,6 +94,7 @@ public class HmtxTable implements Table {
     		is.skip(fileOffset);
     		long lastOffset = 0;
     		for (Integer glyphId : ssGlyphIds){
+    			
     			// offset in original file
     			long offset;
     			if (glyphId <= lastgid){

@@ -2,6 +2,8 @@ package Fonts.table;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.Arrays;
+import java.util.SortedSet;
 
 public class HheaTable implements Table {
 
@@ -18,12 +20,14 @@ public class HheaTable implements Table {
     private short caretSlopeRun;
     private short metricDataFormat;
     private int   numberOfHMetrics;
+    private int dataLength;
     private byte[] byteTable;
     
     protected HheaTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
         raf.seek(de.getOffset());
-        byteTable = new byte[de.getLength()];
-        raf.read(byteTable, 0, de.getLength());
+        dataLength = de.getLength();
+        byteTable = new byte[dataLength];
+        raf.read(byteTable, 0, dataLength);
         raf.seek(de.getOffset());
         
         version = raf.readInt();//4
@@ -69,9 +73,19 @@ public class HheaTable implements Table {
 
     public short getXMaxExtent() {return xMaxExtent;}
     
-    public byte[] getAllBytes(){
-    	// For subset we need to be able to adjust the number of glyphs.
-    	byteTable[34] = (byte) ((numberOfHMetrics >>> 8) & 0xff);
-    	byteTable[35] = (byte) (numberOfHMetrics & 0xff);
-    	return byteTable;}
+    public byte[] getAllBytes(){return byteTable;}
+    
+    public byte[] getSubSetBytes(SortedSet <Integer> ssGlyphIds){
+ 		byte[] byteSubTable = Arrays.copyOf(byteTable, dataLength);
+ 		
+ 		int hmetrics = ssGlyphIds.subSet(0, numberOfHMetrics).size();
+ 		if (ssGlyphIds.last() >= numberOfHMetrics && !ssGlyphIds.contains(numberOfHMetrics -1)) {
+ 			++hmetrics;
+ 		}
+
+ 		// For subset we need to be able to adjust the number of glyphs.
+ 		byteSubTable[34] = (byte) ((hmetrics >>> 8) & 0xff);
+ 		byteSubTable[35] = (byte) (hmetrics & 0xff);
+ 		return byteSubTable;
+    }
 }

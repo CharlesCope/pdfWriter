@@ -259,9 +259,9 @@ public class ChcFont {
     	subSetAdd(61);
     	/* The following TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,” “prep,” “glyf,” “hmtx,” and “fpgm.
     	 * If used with a simple font dictionary, the font program must additionally contain a “cmap” table
-    	 * */
+    	 */
     	
-    	// Okay I will try to do the work here
+    	
     	Map<String, byte[]> tables = new TreeMap<String, byte[]>();
     	long[] newLoca = new long[intNumberGlyph + 1];
 
@@ -272,9 +272,7 @@ public class ChcFont {
     	}
 
     	if(hhea !=null){
-    		// May need to do a check here to make sure it correct once I get it working.
-    		hhea.setNumberOfHMetrics(intNumberGlyph);
-    		tables.put("hhea", hhea.getAllBytes());	
+    		tables.put("hhea", hhea.getSubSetBytes(glyphIds));	
     	}
     	
     	if(maxp !=null){
@@ -300,9 +298,9 @@ public class ChcFont {
     		tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));
     	}
 // When I return work here.    	
-    	if (post != null){
-    		tables.put("post", post);
-    	}
+//    	if (post != null){
+//    		tables.put("post", post);
+//    	}
 
     	return null;
     }
