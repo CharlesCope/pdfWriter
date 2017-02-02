@@ -196,6 +196,7 @@ public class ChcFont {
             loca = (LocaTable) TableFactory.create(tableDirectory.getEntryByTag(Table.loca), raf);
             name = (NameTable) TableFactory.create(tableDirectory.getEntryByTag(Table.name), raf);
             post = (PostTable) TableFactory.create(tableDirectory.getEntryByTag(Table.post), raf);
+            cvt = (CvtTable )TableFactory.create(tableDirectory.getEntryByTag(Table.cvt), raf);
             raf.close();
 
             // Initialize the tables that require it
@@ -226,7 +227,7 @@ public class ChcFont {
             glyphIds.add(gid);
         }
     }
-    public byte[] getSubSetFontBytes(int intNumberGlyph, boolean cmapRequired){
+    public byte[] getSubSetFontBytes(int intNumberGlyph, boolean cmapRequired, boolean postRequired){
     	// Some Test Data.
     	
     	subSetAdd(54532); //The GlyphId is 2830
@@ -271,37 +272,33 @@ public class ChcFont {
     		tables.put("head", head.getAllBytes());
     	}
 
-    	if(hhea !=null){
-    		tables.put("hhea", hhea.getSubSetBytes(glyphIds));	
-    	}
+    	if(hhea !=null){tables.put("hhea", hhea.getSubSetBytes(glyphIds));}
     	
     	if(maxp !=null){
     		maxp.setNumGlyphs(intNumberGlyph);
     		tables.put("maxp", maxp.getAllBytes());
     	}
       
-    	if (glyf != null){
-            tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds)); 
-        }
+    	if (glyf != null){tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds));}
     	
     	if (loca != null){
     		 tables.put("loca", loca.getSubSetBytes(newLoca));
     	}
     	
     	if (cmapRequired == true){
-    		if (cmap != null){
-    			tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));
-    		}
+    		if (cmap != null){	tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));}
     	}
     	
-    	if (hmtx != null){
-    		tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));
+    	if (hmtx != null){	tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));	}
+    	
+    	if(postRequired == true){
+    		if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}
     	}
-// When I return work here.    	
-//    	if (post != null){
-//    		tables.put("post", post);
-//    	}
 
+    	if(cvt != null){	tables.put("cvt", cvt.getAllBytes());	}
+    	
+    	// Need to work on prep table  when I return.. 
+    	
     	return null;
     }
 }

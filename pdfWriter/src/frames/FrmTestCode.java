@@ -93,7 +93,7 @@ public class FrmTestCode extends JFrame {
 				byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
 				//myPDFFont.getFont().getMaxpTable().setNumGlyphs(29);
 			//	byte[] mydata = myPDFFont.getFont().getMaxpTable().getAllBytes();
-				myPDFFont.getFont().getSubSetFontBytes(29, false);
+				myPDFFont.getFont().getSubSetFontBytes(29, false, false);
 				System.out.println("the Length is " + mydata.length);
 				// End test here.
 				// Table need to be set as same font to show the correct symbols 

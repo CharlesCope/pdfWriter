@@ -1,288 +1,71 @@
 package Fonts.table;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
 
 
 public class PostTable implements Table {
+	public static final int NUMBER_OF_MAC_GLYPHS = 258;
+	public static Map<String,Integer> MAC_GLYPH_NAMES_INDICES;
+	public static final String[] MAC_GLYPH_NAMES = new String[]{
+					".notdef",".null", "nonmarkingreturn", "space", "exclam", "quotedbl",
+					"numbersign", "dollar", "percent", "ampersand", "quotesingle",
+					"parenleft", "parenright", "asterisk", "plus", "comma", "hyphen",
+					"period", "slash", "zero", "one", "two", "three", "four", "five",
+					"six", "seven", "eight", "nine", "colon", "semicolon", "less",
+					"equal", "greater", "question", "at", "A", "B", "C", "D", "E", "F",
+					"G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S",
+					"T", "U", "V", "W", "X", "Y", "Z", "bracketleft", "backslash",
+					"bracketright", "asciicircum", "underscore", "grave", "a", "b",
+					"c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o",
+					"p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z", "braceleft",
+					"bar", "braceright", "asciitilde", "Adieresis", "Aring",
+					"Ccedilla", "Eacute", "Ntilde", "Odieresis", "Udieresis", "aacute",
+					"agrave", "acircumflex", "adieresis", "atilde", "aring",
+					"ccedilla", "eacute", "egrave", "ecircumflex", "edieresis",
+					"iacute", "igrave", "icircumflex", "idieresis", "ntilde", "oacute",
+					"ograve", "ocircumflex", "odieresis", "otilde", "uacute", "ugrave",
+					"ucircumflex", "udieresis", "dagger", "degree", "cent", "sterling",
+					"section", "bullet", "paragraph", "germandbls", "registered",
+					"copyright", "trademark", "acute", "dieresis", "notequal", "AE",
+					"Oslash", "infinity", "plusminus", "lessequal", "greaterequal",
+					"yen", "mu", "partialdiff", "summation", "product", "pi",
+					"integral", "ordfeminine", "ordmasculine", "Omega", "ae", "oslash",
+					"questiondown", "exclamdown", "logicalnot", "radical", "florin",
+					"approxequal", "Delta", "guillemotleft", "guillemotright",
+					"ellipsis", "nonbreakingspace", "Agrave", "Atilde", "Otilde", "OE",
+					"oe", "endash", "emdash", "quotedblleft", "quotedblright",
+					"quoteleft", "quoteright", "divide", "lozenge", "ydieresis",
+					"Ydieresis", "fraction", "currency", "guilsinglleft",
+					"guilsinglright", "fi", "fl", "daggerdbl", "periodcentered",
+					"quotesinglbase", "quotedblbase", "perthousand", "Acircumflex",
+					"Ecircumflex", "Aacute", "Edieresis", "Egrave", "Iacute",
+					"Icircumflex", "Idieresis", "Igrave", "Oacute", "Ocircumflex",
+					"apple", "Ograve", "Uacute", "Ucircumflex", "Ugrave", "dotlessi",
+					"circumflex", "tilde", "macron", "breve", "dotaccent", "ring",
+					"cedilla", "hungarumlaut", "ogonek", "caron", "Lslash", "lslash",
+					"Scaron", "scaron", "Zcaron", "zcaron", "brokenbar", "Eth", "eth",
+					"Yacute", "yacute", "Thorn", "thorn", "minus", "multiply",
+					"onesuperior", "twosuperior", "threesuperior", "onehalf",
+					"onequarter", "threequarters", "franc", "Gbreve", "gbreve",
+					"Idotaccent", "Scedilla", "scedilla", "Cacute", "cacute", "Ccaron",
+					"ccaron", "dcroat"
+			};
 
-    /**
-     * TODO: Mac Glyph names for 210 & 257
-     */
-    private static final String[] macGlyphName = {
-        ".notdef",      // 0
-        "null",         // 1
-        "CR",           // 2
-        "space",        // 3
-        "exclam",       // 4
-        "quotedbl",     // 5
-        "numbersign",   // 6
-        "dollar",       // 7
-        "percent",      // 8
-        "ampersand",    // 9
-        "quotesingle",  // 10
-        "parenleft",    // 11
-        "parenright",   // 12
-        "asterisk",     // 13
-        "plus",         // 14
-        "comma",        // 15
-        "hyphen",       // 16
-        "period",       // 17
-        "slash",        // 18
-        "zero",         // 19
-        "one",          // 20
-        "two",          // 21
-        "three",        // 22
-        "four",         // 23
-        "five",         // 24
-        "six",          // 25
-        "seven",        // 26
-        "eight",        // 27
-        "nine",         // 28
-        "colon",        // 29
-        "semicolon",    // 30
-        "less",         // 31
-        "equal",        // 32
-        "greater",      // 33
-        "question",     // 34
-        "at",           // 35
-        "A",            // 36
-        "B",            // 37
-        "C",            // 38
-        "D",            // 39
-        "E",            // 40
-        "F",            // 41
-        "G",            // 42
-        "H",            // 43
-        "I",            // 44
-        "J",            // 45
-        "K",            // 46
-        "L",            // 47
-        "M",            // 48
-        "N",            // 49
-        "O",            // 50
-        "P",            // 51
-        "Q",            // 52
-        "R",            // 53
-        "S",            // 54
-        "T",            // 55
-        "U",            // 56
-        "V",            // 57
-        "W",            // 58
-        "X",            // 59
-        "Y",            // 60
-        "Z",            // 61
-        "bracketleft",  // 62
-        "backslash",    // 63
-        "bracketright", // 64
-        "asciicircum",  // 65
-        "underscore",   // 66
-        "grave",        // 67
-        "a",            // 68
-        "b",            // 69
-        "c",            // 70
-        "d",            // 71
-        "e",            // 72
-        "f",            // 73
-        "g",            // 74
-        "h",            // 75
-        "i",            // 76
-        "j",            // 77
-        "k",            // 78
-        "l",            // 79
-        "m",            // 80
-        "n",            // 81
-        "o",            // 82
-        "p",            // 83
-        "q",            // 84
-        "r",            // 85
-        "s",            // 86
-        "t",            // 87
-        "u",            // 88
-        "v",            // 89
-        "w",            // 90
-        "x",            // 91
-        "y",            // 92
-        "z",            // 93
-        "braceleft",    // 94
-        "bar",          // 95
-        "braceright",   // 96
-        "asciitilde",   // 97
-        "Adieresis",    // 98
-        "Aring",        // 99
-        "Ccedilla",     // 100
-        "Eacute",       // 101
-        "Ntilde",       // 102
-        "Odieresis",    // 103
-        "Udieresis",    // 104
-        "aacute",       // 105
-        "agrave",       // 106
-        "acircumflex",  // 107
-        "adieresis",    // 108
-        "atilde",       // 109
-        "aring",        // 110
-        "ccedilla",     // 111
-        "eacute",       // 112
-        "egrave",       // 113
-        "ecircumflex",  // 114
-        "edieresis",    // 115
-        "iacute",       // 116
-        "igrave",       // 117
-        "icircumflex",  // 118
-        "idieresis",    // 119
-        "ntilde",       // 120
-        "oacute",       // 121
-        "ograve",       // 122
-        "ocircumflex",  // 123
-        "odieresis",    // 124
-        "otilde",       // 125
-        "uacute",       // 126
-        "ugrave",       // 127
-        "ucircumflex",  // 128
-        "udieresis",    // 129
-        "dagger",       // 130
-        "degree",       // 131
-        "cent",         // 132
-        "sterling",     // 133
-        "section",      // 134
-        "bullet",       // 135
-        "paragraph",    // 136
-        "germandbls",   // 137
-        "registered",   // 138
-        "copyright",    // 139
-        "trademark",    // 140
-        "acute",        // 141
-        "dieresis",     // 142
-        "notequal",     // 143
-        "AE",           // 144
-        "Oslash",       // 145
-        "infinity",     // 146
-        "plusminus",    // 147
-        "lessequal",    // 148
-        "greaterequal", // 149
-        "yen",          // 150
-	"mu",           // 151
-        "partialdiff",  // 152
-        "summation",    // 153
-        "product",      // 154
-	"pi",           // 155
-        "integral'",    // 156
-        "ordfeminine",  // 157
-        "ordmasculine", // 158
-	"Omega",        // 159
-        "ae",           // 160
-        "oslash",       // 161
-        "questiondown", // 162
-        "exclamdown",   // 163
-        "logicalnot",   // 164
-        "radical",      // 165
-        "florin",       // 166
-        "approxequal",  // 167
-        "increment",    // 168
-        "guillemotleft",// 169
-        "guillemotright",//170
-        "ellipsis",     // 171
-        "nbspace",      // 172
-        "Agrave",       // 173
-        "Atilde",       // 174
-        "Otilde",       // 175
-        "OE",           // 176
-        "oe",           // 177
-        "endash",       // 178
-        "emdash",       // 179
-        "quotedblleft", // 180
-        "quotedblright",// 181
-        "quoteleft",    // 182
-        "quoteright",   // 183
-        "divide",       // 184
-        "lozenge",      // 185
-        "ydieresis",    // 186
-        "Ydieresis",    // 187
-        "fraction",     // 188
-        "currency",     // 189
-        "guilsinglleft",// 190
-        "guilsinglright",//191
-        "fi",           // 192
-        "fl",           // 193
-        "daggerdbl",    // 194
-        "middot",       // 195
-        "quotesinglbase",//196
-        "quotedblbase", // 197
-        "perthousand",  // 198
-        "Acircumflex",  // 199
-        "Ecircumflex",  // 200
-        "Aacute",       // 201
-        "Edieresis",    // 202
-        "Egrave",       // 203
-        "Iacute",       // 204
-        "Icircumflex",  // 205
-        "Idieresis",    // 206
-        "Igrave",       // 207
-        "Oacute",       // 208
-        "Ocircumflex",  // 209
-        "",             // 210
-        "Ograve",       // 211
-        "Uacute",       // 212
-        "Ucircumflex",  // 213
-        "Ugrave",       // 214
-        "dotlessi",     // 215
-        "circumflex",   // 216
-        "tilde",        // 217
-        "overscore",    // 218
-        "breve",        // 219
-        "dotaccent",    // 220
-        "ring",         // 221
-        "cedilla",      // 222
-        "hungarumlaut", // 223
-        "ogonek",       // 224
-        "caron",        // 225
-        "Lslash",       // 226
-        "lslash",       // 227
-        "Scaron",       // 228
-        "scaron",       // 229
-        "Zcaron",       // 230
-        "zcaron",       // 231
-        "brokenbar",    // 232
-        "Eth",          // 233
-        "eth",          // 234
-        "Yacute",       // 235
-        "yacute",       // 236
-        "Thorn",        // 237
-        "thorn",        // 238
-        "minus",        // 239
-        "multiply",     // 240
-        "onesuperior",  // 241
-        "twosuperior",  // 242
-        "threesuperior",// 243
-        "onehalf",      // 244
-        "onequarter",   // 245
-        "threequarters",// 246
-        "franc",        // 247
-        "Gbreve",       // 248
-        "gbreve",       // 249
-        "Idot",         // 250
-        "Scedilla",     // 251
-        "scedilla",     // 252
-        "Cacute",       // 253
-        "cacute",       // 254
-        "Ccaron",       // 255
-        "ccaron",       // 256
-        ""              // 257
-    };
-
-    private int version;
-   	private int italicAngle;
-    @SuppressWarnings("unused")
+	private int version;
+	private int italicAngle;
 	private short underlinePosition;
-    @SuppressWarnings("unused")
 	private short underlineThickness;
    	private int isFixedPitch;
-    @SuppressWarnings("unused")
 	private int minMemType42;
-    @SuppressWarnings("unused")
 	private int maxMemType42;
-    @SuppressWarnings("unused")
 	private int minMemType1;
-    @SuppressWarnings("unused")
 	private int maxMemType1;
     
     // v2
@@ -292,6 +75,11 @@ public class PostTable implements Table {
 
     /** Creates new PostTable */
     protected PostTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
+    	  MAC_GLYPH_NAMES_INDICES = new HashMap<String,Integer>(NUMBER_OF_MAC_GLYPHS);
+          for (int i = 0; i < NUMBER_OF_MAC_GLYPHS; ++i){
+              MAC_GLYPH_NAMES_INDICES.put(MAC_GLYPH_NAMES[i],i);
+          }
+    	
         raf.seek(de.getOffset());
         version = raf.readInt();
         italicAngle = raf.readInt();
@@ -303,7 +91,12 @@ public class PostTable implements Table {
         minMemType1 = raf.readInt();
         maxMemType1 = raf.readInt();
         
-        if (version == 0x00020000) {
+        if (version == 1.0f) {
+        	psGlyphName = new String[NUMBER_OF_MAC_GLYPHS];
+             System.arraycopy(MAC_GLYPH_NAMES, 0, psGlyphName, 0, NUMBER_OF_MAC_GLYPHS);
+        }
+        
+        else if (version == 0x00020000) {
             numGlyphs = raf.readUnsignedShort();
             glyphNameIndex = new int[numGlyphs];
             for (int i = 0; i < numGlyphs; i++) {
@@ -320,8 +113,24 @@ public class PostTable implements Table {
                     psGlyphName[i] = new String(buf);
                 }
             }
-        } else if (version == 0x00020005) {
+        } 
+        else if (version == 2.5f) {
+        	numGlyphs = raf.readUnsignedShort();
+        	int[] glyphNameIndex = new int[numGlyphs];
+        	
+        	for (int i = 0; i < glyphNameIndex.length; i++){
+        		int offset = raf.readByte();
+        		glyphNameIndex[i] = i + 1 + offset;
+        	}
+        	psGlyphName = new String[glyphNameIndex.length];
+        	for (int i = 0; i < psGlyphName.length; i++){
+        		String name = MAC_GLYPH_NAMES[glyphNameIndex[i]];
+        		if (name != null){psGlyphName[i] = name;}
+        	}
         }
+        else if (version == 3.0f){
+        	// no postscript information is provided.
+        	}
     }
 
     private int highestGlyphNameIndex() {
@@ -338,7 +147,7 @@ public class PostTable implements Table {
         if (version == 0x00020000) {
             return (glyphNameIndex[i] > 257)
                 ? psGlyphName[glyphNameIndex[i] - 258]
-                : macGlyphName[glyphNameIndex[i]];
+                : MAC_GLYPH_NAMES[glyphNameIndex[i]];
         } else {
             return null;
         }
@@ -367,5 +176,66 @@ public class PostTable implements Table {
     	}
     	return italicAngle;}
     
+    public byte[] getSubSetBytes(SortedSet <Integer> ssGlyphIds){
+    	// version 3 does not have any data will throw error.
+    	if (version == 3.0f){ return null;}
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	DataOutputStream out = new DataOutputStream(bos);
+
+    	try {
+    		writeFixed(out, 2.0);// version
+    		writeFixed(out, italicAngle);
+    		out.writeShort(underlinePosition);
+    		out.writeShort(underlineThickness);
+    		out.writeInt((int)isFixedPitch);
+    		out.writeInt((int)minMemType42);
+    		out.writeInt((int)maxMemType42);
+    		out.writeInt((int)minMemType1);
+    		out.writeInt((int)maxMemType1);
+    		// version 2.0
+
+    		// numberOfGlyphs
+    		out.writeShort(ssGlyphIds.size());
+
+    		// glyphNameIndex[numGlyphs]
+    		Map<String, Integer> names = new TreeMap<String, Integer>();
+    		for (int gid : ssGlyphIds)
+    		{
+    			String name = psGlyphName[gid];
+    			Integer macId = MAC_GLYPH_NAMES_INDICES.get(name);
+    			if (macId != null) {
+    				// the name is implicit, as it's from MacRoman
+    				out.writeShort(macId);
+    			}
+    			else
+    			{
+    				// the name will be written explicitly
+    				Integer ordinal = names.get(name);
+    				if (ordinal == null){
+    					ordinal = names.size();
+    					names.put(name, ordinal);
+    				}
+    				out.writeShort(258 + ordinal);
+    			}
+    		}
+
+    		// names[numberNewGlyphs]
+    		for (String name : names.keySet())
+    		{
+    			byte[] buf = name.getBytes(Charset.forName("US-ASCII"));
+    			out.writeByte(buf.length);
+    			out.write(buf);
+    		}
+
+    		out.flush();
+    	} catch (IOException e) {e.printStackTrace();} 
+    	return bos.toByteArray();
+    }
     
+    private void writeFixed(DataOutputStream out, double f) throws IOException{
+    	double ip = Math.floor(f);
+    	double fp = (f-ip) * 65536.0;
+    	out.writeShort((int)ip);
+    	out.writeShort((int)fp);
+    }
 }
