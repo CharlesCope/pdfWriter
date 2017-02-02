@@ -1,5 +1,7 @@
 package Fonts;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Map;
@@ -12,6 +14,7 @@ import Fonts.table.CmapFormat;
 import Fonts.table.CmapTable;
 import Fonts.table.CvtTable;
 import Fonts.table.FpgmTable;
+import Fonts.table.GaspTable;
 import Fonts.table.GlyfTable;
 import Fonts.table.HeadTable;
 import Fonts.table.HheaTable;
@@ -65,6 +68,7 @@ public class ChcFont {
 	private CvtTable cvt;
 	private PrepTable prep;
 	private FpgmTable fpgm;
+	private GaspTable gasp;
 	private byte[] byteOriginalData;
 	// Subset stuff here
 	private final SortedMap<Integer, Integer> uniToGID;
@@ -197,6 +201,9 @@ public class ChcFont {
             name = (NameTable) TableFactory.create(tableDirectory.getEntryByTag(Table.name), raf);
             post = (PostTable) TableFactory.create(tableDirectory.getEntryByTag(Table.post), raf);
             cvt = (CvtTable )TableFactory.create(tableDirectory.getEntryByTag(Table.cvt), raf);
+            prep = (PrepTable)TableFactory.create(tableDirectory.getEntryByTag(Table.prep), raf);
+            fpgm = (FpgmTable)TableFactory.create(tableDirectory.getEntryByTag(Table.fpgm), raf);
+            gasp = (GaspTable)TableFactory.create(tableDirectory.getEntryByTag(Table.gasp), raf);
             raf.close();
 
             // Initialize the tables that require it
@@ -227,7 +234,14 @@ public class ChcFont {
             glyphIds.add(gid);
         }
     }
-    public byte[] getSubSetFontBytes(int intNumberGlyph, boolean cmapRequired, boolean postRequired){
+    public byte[] getSubSetFontBytes(String strPDFilepath, int intNumberGlyph, boolean cmapRequired, boolean postRequired){
+    
+    	try {
+    		// When finished testing use line below for append for now create new each time.
+    		//DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, false));
+		
+    	
     	// Some Test Data.
     	
     	subSetAdd(54532); //The GlyphId is 2830
@@ -258,14 +272,14 @@ public class ChcFont {
     	subSetAdd(122);
     	subSetAdd(51068);
     	subSetAdd(61);
-    	/* The following TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,” “prep,” “glyf,” “hmtx,” and “fpgm.
-    	 * If used with a simple font dictionary, the font program must additionally contain a “cmap” table
-    	 */
-    	
     	
     	Map<String, byte[]> tables = new TreeMap<String, byte[]>();
     	long[] newLoca = new long[intNumberGlyph + 1];
 
+    	/* The following TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,” “prep,” “glyf,” “hmtx,” and “fpgm.
+    	 * If used with a simple font dictionary, the font program must additionally contain a “cmap” table
+    	 */
+    	
     	if (head != null){
     		head.setCheckSumAdjustment(0);
     		head.setIndexToLocFormat((short) 1);// Force long format
@@ -281,24 +295,85 @@ public class ChcFont {
       
     	if (glyf != null){tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds));}
     	
-    	if (loca != null){
-    		 tables.put("loca", loca.getSubSetBytes(newLoca));
-    	}
+    	if (loca != null){tables.put("loca", loca.getSubSetBytes(newLoca));}
     	
-    	if (cmapRequired == true){
-    		if (cmap != null){	tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));}
-    	}
+    	if (cmapRequired == true){if (cmap != null){	tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));}}
     	
     	if (hmtx != null){	tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));	}
     	
-    	if(postRequired == true){
-    		if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}
-    	}
+    	if(postRequired == true){if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}}
 
     	if(cvt != null){	tables.put("cvt", cvt.getAllBytes());	}
     	
-    	// Need to work on prep table  when I return.. 
+    	if(prep != null){tables.put("prep",prep.getAllBytes());	}
+    	
+    	if(fpgm != null){tables.put("fpgm", fpgm.getAllBytes());	}
+    	
+    	if(gasp != null){tables.put("gasp", gasp.getAllBytes());}
+    	
+    	 // calculate checksum  should get 917664 checksum 
+        long checksum = writeFileHeader(dosFile, tables.size());
+        long offset = 12L + 16L * tables.size();
+        
+        for (Map.Entry<String, byte[]> entry : tables.entrySet()){
+            checksum += writeTableHeader(dosFile, entry.getKey(), offset, entry.getValue());
+            offset += (entry.getValue().length + 3) / 4 * 4;
+        }
+        checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
+
+        // update checksumAdjustment in 'head' table
+//        head[8] = (byte)(checksum >>> 24);
+//        head[9] = (byte)(checksum >>> 16);
+//        head[10] = (byte)(checksum >>> 8);
+//        head[11] = (byte)checksum;
+        
+        dosFile.close();
+        
+    	} catch (IOException e) {e.printStackTrace();	}
     	
     	return null;
     }
+    
+    private long writeFileHeader(DataOutputStream out, int nTables) throws IOException  {
+        out.writeInt(0x00010000);
+        out.writeShort(nTables);
+        
+        int mask = Integer.highestOneBit(nTables);
+        int searchRange = mask * 16;
+        out.writeShort(searchRange);
+        
+        int entrySelector = log2(mask);
+    
+        out.writeShort(entrySelector);
+        
+        // numTables * 16 - searchRange
+        int last = 16 * nTables - searchRange;
+        out.writeShort(last);
+        
+        return 0x00010000L + toUInt32(nTables, searchRange) + toUInt32(entrySelector, last);
+    }
+    private long writeTableHeader(DataOutputStream out, String tag, long offset, byte[] bytes)throws IOException {
+        long checksum = 0;
+        for (int nup = 0, n = bytes.length; nup < n; nup++)
+        {
+            checksum += (bytes[nup] & 0xffL) << 24 - nup % 4 * 8;
+        }
+        checksum &= 0xffffffffL;
+
+        byte[] tagbytes = tag.getBytes("US-ASCII");
+
+        out.write(tagbytes, 0, 4);
+        out.writeInt((int)checksum);
+        out.writeInt((int)offset);
+        out.writeInt(bytes.length);
+
+        // account for the checksum twice, once for the header field, once for the content itself
+        return toUInt32(tagbytes) + checksum + checksum + offset + bytes.length;
+    }
+   
+    private int log2(int num){return (int)Math.round(Math.log(num) / Math.log(2));}
+    private long toUInt32(int high, int low) {return (high & 0xffffL) << 16 | low & 0xffffL;}
+    private long toUInt32(byte[] bytes){return (bytes[0] & 0xffL) << 24 | (bytes[1] & 0xffL) << 16
+    		| (bytes[2] & 0xffL) << 8 | bytes[3] & 0xffL; }
+    
 }

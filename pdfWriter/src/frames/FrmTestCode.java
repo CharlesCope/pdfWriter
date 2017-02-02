@@ -86,6 +86,12 @@ public class FrmTestCode extends JFrame {
 		JButton btnPDFFontDictionary = new JButton("Get PDF font dictionary");
 		btnPDFFontDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
+				// Just Testing Stuff
+				String strFileNameTest = "TestingCode.txt";
+				String strPathAndFile = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileNameTest ;
+				// End Just Testing Stuff
+				
+				
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
 				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
 				// Just testing here
@@ -93,7 +99,7 @@ public class FrmTestCode extends JFrame {
 				byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
 				//myPDFFont.getFont().getMaxpTable().setNumGlyphs(29);
 			//	byte[] mydata = myPDFFont.getFont().getMaxpTable().getAllBytes();
-				myPDFFont.getFont().getSubSetFontBytes(29, false, false);
+				myPDFFont.getFont().getSubSetFontBytes(strPathAndFile,29, false, false);
 				System.out.println("the Length is " + mydata.length);
 				// End test here.
 				// Table need to be set as same font to show the correct symbols 

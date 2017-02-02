@@ -55,6 +55,7 @@ public class TableFactory {
         case Table.fvar:
             break;
         case Table.gasp:
+        	t = new GaspTable(de,raf);
             break;
         case Table.glyf:
             t = new GlyfTable(de, raf);
