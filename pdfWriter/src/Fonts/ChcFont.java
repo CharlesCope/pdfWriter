@@ -3,6 +3,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.Map;
 import java.util.SortedMap;
@@ -51,6 +52,7 @@ public class ChcFont {
     public static final int ENCODING_UNICODE_2_0_BMP = 3;
     public static final int ENCODING_UNICODE_2_0_FULL = 4;
     
+    
 	public static int intGlyphCount ;
 	private String path;
 	private TableDirectory tableDirectory = null;
@@ -74,6 +76,7 @@ public class ChcFont {
 	private final SortedMap<Integer, Integer> uniToGID;
 	private final SortedSet<Integer> glyphIds; // new glyph ids
 	private CmapFormat unicodeCmap;
+	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
 	/** Constructor   */
     public ChcFont() {
@@ -234,44 +237,11 @@ public class ChcFont {
             glyphIds.add(gid);
         }
     }
-    public byte[] getSubSetFontBytes(String strPDFilepath, int intNumberGlyph, boolean cmapRequired, boolean postRequired){
+    public byte[] getSubSetFontBytes(String strPDFilepath, int intNumberGlyph, boolean cmapRequired, boolean postRequired, boolean appendFile){
     
     	try {
-    		// When finished testing use line below for append for now create new each time.
-    		//DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
-			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, false));
-		
+			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, appendFile));
     	
-    	// Some Test Data.
-    	
-    	subSetAdd(54532); //The GlyphId is 2830
-    	subSetAdd(50948); //The GlyphId is 2146
-    	subSetAdd(69);     //The GlyphId is 40
-    	subSetAdd(54924); //The GlyphId is 2915
-    	subSetAdd(54028); //The GlyphId is 2739
-    	subSetAdd(51088); //The GlyphId is 2197
-    	subSetAdd(87);     //The GlyphId is 58
-    	subSetAdd(47196);//The GlyphId is 1339
-    	subSetAdd(46300);
-    	subSetAdd(32);
-    	subSetAdd(97);
-    	subSetAdd(99);
-    	subSetAdd(100);
-    	subSetAdd(101);
-    	subSetAdd(105);
-    	subSetAdd(108);
-    	subSetAdd(49324);
-    	subSetAdd(109);
-    	subSetAdd(110);
-    	subSetAdd(111);
-    	subSetAdd(112);
-    	subSetAdd(114);
-    	subSetAdd(116);
-    	subSetAdd(120);
-    	subSetAdd(121);
-    	subSetAdd(122);
-    	subSetAdd(51068);
-    	subSetAdd(61);
     	
     	Map<String, byte[]> tables = new TreeMap<String, byte[]>();
     	long[] newLoca = new long[intNumberGlyph + 1];
@@ -303,7 +273,7 @@ public class ChcFont {
     	
     	if(postRequired == true){if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}}
 
-    	if(cvt != null){	tables.put("cvt", cvt.getAllBytes());	}
+    	if(cvt != null){	tables.put("cvt ", cvt.getAllBytes());}
     	
     	if(prep != null){tables.put("prep",prep.getAllBytes());	}
     	
@@ -320,12 +290,10 @@ public class ChcFont {
             offset += (entry.getValue().length + 3) / 4 * 4;
         }
         checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
-
-        // update checksumAdjustment in 'head' table
-//        head[8] = (byte)(checksum >>> 24);
-//        head[9] = (byte)(checksum >>> 16);
-//        head[10] = (byte)(checksum >>> 8);
-//        head[11] = (byte)checksum;
+      
+        head.setCheckSumAdjustment(checksum);
+        
+        for (byte[] bytes : tables.values()){writeTableBody(dosFile, bytes);}
         
         dosFile.close();
         
@@ -354,8 +322,7 @@ public class ChcFont {
     }
     private long writeTableHeader(DataOutputStream out, String tag, long offset, byte[] bytes)throws IOException {
         long checksum = 0;
-        for (int nup = 0, n = bytes.length; nup < n; nup++)
-        {
+        for (int nup = 0, n = bytes.length; nup < n; nup++){
             checksum += (bytes[nup] & 0xffL) << 24 - nup % 4 * 8;
         }
         checksum &= 0xffffffffL;
@@ -370,7 +337,10 @@ public class ChcFont {
         // account for the checksum twice, once for the header field, once for the content itself
         return toUInt32(tagbytes) + checksum + checksum + offset + bytes.length;
     }
-   
+    private void writeTableBody(OutputStream os, byte[] bytes) throws IOException {
+        os.write(bytes);
+        if (bytes.length % 4 != 0){os.write(PAD_BUF, 0, 4 - bytes.length % 4);}
+    }
     private int log2(int num){return (int)Math.round(Math.log(num) / Math.log(2));}
     private long toUInt32(int high, int low) {return (high & 0xffffL) << 16 | low & 0xffffL;}
     private long toUInt32(byte[] bytes){return (bytes[0] & 0xffL) << 24 | (bytes[1] & 0xffL) << 16

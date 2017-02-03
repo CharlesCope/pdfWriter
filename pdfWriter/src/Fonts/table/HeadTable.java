@@ -9,7 +9,7 @@ public class HeadTable implements Table {
 	private String JavaNewLine = System.getProperty("line.separator");
     private int versionNumber;
     private int fontRevision;
-    private int checkSumAdjustment;
+    private long checkSumAdjustment;
     private int magicNumber;
     private short flags;
     private static short unitsPerEm;
@@ -51,9 +51,15 @@ public class HeadTable implements Table {
         glyphDataFormat = raf.readShort();//2
     }
 
-    public int getCheckSumAdjustment() {return checkSumAdjustment;}
-    public void setCheckSumAdjustment(int intNewCheckSumAdjustment) {
-    	 checkSumAdjustment = intNewCheckSumAdjustment;}
+    public long getCheckSumAdjustment() {return checkSumAdjustment;}
+    public void setCheckSumAdjustment(long checksum) {
+    	 checkSumAdjustment = checksum;
+    	// For subset we need to be able to adjust the check sum adjustment
+     	byteTable[8] = (byte) ((checkSumAdjustment >>> 24) & 0xff);
+     	byteTable[9] = (byte) ((checkSumAdjustment >>> 16) & 0xff);
+     	byteTable[10] = (byte) ((checkSumAdjustment >>> 8) & 0xff);
+     	byteTable[11] = (byte) (checkSumAdjustment & 0xff);	 
+    }
     
     public long getCreated() {return created;}
 
@@ -135,7 +141,11 @@ public class HeadTable implements Table {
 
     public short getIndexToLocFormat() {return indexToLocFormat;}
     public void  setIndexToLocFormat(short subSetLocFormat) {
-    	indexToLocFormat= subSetLocFormat;}
+    	indexToLocFormat= subSetLocFormat;
+    	// For subset we need to force long format
+    	byteTable[50] = (byte) ((indexToLocFormat >>> 8) & 0xff);
+    	byteTable[51] = (byte) (indexToLocFormat & 0xff);
+    }
 
     public short getLowestRecPPEM() {return lowestRecPPEM;}
 
@@ -157,16 +167,7 @@ public class HeadTable implements Table {
 
     public short getYMin() {return yMin;}
 
-    public byte[] getAllBytes(){
-    	// For subset we need to be able to adjust the check sum adjustment
-    	byteTable[8] = (byte) ((checkSumAdjustment >>> 24) & 0xff);
-    	byteTable[9] = (byte) ((checkSumAdjustment >>> 16) & 0xff);
-    	byteTable[10] = (byte) ((checkSumAdjustment >>> 8) & 0xff);
-    	byteTable[11] = (byte) (checkSumAdjustment & 0xff);
-    	// For subset we need to force long format
-    	byteTable[50] = (byte) ((indexToLocFormat >>> 8) & 0xff);
-    	byteTable[51] = (byte) (indexToLocFormat & 0xff);
-    	return byteTable;}
+    public byte[] getAllBytes(){return byteTable;}
     
     public String toString() {
         return new StringBuffer()
