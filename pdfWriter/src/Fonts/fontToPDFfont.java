@@ -26,28 +26,12 @@ public class fontToPDFfont {
 		fontToPDFfont.myChcFont = myChcFont;
 	}
 
-	public static PDFFont ConvertFontFileToPDFFont(String strFile){
+	public static ChcFont ConvertFontFileToPDFFont(String strFile){
 		if(strFile.isEmpty()){return null;}
 		// First create the True Type Font Object
 		myChcFont = new ChcFont().create(strFile);
-		// Then create the PDFFont Object to get data from True Type Font Object
-		PDFFont myPDFFont = new PDFFont();
-		myPDFFont.setFont(myChcFont);
-		myPDFFont.setUnitsPerEm(myChcFont.getHeadTable().getUnitsPerEm());
-		intUnitsPerEM = myPDFFont.getUnitsPerEm();
-		myPDFFont.setBoundingBoxLowerLeftx(myChcFont.getHeadTable().getXMin());
-		myPDFFont.setBoundingBoxLowerLefty(myChcFont.getHeadTable().getYMin());
-		myPDFFont.setBoundingBoxUpperRightx(myChcFont.getHeadTable().getXMax());
-		myPDFFont.setBoundingBoxUpperRighty(myChcFont.getHeadTable().getYMax());
-		
-		String strBaseFontName = myChcFont.getNameTable().getRecord(NameTable.namePostscriptName);
-		String strFontFamilyName = myChcFont.getNameTable().getRecord(NameTable.nameFontFamilyName);
-		
-		if(strBaseFontName.isEmpty() == false){myPDFFont.setFontBaseName(strBaseFontName);}
-		if(strFontFamilyName.isEmpty() == false){myPDFFont.setFontFamilyName(strFontFamilyName);}
-
-		myPDFFont.setFixedPitchFlag(myChcFont.getPostTable().getIsFixedPitch());
-		
+		intUnitsPerEM = myChcFont.getUnitsPerEM();
+	
 		/** Only Roman Encoding or Windows uni-code are allowed for a non symbolic font 
 		 *  For symbolic font, no encoding entry is allowed and only one encoding entry is expected into the FontFile CMap
 		 *  Any font whose character set is not a subset of the Adobe standard character set is considered to be symbolic.
@@ -56,101 +40,45 @@ public class fontToPDFfont {
 		if(isWindows() == true){
 			if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL)!= null){
 				if (myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL).getFormat() == 4) {
-					myPDFFont.setCmapFormat((CmapFormat4) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
+					myChcFont.setCmapFormat((CmapFormat4) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
 				} else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL).getFormat() == 2){
-					myPDFFont.setCmapFormat((CmapFormat2) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
+					myChcFont.setCmapFormat((CmapFormat2) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
 				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL).getFormat() == 0){
-					myPDFFont.setCmapFormat((CmapFormat0) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
+					myChcFont.setCmapFormat((CmapFormat0) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
 				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL).getFormat() == 6){
-					myPDFFont.setCmapFormat((CmapFormat6) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
+					myChcFont.setCmapFormat((CmapFormat6) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMicrosoft, NameTable.encodingUGL));
 				}
-				
-				myPDFFont.setNonsymbolicFlag(true);
-				myPDFFont.setSymbolicFlag(false);
-				
 			}
-			else {
-				myPDFFont.setNonsymbolicFlag(false);
-				myPDFFont.setSymbolicFlag(true);
-			}
+
 		}
 		if(isMac() == true){
 			// TODO Mac has a lot of encoding do we need to deal with all of them?
 			if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman)!= null){
 				if (myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 4) {
-					myPDFFont.setCmapFormat((CmapFormat4) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+					myChcFont.setCmapFormat((CmapFormat4) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
 				} else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 2){
-					myPDFFont.setCmapFormat((CmapFormat2) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+					myChcFont.setCmapFormat((CmapFormat2) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
 				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 0){
-					myPDFFont.setCmapFormat((CmapFormat0) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+					myChcFont.setCmapFormat((CmapFormat0) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
 				}else if(myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman).getFormat() == 6){
-					myPDFFont.setCmapFormat((CmapFormat6) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
+					myChcFont.setCmapFormat((CmapFormat6) myChcFont.getCmapTable().getCmapFormat(NameTable.platformMacintosh, NameTable.encodingRoman));
 				}
-				
-				myPDFFont.setNonsymbolicFlag(true);
-				myPDFFont.setSymbolicFlag(false);
 			}
-			else {
-				myPDFFont.setNonsymbolicFlag(false);
-				myPDFFont.setSymbolicFlag(true);}
 		}
-		
-		// Apple/Mac platform calls this the Style table and Microsoft Calls it SubFamily.
-		String strStyle = myChcFont.getNameTable().getRecord(NameTable.nameFontSubfamilyName);
-		if (strStyle.toUpperCase().contains("ITALI")== true){myPDFFont.setItalicFlag(true);}
-		else{myPDFFont.setItalicFlag(false);}
-		
-		myPDFFont.setScriptFlag(myChcFont.getOS2Table().getIsScript());
-		myPDFFont.setSerifFlag(myChcFont.getOS2Table().getIsSerif());		
-		
-		// TODO Need to find the data in file and set flags.
-		//myPDFFont.setAllCapFlag(setFlag);
-		//myPDFFont.setSmallCapFlag(setFlag);
-		//myPDFFont.setForceBoldFlag(setFlag);
 
-		
-		Glyph MissingWidth = myChcFont.getGlyph(0);
-		if (MissingWidth != null){myPDFFont.setMissingWidth(pdfScalingFormula(MissingWidth.advanceWidth,intUnitsPerEM));}
-		else{myPDFFont.setMissingWidth(0);}
-		
-		int intVersion = myChcFont.getOS2Table().getVersion();
-		
-		if(intVersion >= 2){
-			myPDFFont.setCapHeight(pdfScalingFormula(myChcFont.getOS2Table().getCapHeight(),intUnitsPerEM));
-			myPDFFont.setXHeight(pdfScalingFormula(myChcFont.getOS2Table().getXHeight(),intUnitsPerEM));
-			myPDFFont.setFontWeight(myChcFont.getOS2Table().getWeightClass());
-		}
-		/** NOTE: These are just rule-of-thumb values,in case the xHeight and CapHeight fields aren't available.*/
-		else{
-			myPDFFont.setCapHeight((int) (.7 * intUnitsPerEM));
-			myPDFFont.setXHeight((int) (.5 * intUnitsPerEM));
-		}
-		
-		myPDFFont.setItalicAngle(myChcFont.getPostTable().getItalicAngle());
-		myPDFFont.setAscent(pdfScalingFormula(myChcFont.getHheaTable().getAscender(),intUnitsPerEM));
-		myPDFFont.setDescent(pdfScalingFormula(myChcFont.getHheaTable().getDescender(),intUnitsPerEM));
-		myPDFFont.setLeading(pdfScalingFormula(myChcFont.getHheaTable().getLineGap(),intUnitsPerEM));
-		myPDFFont.setStemV(myChcFont.getOS2Table().getWeightClass());
-		myPDFFont.setStemH(190); // Just hard code it for now look for it later.
-		myPDFFont.setMaxWidth(pdfScalingFormula(myChcFont.getHheaTable().getAdvanceWidthMax(),intUnitsPerEM));
-		myPDFFont.setAvgWidth(pdfScalingFormula(myChcFont.getOS2Table().getAvgCharWidth(),intUnitsPerEM));
-		myPDFFont.setFirstChar(0);
-		myPDFFont.setLastChar(myChcFont.getNumGlyphs());
-		myPDFFont.setWEntry(getWEntry());
+
+
+
+		myChcFont.setWEntry(getWEntry());
 		// TODO: Need an if statement here later but just for testing right now. myPDFFont.setToUnicodeCMAP("identityH");
-		myPDFFont.setToUnicodeCMAP("identityH");
-		
+		myChcFont.setToUnicodeCMAP("identityH");
+
 		// If we make it here return the converted file object
-		return myPDFFont;
+		return myChcFont;
 		
 	}
 	
-    public static int pdfScalingFormula(int intAdvanceWidth, int intUnitsPerEm){
-    	// Avoid divide by zero error.
-    	if(intAdvanceWidth == 0 ){return 0;}
-    	
-    	return (intAdvanceWidth * 1000) / intUnitsPerEm;
-    }
+    
 
     private static String getWEntry(){
     	/** The W Entry array allows the definition of widths for individual CIDs */

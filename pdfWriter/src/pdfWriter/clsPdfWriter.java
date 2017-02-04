@@ -32,7 +32,7 @@ import java.util.Set;
 import javax.swing.JOptionPane;
 
 import Fonts.FontManager;
-import Fonts.PDFFont;
+import Fonts.ChcFont;
 import Fonts.fontToPDFfont;
 import cidObjects.CIDFontDictionary;
 import cidObjects.CIDFontDictionary.CIDFontTypes;
@@ -148,7 +148,7 @@ public class clsPdfWriter {
     private Integer intToUnicodeObject = 0; //-- Keep up with the Unicode Cmap file;
     private Boolean blnToUnicodeNeeded = true; // Keep only one copy of unicode Cmap in file.
     private String strPDFilepath;// Used to write binary data to pdf file.
-    private  List<PDFFont> PDFFontList = new LinkedList<>();
+    private  List<ChcFont> PDFFontList = new LinkedList<>();
 
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
@@ -410,11 +410,11 @@ public class clsPdfWriter {
 			dicFontsUsed.put(font.getName(), intFontCount);
 			String strFilePath = getFontPath(font);
 		
-			PDFFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 
+			ChcFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 
 			PDFFontList.add(pdfFont);
 		}
 		
-		PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
+		ChcFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
 		
 		Double sngLength ;
 		
@@ -1176,7 +1176,7 @@ public class clsPdfWriter {
     
     private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
     	String strComment  = "";
-    	PDFFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
+    	ChcFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
     	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        	
@@ -1194,7 +1194,7 @@ public class clsPdfWriter {
     	fontDesc.setFontName(curPDFFont.getFontBaseName());
     	fontDesc.setFlags(curPDFFont.getFontDescriptorFlags());
     	fontDesc.setFontBBox(curPDFFont.getFontBBox());
-    	fontDesc.setMissingWidth(curPDFFont.getMissingWidth());
+    	fontDesc.setMissingWidth(String.valueOf(curPDFFont.getMissingWidth()));
     	fontDesc.setStemV(curPDFFont.getStemV());
     	fontDesc.setStemH(curPDFFont.getStemH()); // This is not working need to find out where it getting the data.
     	fontDesc.setItalicAngle(curPDFFont.getItalicAngle());
@@ -1837,7 +1837,7 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
-    public void embedFontFile(PDFFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
+    public void embedFontFile(ChcFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
     	// Only embed fonts from resource at this time
     	upDateReferenceTable();
     	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");

@@ -22,7 +22,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import Fonts.PDFFont;
+import Fonts.ChcFont;
 import Fonts.fontToPDFfont;
 import Fonts.table.CmapFormat0;
 import Fonts.table.CmapFormat2;
@@ -87,20 +87,20 @@ public class FrmTestCode extends JFrame {
 		btnPDFFontDictionary.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				// Just Testing Stuff
-				String strFileNameTest = "TestingCode.txt";
-				String strPathAndFile = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileNameTest ;
+			//	String strFileNameTest = "TestingCode.txt";
+			//	String strPathAndFile = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileNameTest ;
 				// End Just Testing Stuff
 				
 				
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
-				PDFFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
+				ChcFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
 				// Just testing here
 				// byte[] mydata = myPDFFont.getFont().getHeadTable().getAllBytes();
-				byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
+				//byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
 				//myPDFFont.getFont().getMaxpTable().setNumGlyphs(29);
-			//	byte[] mydata = myPDFFont.getFont().getMaxpTable().getAllBytes();
-				myPDFFont.getFont().getSubSetFontBytes(strPathAndFile,29, false, false,false);
-				System.out.println("the Length is " + mydata.length);
+			   // byte[] mydata = myPDFFont.getFont().getMaxpTable().getAllBytes();
+			   // myPDFFont.getFont().getSubSetFontBytes(strPathAndFile,29, false, false,false);
+				//System.out.println("the Length is " + mydata.length);
 				// End test here.
 				// Table need to be set as same font to show the correct symbols 
 				Font font = new Font (myPDFFont.getFontFamilyName(), Font.TRUETYPE_FONT, 14);
@@ -172,7 +172,7 @@ public class FrmTestCode extends JFrame {
 		}
 	}
 	
-	public void getGlyphsAndWidths(int[] glyphIDs, PDFFont myPDFFont){
+	public void getGlyphsAndWidths(int[] glyphIDs, ChcFont myPDFFont){
 	
 		int CharCode = 0;
 		// Hard Code the first row

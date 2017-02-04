@@ -1,4 +1,5 @@
 package Fonts;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -29,11 +30,15 @@ import Fonts.table.PrepTable;
 import Fonts.table.Table;
 import Fonts.table.TableDirectory;
 import Fonts.table.TableFactory;
+import cidObjects.CIDSystemInfo;
+import pdfCmaps.identityH;
 
 /**
  * The TrueType font.
  */
 public class ChcFont {
+	private static final int ITALIC = 1;
+	private static final int OBLIQUE = 512;
 	public static final int PLATFORM_UNICODE = 0;
 	public static final int PLATFORM_MACINTOSH = 1;
 	public static final int PLATFORM_WINDOWS = 3;
@@ -52,7 +57,9 @@ public class ChcFont {
     public static final int ENCODING_UNICODE_2_0_BMP = 3;
     public static final int ENCODING_UNICODE_2_0_FULL = 4;
     
-    
+    private final String  PDFCRLF = "\r\n";
+	private String strWEntry ="";
+	private String strToUnicodeCMAP ="";
 	public static int intGlyphCount ;
 	private String path;
 	private TableDirectory tableDirectory = null;
@@ -72,10 +79,48 @@ public class ChcFont {
 	private FpgmTable fpgm;
 	private GaspTable gasp;
 	private byte[] byteOriginalData;
+	private int intUnitsPerEm;
+	private Integer BBoxLowerLeftx = 0;
+	private Integer BBoxLowerLefty = 0;
+	private Integer BBoxUpperRightx = 0;
+	private Integer BBoxUpperRighty = 0;
+	private String strFontBBox = "";
+	private Integer intMissingWidth = 0;
+	private String strBaseFontName = "";
+	private String strFontFamilyName = "";
+	// Flags
+	private boolean blnFixedPitchFlag = false;
+	private boolean blnSerifFlag = false; 
+	private boolean blnSymbolicFlag = false;
+	private boolean blnScriptFlag = false;
+	private boolean blnNonsymbolicFlag = false;
+	private boolean blnItalicFlag = false; 
+	private boolean blnAllCapFlag = false;
+	private boolean blnSmallCapFlag = false;
+	private boolean blnForceBoldFlag = false;
+	
+	private Integer intFirstChar = 0;
+	private Integer intLastChar = 0;
+	private Integer intWeight = 0;
+	private Integer intCapHeight = 0;
+	private Integer intXHeight = 0;
+	private Integer intItalicAngle = 0;
+	private Integer intAscent = 0;
+	private Integer intDescent = 0;
+	private Integer intLeading = 0;
+	private Integer intStemV = 0;
+	private Integer intStemH = 0;
+	private Integer intMaxWidth = 0;
+	private Integer intAvgWidth = 0;
+	private CmapFormat cmapFormat = null;
+	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
+	
 	// Subset stuff here
 	private final SortedMap<Integer, Integer> uniToGID;
 	private final SortedSet<Integer> glyphIds; // new glyph ids
 	private CmapFormat unicodeCmap;
+	String JavaNewLine = System.getProperty("line.separator");
+	
 	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
 	/** Constructor   */
@@ -94,6 +139,7 @@ public class ChcFont {
         }
         return null;
     }
+  
     public FpgmTable getFpgmTable(){return fpgm;}
     
     public GlyfTable getGlyfTable(){return glyf;}
@@ -125,7 +171,12 @@ public class ChcFont {
     	return unicodeCmap;
     	
     }
+ 
+    public int getCharacterCodeToGlyphId(int intCharCode){return getUnicodeCmap().mapCharCode(intCharCode);	}
+   
     public HeadTable getHeadTable() {return head;}
+    
+    public int getUnitsPerEM(){return intUnitsPerEm; }
     
     public HheaTable getHheaTable() {return hhea;}
     
@@ -138,13 +189,97 @@ public class ChcFont {
     public NameTable getNameTable() {return name;}
 
     public PostTable getPostTable() {return post;}
+    
+    public CmapFormat getCmapFormat() {return cmapFormat;}
+	public void setCmapFormat(CmapFormat cmapFormat) {this.cmapFormat = cmapFormat;}
 
-    public int getAscent() {return hhea.getAscender();}
-
-    public int getDescent() {return hhea.getDescender();}
+	public void setFirstChar(int FirstChar){intFirstChar = FirstChar;}
+    public String getFirstChar(){return  intFirstChar.toString();}
+    
+    public void setLastChar(int LastChar){intLastChar = LastChar;}
+	public String getLastChar(){return  intLastChar.toString();}
 
     public int getNumGlyphs() {return maxp.getNumGlyphs();}
+    
+	public String getFontWeight() {return  intWeight.toString();}
+	
+	public String getCapHeight(){return intCapHeight.toString();}
+	
+	public String getXHeight(){return intXHeight.toString();}
+	
+    public int getBoundingBoxLowerLeftx() {return BBoxLowerLeftx;}
+	
+    public int getBoundingBoxLowerLefty() {return BBoxLowerLefty;}
+	
+    public int getBoundingBoxUpperRightx() {return BBoxUpperRightx;}
+	
+    public int getBoundingBoxUpperRighty() {return BBoxUpperRighty;}
+    
+    public int getMissingWidth(){return intMissingWidth; }
+    
+    public String getItalicAngle(){return intItalicAngle.toString();}
+    
+    public String getFontBaseName(){return strBaseFontName;}
+    
+    public String getFontFamilyName(){return strFontFamilyName;}
+    
+    public String getAscent(){return intAscent.toString();}
+    
+    public String getDescent(){return intDescent.toString();}
+    
+    public String getLeading(){return intLeading.toString();}
+    
+    public String getMaxWidth(){return  intMaxWidth.toString();}
+    
+    public String getAvgWidth(){return intAvgWidth.toString();}
+	
+    public String getStemH(){ return  intStemH.toString();} 
+  
+    public String getStemV(){
+		final int ULTRA_LIGHT = 1;
+		final int EXTRA_LIGHT = 2;
+		final int LIGHT = 3;
+		final int SEMI_LIGHT = 4;
+		final int MEDIUM_NORMAL = 5;
+		final int SEMI_BOLD = 6;
+		final int BOLD = 7;
+		final int EXTRA_BOLD = 8;
+		final int ULTRA_BOLD = 9;
+		Integer intReturnValue = 50;
+		
+		switch (intStemV) {
+		case ULTRA_LIGHT:  intReturnValue = 50;		break;
+		case EXTRA_LIGHT:  intReturnValue = 68;		break;
+		case LIGHT:  intReturnValue = 88;			break;
+		case SEMI_LIGHT:  intReturnValue = 100;		break;
+		case MEDIUM_NORMAL:  intReturnValue = 125;	break;
+		case SEMI_BOLD:  intReturnValue = 135;		break;
+		case BOLD:  intReturnValue = 165;			break;
+		case EXTRA_BOLD:  intReturnValue = 201;		break;
+		case ULTRA_BOLD:  intReturnValue = 241;		break;
+		default: intReturnValue = 50;				break;}
 
+		return  intReturnValue.toString();}
+
+    
+    public boolean getIsFixedPitch(){return blnFixedPitchFlag;}
+    
+    public boolean getIsItalicFlag(){return blnItalicFlag;}
+    
+    public boolean getIsScriptFlag(){return blnScriptFlag;}
+    
+    public boolean getIsSerifFlag(){return blnSerifFlag;}
+    
+    public boolean getIsAllCapFlag(){return blnAllCapFlag;}
+    
+    public boolean getIsSmallCapFlag(){return blnSmallCapFlag;}
+    
+    public boolean getIsForceBoldFlag(){return blnForceBoldFlag;}
+    
+    public boolean getIsSymbolicFlag(){return blnSymbolicFlag;}
+    
+    public boolean getIsNonsymbolicFlag(){return blnNonsymbolicFlag;}
+    
     public byte[] getOriginalData(){	
     	if(byteOriginalData == null){
     		if(path != null){
@@ -170,7 +305,11 @@ public class ChcFont {
                 hmtx.getAdvanceWidth(i))
             : null;
     }
-
+ 
+    public int getGlyphWidthToPDFWidth(int CharCode){
+    	try {return pdfScalingFormula(getGlyph(CharCode).getAdvanceWidth());
+    	} catch (Exception e) {	return 0;}
+    }
     public String getPath() {return path; }
 
     public TableDirectory getTableDirectory() {return tableDirectory; }
@@ -214,7 +353,62 @@ public class ChcFont {
             		intGlyphCount - hhea.getNumberOfHMetrics());
             loca.init(intGlyphCount, head.getIndexToLocFormat() == 0);
             glyf.init(intGlyphCount, loca);
-     
+            
+            // Now get the data from the tables
+            intUnitsPerEm = head.getUnitsPerEm(); 
+            BBoxLowerLeftx = (int) head.getXMin();
+            BBoxLowerLefty = (int) head.getYMin();
+            BBoxUpperRightx =(int) head.getXMax();
+            BBoxUpperRighty = (int) head.getYMax();
+            Glyph MissingWidth = getGlyph(0);
+    		if (MissingWidth != null){intMissingWidth = pdfScalingFormula(MissingWidth.advanceWidth);}
+    		else{intMissingWidth =(0);}
+    		strBaseFontName = name.getRecord(NameTable.namePostscriptName);
+    		strFontFamilyName = name.getRecord(NameTable.nameFontFamilyName);
+    		
+    		blnFixedPitchFlag = post.getIsFixedPitch();
+
+    		int fsSelection = os2.getSelection();
+    		blnItalicFlag =((fsSelection & (ITALIC | OBLIQUE)) != 0);
+
+    		blnScriptFlag = os2.getIsScript();
+    		blnSerifFlag = os2.getIsSerif();		
+    		
+    		blnSymbolicFlag = true;
+    		blnNonsymbolicFlag = false;
+    		
+    		intWeight = os2.getWeightClass() * 100; 
+    		
+            if (os2.getVersion() >= 1.2){
+            	intCapHeight = pdfScalingFormula(os2.getCapHeight());
+            	intXHeight = pdfScalingFormula(os2.getXHeight());
+             
+            }
+            else {
+                // estimate by summing the typographical +ve ascender and -ve descender
+            	intCapHeight = pdfScalingFormula(os2.getTypoAscender() + os2.getTypoDescender());
+            	// estimate by halving the typographical ascender
+            	intXHeight = pdfScalingFormula((int) (os2.getTypoAscender() / 2.0f));
+            }
+            
+            intItalicAngle = post.getItalicAngle();
+            intAscent = pdfScalingFormula((int) hhea.getAscender());
+            intDescent = pdfScalingFormula(hhea.getDescender());
+            intLeading = pdfScalingFormula(hhea.getLineGap());
+            intStemV = os2.getWeightClass();  // This is calculated in the get property
+            intStemH = 190; // Hard coded till I figure it out.
+            
+            intMaxWidth = pdfScalingFormula(hhea.getAdvanceWidthMax());
+            intAvgWidth = pdfScalingFormula(os2.getAvgCharWidth());
+            intFirstChar = 0; // Just default most Latin starts at 32 before that non printable codes
+            intLastChar = maxp.getNumGlyphs(); // Just defaults can be set to subsets
+    		
+            // TODO Need to find the data in file and set flags.
+    		//blnAllCapFlag =
+    		//blnSmallCapFlag =
+    		//blnForceBoldFlag =
+
+    		
         } catch (IOException e) {e.printStackTrace();}
     }
     
@@ -224,11 +418,79 @@ public class ChcFont {
      * @param pathName Path to the TTF font file
      */
     public ChcFont create(String pathName) {
-        ChcFont f = new ChcFont();
-        f.read(pathName);
-        return f;
+        ChcFont font = new ChcFont();
+        font.read(pathName);
+        return font;
     }
+  
+    public String getFontBBox(){
+		// Results not matching data in file
+		Integer lowerLeftx = 0;
+		Integer lowerLefty = 0;
+		Integer upperRightx = 0;
+		Integer upperRighty =0;
+		
+		lowerLeftx = (int) toEmSpace(BBoxLowerLeftx);
+		lowerLefty = (int) toEmSpace(BBoxLowerLefty);
+		upperRightx = (int) toEmSpace(BBoxUpperRightx);
+		upperRighty= (int) toEmSpace(BBoxUpperRighty);
+		
+		strFontBBox = lowerLeftx.toString() + " ";
+		strFontBBox += lowerLefty.toString() + " ";
+		strFontBBox += upperRightx.toString() + " ";
+		strFontBBox += upperRighty.toString() + " ";
+		
+		return strFontBBox;
+		
+	}
+   
+    public String getWEntry(){ return strWEntry;}
+	public void setWEntry(String WEntry){strWEntry = WEntry;}	 
     
+	public String getCIDSystemInfoDictionary(){ return cidSystemInfo.toString();}
+	
+	public String getToUnicodeCMAP(){return strToUnicodeCMAP;}
+	
+    public void setToUnicodeCMAP(String strPdfCmapName){ 
+		String strTemp = ""; 
+		
+		if (strPdfCmapName == "identityH"){
+			// Create the Cmap object
+		    identityH CmapH = new identityH();
+		    strTemp = "<< /Length " + CmapH.Length() + " >>" + PDFCRLF;
+		    strTemp += "stream" + PDFCRLF;
+		    strTemp += CmapH.toString() + PDFCRLF;
+		    strTemp += "endstream" + PDFCRLF;
+		    
+		    // set the values of the CIDdSystemInfo based on CMAP DATA
+		    cidSystemInfo.setRegistry(CmapH.getRegistry());
+		    cidSystemInfo.setOrdering(CmapH.getOrdering());
+		    cidSystemInfo.setSupplement(CmapH.getSupplement());
+		    strToUnicodeCMAP = strTemp;}
+		 }
+    public int getSpaceWidthToPDFWidth(){
+		/**Advance width rule : The space's advance width is set by visually selecting a value that is appropriate for the current font.
+		 * The general guidelines for the advance widths are:
+		 *  The minimum value should be no less than 1/5 the em, 
+		 *  which is equivalent to the value of a thin space in traditional typesetting.
+		 *  For an average width font a good value is ~1/4 the em.
+		 *  Example: In Monotype's font Times New Roman-regular the space is 512 units, the em is 2048.  
+		 */
+		// Just me taking a stab at it.
+		double dblMin = intUnitsPerEm * .20;
+		double dblAvg = intUnitsPerEm * .25;
+		double dblWide = intUnitsPerEm * .33;
+		double dblTotal = (dblMin + dblAvg + dblWide)/ 3;
+		int results = pdfScalingFormula((int)dblTotal);
+		
+		if (results < (intUnitsPerEm * .5)){return results;}
+		else{ return pdfScalingFormula((int) (intUnitsPerEm * .5));}
+		
+	}
+    public double toEmSpace(double dblValue){
+        if (intUnitsPerEm == 1000) {return dblValue;}
+        return Math.ceil((dblValue / intUnitsPerEm) * 1000);    // always round up
+    }
     public void subSetAdd(int unicode) {
     	if (unicodeCmap == null){unicodeCmap = this.getUnicodeCmap();}
         int gid = unicodeCmap.mapCharCode(unicode);
@@ -237,6 +499,64 @@ public class ChcFont {
             glyphIds.add(gid);
         }
     }
+ 
+    public String getFontDescriptorFlags(){
+
+    	// big-endian string
+    	StringBuilder str32Flag = new StringBuilder("00000000000000000000000000000000");
+    	final int RADIX = 10;
+
+    	// set our flag bits
+    	str32Flag.setCharAt(31, Character.forDigit(Boolean.compare(blnFixedPitchFlag,false), RADIX));
+    	str32Flag.setCharAt(30, Character.forDigit(Boolean.compare(blnSerifFlag,false), RADIX));
+    	str32Flag.setCharAt(29, Character.forDigit(Boolean.compare(blnSymbolicFlag,false), RADIX));
+    	str32Flag.setCharAt(28, Character.forDigit(Boolean.compare(blnScriptFlag,false), RADIX));
+    	// 5 Flag not Used
+    	str32Flag.setCharAt(26, Character.forDigit(Boolean.compare(blnNonsymbolicFlag,false), RADIX));
+    	str32Flag.setCharAt(25, Character.forDigit(Boolean.compare(blnItalicFlag,false), RADIX));
+    	// 8 to 16 Flags not Used
+    	str32Flag.setCharAt(15, Character.forDigit(Boolean.compare(blnAllCapFlag,false), RADIX));
+    	str32Flag.setCharAt(14, Character.forDigit(Boolean.compare(blnSmallCapFlag,false), RADIX));
+    	str32Flag.setCharAt(13, Character.forDigit(Boolean.compare(blnForceBoldFlag,false), RADIX));
+    	// 12 to 0 Flags not Used
+    	Integer intFlagsVaule = Integer.parseUnsignedInt(str32Flag.toString(), 2);
+    	return  intFlagsVaule.toString();
+
+    }
+
+    public Double getStringWidth(String strToMeasure, int intFontSize){
+		//-- Make sure we have something before checking it length
+		if (strToMeasure == null){return 0.0;}
+		if(strToMeasure == ""){return 0.0;}
+		if(intFontSize ==0){return 0.0;}
+
+		Integer intWidth = 0;
+		int intTemp = 0;
+
+		for (int offset = 0; offset < strToMeasure.length(); ){
+			int codePoint = strToMeasure.codePointAt(offset);
+			int intGlyphID = this.getCharacterCodeToGlyphId(codePoint);
+
+			// deal with the space
+			if(codePoint == 32){intTemp = this.getSpaceWidthToPDFWidth();}
+			// Get the width for the Glyph
+			else{intTemp = this.getGlyphWidthToPDFWidth(intGlyphID);}
+			// Deal with missing data
+			if (intTemp == 0){ intTemp = intMissingWidth;}
+
+			intWidth += intTemp;
+			offset += Character.charCount(codePoint);
+		}
+
+		return intWidth * intFontSize / 1000.0;
+
+	}
+    public int pdfScalingFormula(int intAdvanceWidth){
+    	// Avoid divide by zero error.
+    	if(intAdvanceWidth == 0 ){return 0;}
+    	return (intAdvanceWidth * 1000) / intUnitsPerEm;
+    }
+    
     public byte[] getSubSetFontBytes(String strPDFilepath, int intNumberGlyph, boolean cmapRequired, boolean postRequired, boolean appendFile){
     
     	try {
@@ -301,7 +621,7 @@ public class ChcFont {
     	
     	return null;
     }
-    
+        
     private long writeFileHeader(DataOutputStream out, int nTables) throws IOException  {
         out.writeInt(0x00010000);
         out.writeShort(nTables);
@@ -345,5 +665,94 @@ public class ChcFont {
     private long toUInt32(int high, int low) {return (high & 0xffffL) << 16 | low & 0xffffL;}
     private long toUInt32(byte[] bytes){return (bytes[0] & 0xffL) << 24 | (bytes[1] & 0xffL) << 16
     		| (bytes[2] & 0xffL) << 8 | bytes[3] & 0xffL; }
+  
+    public String getEncodedString(String strToConvert){
+		// This encodes the  unicode string to Hex Values instead of ASCII values for the pdf CID to work.
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+		for (int offset = 0; offset < strToConvert.length(); ){
+			int codePoint = strToConvert.codePointAt(offset);
+			// Next get the character identifier (CID) numbers  for the CodePoint
+			int intCID = getCharacterCodeToGlyphId(codePoint);
+
+			// multi-byte encoding with 1 to 4 bytes
+			byte[] bytes = new byte[] { (byte)(intCID >> 8 & 0xff), (byte)(intCID & 0xff) } ;
+
+			try {out.write(bytes);} catch (IOException e) {e.printStackTrace();}
+
+			offset += Character.charCount(codePoint);
+		}
+	
+		return Hex.getString(out.toByteArray());
+		
+	}    
+	
+    public String getUnicodeEscapeString(int intValue){return "\\u"+ addZeros(Integer.toHexString(intValue));}
+	
+	public String getUnicodeString(int intValue){return "U+"+addZeros(Integer.toHexString(intValue));}
+	
+    private String addZeros(String a){
+		int i = 0;
+		i = a.length();
+		if ( i == 4 ){return a;}
+		else{
+			int j= 4 - i;
+			for (int k=0; k<j; k++){a = "0" + a;}
+			return a;
+		}
+	}
     
+    public String getFontDictionary(){
+    	
+    	String strResults = "First Char >> "+ getFirstChar()+ JavaNewLine; 
+    	strResults += "Last Char >> " + getLastChar()+ JavaNewLine;
+    	strResults += "Font Descriptor Flags >> " + getFontDescriptorFlags() + " " + JavaNewLine;;
+    	strResults +="Font BBox >> [ " + getFontBBox() + " ]" + JavaNewLine;
+    	strResults += "Missing Width >> " +  getMissingWidth() + " " + JavaNewLine;
+    	strResults += "StemV >> " +getStemV() + " " + JavaNewLine;
+    	strResults += "Italic Angle >> " + getItalicAngle() + " " + JavaNewLine;
+    	strResults += "Cap Height >> " +getCapHeight() + " " + JavaNewLine;
+    	strResults += "X Height >> " + getXHeight() + " " + JavaNewLine;
+    	strResults += "Ascent >> " + getAscent() + " " + JavaNewLine;
+    	strResults += "Descent >> " + getDescent() + " " + JavaNewLine;
+    	strResults += "Leading >> " + getLeading()+ " " + JavaNewLine;
+    	strResults += "Max Width >> " + getMaxWidth() + " " + JavaNewLine; 
+    	strResults += "Avg Width >> " + getAvgWidth() + " " + JavaNewLine;
+    	
+    	return strResults;
+    }
+    
+/** Need a toString Method for debugging and development */
+	
+	public String toString(){
+		
+		String strToString = "<< Start of PDF font dictionary >> " + JavaNewLine;
+		strToString += getFontDictionary();
+		strToString += "<< End PDF Font Dictionary >>" + JavaNewLine;
+		strToString += "BaseFont Name >> " + strBaseFontName + JavaNewLine;
+		strToString += "Flags Values >> " + getFontDescriptorFlags() + JavaNewLine;
+		strToString += "Flags Set Values Fixed Pitch >> " + blnFixedPitchFlag + JavaNewLine;
+		strToString += "Flags Set Values Serif >> " + blnSerifFlag + JavaNewLine;
+		strToString += "Flags Set Values Symbolic >> " + blnSymbolicFlag + JavaNewLine;
+		strToString += "Flags Set Values Non Symbolic >> " + blnNonsymbolicFlag + JavaNewLine;
+		strToString += "Flags Set Values Script >> " + blnScriptFlag + JavaNewLine;
+		strToString += "Flags Set Values Italic >> " + blnItalicFlag + JavaNewLine;
+		strToString += "Flags Set Values All Caps >> " + blnAllCapFlag + JavaNewLine;
+		strToString += "Flags Set Values Small Caps >> " + blnSmallCapFlag + JavaNewLine;
+		strToString += "Flags Set Values Force Bold >> " + blnForceBoldFlag + JavaNewLine;
+		strToString += "Font Bounding Box >> " + getFontBBox() + JavaNewLine;
+		strToString += "Character Missing Width >> " + getMissingWidth() + JavaNewLine;
+		strToString += "Capital letters Height >> " + getCapHeight() + JavaNewLine;
+		strToString += "Lower case x Height >> " + getXHeight() + JavaNewLine;
+		strToString += "The  Font Weight >>" + getFontWeight() + JavaNewLine;
+		strToString += "Italic Angle Slope Right neg number >> " + getItalicAngle() + JavaNewLine;
+		strToString += "Ascent maximum height above baseline >> " + getAscent() + JavaNewLine;
+		strToString += "Descent maximum depth below baseline >> " + getDescent() + JavaNewLine;
+		strToString += "spacing between baselines of consecutive lines >> " + getLeading() + JavaNewLine;
+		strToString += "The thickness, measured horizontally, of the dominant vertical stems of glyphs in the font. >> " + getStemV() + JavaNewLine;
+		strToString += "Maximum advance width value in ‘hmtx’ table. >> " + getMaxWidth()+ JavaNewLine;
+		strToString += "Average weighted advance width of lower case letters and space >> " + getAvgWidth() + JavaNewLine;
+		return strToString;
+		
+	}
 }
