@@ -1,4 +1,4 @@
-package pdfWriter;
+package frames;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import Fonts.FontManager;
+import pdfWriter.clsPdfWriter;
 
 
 
