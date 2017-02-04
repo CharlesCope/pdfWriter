@@ -37,7 +37,7 @@ import pdfCmaps.identityH;
 /**
  * The TrueType font.
  */
-public class ChcFont {
+public class PdfFont {
 	private static final int ITALIC = 1;
 	private static final int OBLIQUE = 512;
 	public static final int PLATFORM_UNICODE = 0;
@@ -123,7 +123,7 @@ public class ChcFont {
 	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
 	/** Constructor   */
-    public ChcFont() {
+    public PdfFont() {
     	uniToGID = new TreeMap<Integer, Integer>();
     	glyphIds = new TreeSet<Integer>();
         glyphIds.add(0);
@@ -421,8 +421,8 @@ public class ChcFont {
     /**
      * @param pathName Path to the TTF font file
      */
-    public ChcFont create(String pathName) {
-        ChcFont font = new ChcFont();
+    public PdfFont create(String pathName) {
+        PdfFont font = new PdfFont();
         font.read(pathName);
         return font;
     }

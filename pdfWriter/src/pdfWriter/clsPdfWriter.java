@@ -31,7 +31,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import Fonts.ChcFont;
+import Fonts.PdfFont;
 import Fonts.FontManager;
 import cidObjects.CIDFontDictionary;
 import cidObjects.CIDFontDictionary.CIDFontTypes;
@@ -147,7 +147,7 @@ public class clsPdfWriter {
     private Integer intToUnicodeObject = 0; //-- Keep up with the Unicode Cmap file;
     private Boolean blnToUnicodeNeeded = true; // Keep only one copy of unicode Cmap in file.
     private String strPDFilepath;// Used to write binary data to pdf file.
-    private  List<ChcFont> PDFFontList = new LinkedList<>();
+    private  List<PdfFont> PDFFontList = new LinkedList<>();
 
     //-- Used for our Jpeg files only.
     private ImageDictionary strImageJPEG;
@@ -409,13 +409,13 @@ public class clsPdfWriter {
 			dicFontsUsed.put(font.getName(), intFontCount);
 			String strFilePath = getFontPath(font);
 		
-			ChcFont	pdfFont =new ChcFont().create(strFilePath);
+			PdfFont	pdfFont =new PdfFont().create(strFilePath);
 			// TODO: Need an if statement here later but just for testing right now.  Hard coded for now.
 			pdfFont.setToUnicodeCMAP("identityH");
 			PDFFontList.add(pdfFont);
 		}
 		
-		ChcFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
+		PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
 		
 		Double sngLength ;
 		
@@ -1177,7 +1177,7 @@ public class clsPdfWriter {
     
     private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
     	String strComment  = "";
-    	ChcFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
+    	PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
     	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        	
@@ -1838,7 +1838,7 @@ public class clsPdfWriter {
 	}
 //End Region    
 	 
-    public void embedFontFile(ChcFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
+    public void embedFontFile(PdfFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
     	// Only embed fonts from resource at this time
     	upDateReferenceTable();
     	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");

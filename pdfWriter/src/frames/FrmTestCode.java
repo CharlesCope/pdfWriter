@@ -17,12 +17,10 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
-// Code Came from here.
-// http://www.udel.edu/CIS/software/dist/batik-src/xml-batik/sources/org/apache/batik/svggen/
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
-import Fonts.ChcFont;
+import Fonts.PdfFont;
 import Fonts.table.CmapFormat0;
 import Fonts.table.CmapFormat2;
 import Fonts.table.CmapFormat4;
@@ -92,7 +90,7 @@ public class FrmTestCode extends JFrame {
 				
 				
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
-				ChcFont myPDFFont = new ChcFont().create(fileName);
+				PdfFont myPDFFont = new PdfFont().create(fileName);
 				// TODO: Need an if statement here later but just for testing right now. 
 				myPDFFont.setToUnicodeCMAP("identityH");
 				// Just testing here
@@ -174,7 +172,7 @@ public class FrmTestCode extends JFrame {
 		}
 	}
 	
-	public void getGlyphsAndWidths(int[] glyphIDs, ChcFont myPDFFont){
+	public void getGlyphsAndWidths(int[] glyphIDs, PdfFont myPDFFont){
 	
 		int CharCode = 0;
 		// Hard Code the first row

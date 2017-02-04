@@ -6,7 +6,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import Fonts.ChcFont;
+import Fonts.PdfFont;
 
 public class CmapFormat4 extends CmapFormat {
 
@@ -55,8 +55,8 @@ public class CmapFormat4 extends CmapFormat {
         // Offset in bytes to glyph indexArray, or 0
         for (int i = 0; i < segCount; i++) {idRangeOffset[i] = raf.readUnsignedShort();}
 
-        tmpGlyphToChar = new HashMap<Integer, Integer>(ChcFont.intGlyphCount);
-        characterCodeToGlyphId = new HashMap<Integer, Integer>(ChcFont.intGlyphCount);
+        tmpGlyphToChar = new HashMap<Integer, Integer>(PdfFont.intGlyphCount);
+        characterCodeToGlyphId = new HashMap<Integer, Integer>(PdfFont.intGlyphCount);
        
         int maxGlyphId = 0;
 
