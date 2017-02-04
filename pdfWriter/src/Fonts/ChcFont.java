@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -56,9 +57,8 @@ public class ChcFont {
     public static final int ENCODING_UNICODE_1_1 = 1;
     public static final int ENCODING_UNICODE_2_0_BMP = 3;
     public static final int ENCODING_UNICODE_2_0_FULL = 4;
-    
+    enum  State{FIRST, BRACKET, SERIAL }
     private final String  PDFCRLF = "\r\n";
-	private String strWEntry ="";
 	private String strToUnicodeCMAP ="";
 	public static int intGlyphCount ;
 	private String path;
@@ -112,7 +112,6 @@ public class ChcFont {
 	private Integer intStemH = 0;
 	private Integer intMaxWidth = 0;
 	private Integer intAvgWidth = 0;
-	private CmapFormat cmapFormat = null;
 	private CIDSystemInfo cidSystemInfo = new CIDSystemInfo();
 	
 	// Subset stuff here
@@ -190,9 +189,6 @@ public class ChcFont {
 
     public PostTable getPostTable() {return post;}
     
-    public CmapFormat getCmapFormat() {return cmapFormat;}
-	public void setCmapFormat(CmapFormat cmapFormat) {this.cmapFormat = cmapFormat;}
-
 	public void setFirstChar(int FirstChar){intFirstChar = FirstChar;}
     public String getFirstChar(){return  intFirstChar.toString();}
     
@@ -354,6 +350,9 @@ public class ChcFont {
             loca.init(intGlyphCount, head.getIndexToLocFormat() == 0);
             glyf.init(intGlyphCount, loca);
             
+            // Set the best unicode Cmap for this font
+            getUnicodeCmap();
+            
             // Now get the data from the tables
             intUnitsPerEm = head.getUnitsPerEm(); 
             BBoxLowerLeftx = (int) head.getXMin();
@@ -374,6 +373,11 @@ public class ChcFont {
     		blnScriptFlag = os2.getIsScript();
     		blnSerifFlag = os2.getIsSerif();		
     		
+    		/** Only Roman Encoding or Windows uni-code are allowed for a non symbolic font 
+    		 *  For symbolic font, no encoding entry is allowed and only one encoding entry is expected into the FontFile CMap
+    		 *  Any font whose character set is not a subset of the Adobe standard character set is considered to be symbolic.
+    		 *  If the Symbolic flag should be set then the Nonsymbolic flag must be cleared .
+    		 * */
     		blnSymbolicFlag = true;
     		blnNonsymbolicFlag = false;
     		
@@ -412,7 +416,7 @@ public class ChcFont {
         } catch (IOException e) {e.printStackTrace();}
     }
     
-    public static ChcFont create() { return new ChcFont(); }
+    //public static ChcFont create() { return new ChcFont(); }
     
     /**
      * @param pathName Path to the TTF font file
@@ -444,9 +448,96 @@ public class ChcFont {
 		
 	}
    
-    public String getWEntry(){ return strWEntry;}
-	public void setWEntry(String WEntry){strWEntry = WEntry;}	 
-    
+    public String getWEntry(){ 
+    	/** The W Entry array allows the definition of widths for individual CIDs */
+    	
+  	  int cidMax = intGlyphCount;
+        int[] gidwidths = new int[cidMax * 2];
+        
+        for (int cid = 0; cid < cidMax; cid++){
+            gidwidths[cid * 2] = cid;
+            gidwidths[cid * 2 + 1] = hmtx.getAdvanceWidth(cid);
+        }
+        float scaling = 1000f / intUnitsPerEm;
+        
+        long lastCid = gidwidths[0];
+        long lastValue = Math.round(gidwidths[1] * scaling);
+      
+        ArrayList<String> inner = null;
+        ArrayList<String> outer = new ArrayList<String>();
+       
+        outer.add(String.valueOf(lastCid));
+       
+        State state = State.FIRST;
+
+        for (int i = 2; i < gidwidths.length; i += 2){
+      	  
+            long cid   = gidwidths[i];
+            long value = Math.round(gidwidths[i + 1] * scaling);
+
+            switch (state){
+            case FIRST:
+          	  
+          	  if (cid == lastCid + 1 && value == lastValue){state = State.SERIAL;}
+          	  else if (cid == lastCid + 1){
+          		  state = State.BRACKET;
+          		  inner = new ArrayList<String>();
+          		  inner.add(String.valueOf(lastValue));
+          	  }
+
+          	  else{
+          		  inner = new ArrayList<String>();
+          		  inner.add(String.valueOf(lastValue));
+          		  outer.add(inner.toString());
+          		  outer.add(String.valueOf(cid));
+          	  }
+          	  break;
+            case BRACKET:
+          	 
+          	  if (cid == lastCid + 1 && value == lastValue){
+          		  state = State.SERIAL;
+          		  outer.add(inner.toString());
+          		  outer.add(String.valueOf(lastCid)); }
+          	  else if (cid == lastCid + 1){inner.add(String.valueOf(lastValue));}
+          	  else{
+          		  state = State.FIRST;
+          		  inner.add(String.valueOf(lastValue));
+          		  outer.add(inner.toString());
+          		  outer.add(String.valueOf(cid));}
+          	  break;
+            case SERIAL:
+          	  if (cid != lastCid + 1 || value != lastValue){
+          		  outer.add(String.valueOf(lastCid));
+          		  outer.add(String.valueOf(lastValue));
+          		  outer.add(String.valueOf(cid));
+          		  state = State.FIRST;
+          	  }
+          	  break;
+            }
+            lastValue = value;
+            lastCid = cid;
+        }
+
+        switch (state)
+        {
+        case FIRST:
+      	  inner =  new ArrayList<String>();
+      	  inner.add(String.valueOf(lastValue));
+      	  outer.add(inner.toString());
+      	  break;
+        case BRACKET:
+      	  inner.add(String.valueOf(lastValue));
+      	  outer.add(inner.toString());
+      	  break;
+        case SERIAL:
+      	  outer.add(String.valueOf(lastCid));
+      	  outer.add(String.valueOf(lastValue));
+      	  break;
+        }
+         // Now return it without the comma and make it readable for humans.
+        return outer.toString().replace(",", "").replace("]", "]" + PDFCRLF);
+    }
+	    
 	public String getCIDSystemInfoDictionary(){ return cidSystemInfo.toString();}
 	
 	public String getToUnicodeCMAP(){return strToUnicodeCMAP;}

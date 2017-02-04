@@ -31,9 +31,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import Fonts.FontManager;
 import Fonts.ChcFont;
-import Fonts.fontToPDFfont;
+import Fonts.FontManager;
 import cidObjects.CIDFontDictionary;
 import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfObjects.FontDescriptor;
@@ -410,7 +409,9 @@ public class clsPdfWriter {
 			dicFontsUsed.put(font.getName(), intFontCount);
 			String strFilePath = getFontPath(font);
 		
-			ChcFont	pdfFont = fontToPDFfont.ConvertFontFileToPDFFont(strFilePath); 
+			ChcFont	pdfFont =new ChcFont().create(strFilePath);
+			// TODO: Need an if statement here later but just for testing right now.  Hard coded for now.
+			pdfFont.setToUnicodeCMAP("identityH");
 			PDFFontList.add(pdfFont);
 		}
 		
@@ -1859,47 +1860,7 @@ public class clsPdfWriter {
     		System.out.println("Chris");
 
     	}
-    	/** TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,”
-    	 *   “prep,” “glyf,” “hmtx,” and “fpgm.” If used with a simple font dictionary, the font
-    	 *   program must additionally contain a “cmap” table defining one or more encodings,
-    	 *   as discussed in “Encodings for TrueType Fonts” on page 429. If used with a
-    	 *   CIDFont dictionary, the “cmap” table is not needed, since the mapping from
-    	 *   character codes to glyph descriptions is provided separately.    
-    	 */
-    	//	Integer  intLength = 0;
-    	//intLength = pffFont.getFont().getHeadTable().getAllBytes().length;
-    	//intLength+= pffFont.getFont().getHheaTable().getAllBytes().length;
-    	//intLength+= pffFont.getFont().getLocaTable().getAllBytes().length;
-    	//intLength+= pffFont.getFont().getMaxpTable().getAllBytes().length;
-    	//The 'cvt ' table is optional
-    	//if(pffFont.getFont().getCvtTable()!= null ){intLength+= pffFont.getFont().getCvtTable().getAllBytes().length;}
-    	//TODO: Nothing says this table is optional so why is it null?
-    	//if(pffFont.getFont().getPrepTable()!= null ){intLength+= pffFont.getFont().getPrepTable().getAllBytes().length;}
-    	//intLength+= pffFont.getFont().getGlyfTable().getAllBytes().length;
-    	//intLength+= pffFont.getFont().getHmtxTable().getAllBytes().length;
-    	//The 'fpgm' table is optional.
-    	//if(pffFont.getFont().getFpgmTable()!= null ){	intLength+= pffFont.getFont().getFpgmTable().getAllBytes().length;}
     	
-    	//strEmbedded +=	intLength.toString()  + "/Length1 "+intLength.toString() + "  >>" + PDFCRLF;
-		//strEmbedded += "stream";
-		//writeString(writer, strEmbedded);
-		//writer.close();
-		//DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
-		//dosFile.write(pffFont.getFont().getHeadTable().getAllBytes());
-		//dosFile.write(pffFont.getFont().getHheaTable().getAllBytes());
-		//dosFile.write(pffFont.getFont().getLocaTable().getAllBytes());
-		//dosFile.write(pffFont.getFont().getMaxpTable().getAllBytes());
-		//The 'cvt ' table is optional
-		//if(pffFont.getFont().getCvtTable()!= null ){
-		//	dosFile.write(pffFont.getFont().getCvtTable().getAllBytes());}
-		//if(pffFont.getFont().getPrepTable()!= null ){
-		//	dosFile.write(pffFont.getFont().getPrepTable().getAllBytes());}
-		//dosFile.write(pffFont.getFont().getGlyfTable().getAllBytes());
-		//dosFile.write(pffFont.getFont().getHmtxTable().getAllBytes());
-		//The 'fpgm' table is optional.
-		//if(pffFont.getFont().getFpgmTable()!= null ){
-		//	dosFile.write(pffFont.getFont().getFpgmTable().getAllBytes());}
-		//dosFile.close();
 		
 //		strEmbedded = "endstream" + PDFCRLF;
 //		strEmbedded+= "endobj"+ PDFCRLF;

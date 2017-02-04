@@ -23,7 +23,6 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 import Fonts.ChcFont;
-import Fonts.fontToPDFfont;
 import Fonts.table.CmapFormat0;
 import Fonts.table.CmapFormat2;
 import Fonts.table.CmapFormat4;
@@ -93,7 +92,9 @@ public class FrmTestCode extends JFrame {
 				
 				
 				String fileName = path + File.separator + "Fonts"+ File.separator +(String) cboFonts.getSelectedItem();
-				ChcFont myPDFFont = fontToPDFfont.ConvertFontFileToPDFFont(fileName);
+				ChcFont myPDFFont = new ChcFont().create(fileName);
+				// TODO: Need an if statement here later but just for testing right now. 
+				myPDFFont.setToUnicodeCMAP("identityH");
 				// Just testing here
 				// byte[] mydata = myPDFFont.getFont().getHeadTable().getAllBytes();
 				//byte[] mydata = myPDFFont.getFont().getHheaTable().getAllBytes();
@@ -114,22 +115,23 @@ public class FrmTestCode extends JFrame {
 				model.setColumnIdentifiers(new String[] {"Unicode", "Character", "Symbol", "GlyphID", "PDF Width"});
 
 				refreshTableModel();
+				myPDFFont.getUnicodeCmap().getFormat();
 				//	Check what format of table are we getting
-				if (myPDFFont.getCmapFormat() != null) {
-					if (myPDFFont.getCmapFormat().getFormat() == 4) {
-						CmapFormat4 cmapFormat4 = (CmapFormat4) myPDFFont.getCmapFormat();
+				if (myPDFFont.getUnicodeCmap() != null) {
+					if (myPDFFont.getUnicodeCmap().getFormat() == 4) {
+						CmapFormat4 cmapFormat4 = (CmapFormat4) myPDFFont.getUnicodeCmap();
 						lblTableData.setText("Cmap Format 4");
 						getGlyphsAndWidths(cmapFormat4.getGlyphIdArray(), myPDFFont);}
-					else if(myPDFFont.getCmapFormat().getFormat() == 2){
-						CmapFormat2 cmapFormat2 = (CmapFormat2) myPDFFont.getCmapFormat();
+					else if(myPDFFont.getUnicodeCmap().getFormat() == 2){
+						CmapFormat2 cmapFormat2 = (CmapFormat2) myPDFFont.getUnicodeCmap();
 						lblTableData.setText("Cmap Format 2");
 						getGlyphsAndWidths(cmapFormat2.getGlyphIndexArray(), myPDFFont);}
-					else if(myPDFFont.getCmapFormat().getFormat() == 0){
-						CmapFormat0 cmapFormat0 = (CmapFormat0) myPDFFont.getCmapFormat();
+					else if(myPDFFont.getUnicodeCmap().getFormat() == 0){
+						CmapFormat0 cmapFormat0 = (CmapFormat0) myPDFFont.getUnicodeCmap();
 						lblTableData.setText("Cmap Format 0");
 						getGlyphsAndWidths(cmapFormat0.getGlyphIdArray(), myPDFFont);}
-					else if(myPDFFont.getCmapFormat().getFormat() == 6){
-						CmapFormat6 cmapFormat6 = (CmapFormat6) myPDFFont.getCmapFormat();
+					else if(myPDFFont.getUnicodeCmap().getFormat() == 6){
+						CmapFormat6 cmapFormat6 = (CmapFormat6) myPDFFont.getUnicodeCmap();
 						lblTableData.setText("Cmap Format 6");
 						getGlyphsAndWidths(cmapFormat6.getGlyphIdArray(), myPDFFont);
 					}
@@ -179,7 +181,7 @@ public class FrmTestCode extends JFrame {
 		String temp = myPDFFont.getUnicodeEscapeString(0);
 		char symbol = (char) Integer.parseInt( temp.substring(2), 16 );
 		String unicode = myPDFFont.getUnicodeString(0);
-		CharCode = myPDFFont.getCmapFormat().mapCharCode(0);
+		CharCode = myPDFFont.getUnicodeCmap().mapCharCode(0);
 		int pdfwidth = myPDFFont.getGlyphWidthToPDFWidth(CharCode);
 		model.addRow(new Object[]{unicode,0,symbol,CharCode,pdfwidth});
 		
@@ -187,7 +189,7 @@ public class FrmTestCode extends JFrame {
 			temp = myPDFFont.getUnicodeEscapeString(i);
 			symbol = (char) Integer.parseInt( temp.substring(2), 16 );
 			unicode = myPDFFont.getUnicodeString(i);
-			CharCode = myPDFFont.getCmapFormat().mapCharCode(i);
+			CharCode = myPDFFont.getUnicodeCmap().mapCharCode(i);
 			if(CharCode > 0 ){
 				// Deal with the space
 				if (i == 32){pdfwidth = myPDFFont.getSpaceWidthToPDFWidth();}
