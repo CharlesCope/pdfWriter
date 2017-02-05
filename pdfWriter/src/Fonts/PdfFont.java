@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
@@ -88,6 +89,7 @@ public class PdfFont {
 	private Integer intMissingWidth = 0;
 	private String strBaseFontName = "";
 	private String strFontFamilyName = "";
+	private String strPrefixNameTag = "";
 	// Flags
 	private boolean blnFixedPitchFlag = false;
 	private boolean blnSerifFlag = false; 
@@ -218,7 +220,26 @@ public class PdfFont {
     public String getFontBaseName(){return strBaseFontName;}
     
     public String getFontFamilyName(){return strFontFamilyName;}
-    
+    /**
+	 * The tag consists of exactly six upper case letters; the
+	 * choice of letters is arbitrary, but different subsets in the same PDF file must have
+	 * different tags. 
+	 */
+    public String getPrefixNameTag() {
+    	int intRandom = 65;
+		int asciiForUpperA = 65;
+		int asciiForUpperZ = 90;
+		char[] charArray = new char[6];
+		// Loop six times picking random letters
+		  for (int intIndex = 0; intIndex < 6; intIndex++) {
+			  intRandom =  randInt(asciiForUpperA,asciiForUpperZ);
+			  charArray[intIndex] = (char) intRandom;
+	        }
+		
+		  strPrefixNameTag =  String.valueOf(charArray);
+    	
+    	return strPrefixNameTag;
+	}
     public String getAscent(){return intAscent.toString();}
     
     public String getDescent(){return intDescent.toString();}
@@ -792,7 +813,17 @@ public class PdfFont {
 			return a;
 		}
 	}
-    
+   private int randInt(int min, int max) {
+
+        // Usually this can be a field rather than a method variable
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
+    }
     public String getFontDictionary(){
     	
     	String strResults = "First Char >> "+ getFirstChar()+ JavaNewLine; 

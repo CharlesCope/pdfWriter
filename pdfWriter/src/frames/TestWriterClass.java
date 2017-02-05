@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Properties;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -104,14 +105,17 @@ public class TestWriterClass extends JDialog {
 		btnTest.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 			
-				Properties fontProperties = FontManager.getInstance().getFontProperties(false);
-				System.out.println("The Foninfo we need is " + fontProperties.get("malgun gothic"));
+// Just testing 
+			
+				
+				//Properties fontProperties = FontManager.getInstance().getFontProperties(false);
+				//System.out.println("The Foninfo we need is " + fontProperties.get("malgun gothic"));
 				
 //				for (Object value : fontProperties.values()) {
 //					
 //					System.out.println(value);
 //				}
-		    	JOptionPane.showMessageDialog(null, "Done with test ");
+		    	JOptionPane.showMessageDialog(null, "Test Done");
 			}
 		});
 		btnTest.setBounds(23, 198, 89, 23);
@@ -226,5 +230,15 @@ public class TestWriterClass extends JDialog {
 
 	}
 	
-	
+	private int randInt(int min, int max) {
+
+        // Usually this can be a field rather than a method variable
+        Random rand = new Random();
+
+        // nextInt is normally exclusive of the top value,
+        // so add 1 to make it inclusive
+        int randomNum = rand.nextInt((max - min) + 1) + min;
+
+        return randomNum;
+    }
 }
