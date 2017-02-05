@@ -417,6 +417,15 @@ public class clsPdfWriter {
 		
 		PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
 		
+		// Now add the code points to the font.
+		for (int offset = 0; offset < strTextToShow.length(); ) {
+             int codePoint = strTextToShow.codePointAt(offset);
+             curPDFFont.subSetAdd(codePoint);
+             offset += Character.charCount(codePoint);
+         }
+		
+		
+		
 		Double sngLength ;
 		
 		  switch(Align){
