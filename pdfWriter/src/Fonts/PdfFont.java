@@ -2,7 +2,6 @@ package Fonts;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
@@ -198,6 +197,8 @@ public class PdfFont {
 	public String getLastChar(){return  intLastChar.toString();}
 
     public int getNumGlyphs() {return maxp.getNumGlyphs();}
+    
+    public int getSubSetNumGlyphs() {return glyphIds.size();}
     
 	public String getFontWeight() {return  intWeight.toString();}
 	
@@ -669,69 +670,70 @@ public class PdfFont {
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
     
-    public byte[] getSubSetFontBytes(String strPDFilepath, int intNumberGlyph, boolean cmapRequired, boolean postRequired, boolean appendFile){
-    
+    public byte[] getSubSetFontBytes( boolean cmapRequired, boolean postRequired){
+    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    	int intNumberGlyph = glyphIds.size();
     	try {
-			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, appendFile));
-    	
-    	
-    	Map<String, byte[]> tables = new TreeMap<String, byte[]>();
-    	long[] newLoca = new long[intNumberGlyph + 1];
 
-    	/* The following TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,” “prep,” “glyf,” “hmtx,” and “fpgm.
-    	 * If used with a simple font dictionary, the font program must additionally contain a “cmap” table
-    	 */
-    	
-    	if (head != null){
-    		head.setCheckSumAdjustment(0);
-    		head.setIndexToLocFormat((short) 1);// Force long format
-    		tables.put("head", head.getAllBytes());
-    	}
+    		DataOutputStream dosFile = new DataOutputStream(baos);
 
-    	if(hhea !=null){tables.put("hhea", hhea.getSubSetBytes(glyphIds));}
-    	
-    	if(maxp !=null){
-    		maxp.setNumGlyphs(intNumberGlyph);
-    		tables.put("maxp", maxp.getAllBytes());
-    	}
-      
-    	if (glyf != null){tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds));}
-    	
-    	if (loca != null){tables.put("loca", loca.getSubSetBytes(newLoca));}
-    	
-    	if (cmapRequired == true){if (cmap != null){	tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));}}
-    	
-    	if (hmtx != null){	tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));	}
-    	
-    	if(postRequired == true){if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}}
+    		Map<String, byte[]> tables = new TreeMap<String, byte[]>();
+    		long[] newLoca = new long[intNumberGlyph + 1];
 
-    	if(cvt != null){	tables.put("cvt ", cvt.getAllBytes());}
-    	
-    	if(prep != null){tables.put("prep",prep.getAllBytes());	}
-    	
-    	if(fpgm != null){tables.put("fpgm", fpgm.getAllBytes());	}
-    	
-    	if(gasp != null){tables.put("gasp", gasp.getAllBytes());}
-    	
-    	 // calculate checksum  should get 917664 checksum 
-        long checksum = writeFileHeader(dosFile, tables.size());
-        long offset = 12L + 16L * tables.size();
-        
-        for (Map.Entry<String, byte[]> entry : tables.entrySet()){
-            checksum += writeTableHeader(dosFile, entry.getKey(), offset, entry.getValue());
-            offset += (entry.getValue().length + 3) / 4 * 4;
-        }
-        checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
-      
-        head.setCheckSumAdjustment(checksum);
-        
-        for (byte[] bytes : tables.values()){writeTableBody(dosFile, bytes);}
-        
-        dosFile.close();
-        
+    		/* The following TrueType tables are always required: “head,” “hhea,” “loca,” “maxp,” “cvt ,” “prep,” “glyf,” “hmtx,” and “fpgm.
+    		 * If used with a simple font dictionary, the font program must additionally contain a “cmap” table
+    		 */
+
+    		if (head != null){
+    			head.setCheckSumAdjustment(0);
+    			head.setIndexToLocFormat((short) 1);// Force long format
+    			tables.put("head", head.getAllBytes());
+    		}
+
+    		if(hhea !=null){tables.put("hhea", hhea.getSubSetBytes(glyphIds));}
+
+    		if(maxp !=null){
+    			maxp.setNumGlyphs(intNumberGlyph);
+    			tables.put("maxp", maxp.getAllBytes());
+    		}
+
+    		if (glyf != null){tables.put("glyf", glyf.getSubSetBytes(newLoca, loca.getOffsets(),getOriginalData(),glyphIds));}
+
+    		if (loca != null){tables.put("loca", loca.getSubSetBytes(newLoca));}
+
+    		if (cmapRequired == true){if (cmap != null){	tables.put("cmap", cmap.getSubSetBytes(uniToGID, glyphIds));}}
+
+    		if (hmtx != null){	tables.put("hmtx", hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics()));	}
+
+    		if(postRequired == true){if (post != null){tables.put("post", post.getSubSetBytes(glyphIds));}}
+
+    		if(cvt != null){	tables.put("cvt ", cvt.getAllBytes());}
+
+    		if(prep != null){tables.put("prep",prep.getAllBytes());	}
+
+    		if(fpgm != null){tables.put("fpgm", fpgm.getAllBytes());	}
+
+    		if(gasp != null){tables.put("gasp", gasp.getAllBytes());}
+
+    		// calculate checksum  should get 917664 checksum 
+    		long checksum = writeFileHeader(dosFile, tables.size());
+    		long offset = 12L + 16L * tables.size();
+
+    		for (Map.Entry<String, byte[]> entry : tables.entrySet()){
+    			checksum += writeTableHeader(dosFile, entry.getKey(), offset, entry.getValue());
+    			offset += (entry.getValue().length + 3) / 4 * 4;
+    		}
+    		checksum = 0xB1B0AFBAL - (checksum & 0xffffffffL);
+
+    		head.setCheckSumAdjustment(checksum);
+
+    		for (byte[] bytes : tables.values()){writeTableBody(dosFile, bytes);}
+
+    		dosFile.close();
+
     	} catch (IOException e) {e.printStackTrace();	}
-    	
-    	return null;
+
+    	return baos.toByteArray();
     }
         
     private long writeFileHeader(DataOutputStream out, int nTables) throws IOException  {

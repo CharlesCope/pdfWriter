@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import pdfWriter.clsPdfWriter;
+import javax.swing.JCheckBox;
 
 
 
@@ -30,7 +31,8 @@ public class TestWriterClass extends JDialog {
 	private JButton btnPDF;
 	private JComboBox<String> cboLanguage;
 	private JLabel lblMessage;
-
+	private boolean blnEmbedded = false;
+	
 	/** Launch the application.	 */
 	public static void main(String[] args) {
 		try {
@@ -98,25 +100,17 @@ public class TestWriterClass extends JDialog {
 		btnPDF.setBounds(156, 197, 122, 23);
 		contentPanel.add(btnPDF);
 		
-		JButton btnTest = new JButton("Test");
-		btnTest.addActionListener(new ActionListener() {
+		JCheckBox chckbxEmbedded = new JCheckBox("Embed Font File");
+		chckbxEmbedded.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			
-// Just testing 
-			
-				
-				//Properties fontProperties = FontManager.getInstance().getFontProperties(false);
-				//System.out.println("The Foninfo we need is " + fontProperties.get("malgun gothic"));
-				
-//				for (Object value : fontProperties.values()) {
-//					
-//					System.out.println(value);
-//				}
-		    	JOptionPane.showMessageDialog(null, "Test Done");
+				if(chckbxEmbedded.isSelected()== true ){blnEmbedded = true;}
+				if(chckbxEmbedded.isSelected()== false ){blnEmbedded = false;}
 			}
 		});
-		btnTest.setBounds(23, 198, 89, 23);
-		contentPanel.add(btnTest);
+		chckbxEmbedded.setBackground(Color.WHITE);
+		chckbxEmbedded.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		chckbxEmbedded.setBounds(10, 196, 135, 23);
+		contentPanel.add(chckbxEmbedded);
 	}
 	private void setUpEvents(){
 		btnPDF.addActionListener(new ActionListener() {
@@ -150,7 +144,7 @@ public class TestWriterClass extends JDialog {
 				//-- Put the file on the user desk top
 				String strFileName = "TestingTrueTypeFonts.pdf";
 				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;
-				myPDFClass.WritePDF(strPath);
+				myPDFClass.WritePDF(strPath,blnEmbedded);
 
 				JOptionPane.showMessageDialog(null, "The TestingTrueTypeFonts.pdf  File has been created ");				
 
@@ -162,7 +156,7 @@ public class TestWriterClass extends JDialog {
 		    	Font fontTimes = new Font ("TimesRoman", Font.TRUETYPE_FONT, 14);
 		    	
 		    	Font fontMalgun = new Font ("Malgun Gothic", Font.ITALIC, 14);
-		    	System.out.println("The font name is " + fontMalgun.getFontName());
+		    	//System.out.println("The font name is " + fontMalgun.getFontName());
 		    	String selected = (String) cboLanguage.getSelectedItem();
 		        
 		        switch (selected) {
@@ -226,6 +220,4 @@ public class TestWriterClass extends JDialog {
 		} catch (FontFormatException | IOException | URISyntaxException e) {e.printStackTrace();}
 
 	}
-	
-
 }

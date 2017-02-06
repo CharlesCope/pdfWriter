@@ -5,18 +5,14 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,8 +27,8 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
-import Fonts.PdfFont;
 import Fonts.FontManager;
+import Fonts.PdfFont;
 import cidObjects.CIDFontDictionary;
 import cidObjects.CIDFontDictionary.CIDFontTypes;
 import pdfObjects.FontDescriptor;
@@ -201,61 +197,42 @@ public class clsPdfWriter {
 		
 	}
 	//... Get Set Properties    
-	public String pdfTitle() {
-		return _pdfTitle;
-	}
-	public void pdfTitle(String _pdfTitle) {
-		this._pdfTitle = _pdfTitle;
-	}
-	public String pdfAuthor() {
-		return _pdfAuthor;
-	}
-	public void pdfAuthor(String _pdfAuthor) {
-		this._pdfAuthor = _pdfAuthor;
-	}
-	public String pdfSubject() {
-		return _pdfSubject;
-	}
-	public void pdfSubject(String _pdfSubject) {
-		this._pdfSubject = _pdfSubject;
-	}
-	public String pdfKeyWords() {
-		return _pdfKeyWords;
-	}
-	public void pdfKeyWords(String _pdfKeyWords) {
-		this._pdfKeyWords = _pdfKeyWords;
-	}
-	public String pdfCreator() {
-		return _pdfCreator;
-	}
-	public void pdfCreator(String _pdfCreator) {
-		this._pdfCreator = _pdfCreator;
-	}
-	public String pdfProducer() {
-		return _pdfProducer;
-	}
-	public void pdfProducer(String _pdfProducer) {
-		this._pdfProducer = _pdfProducer;
-	}
-	public Integer PageCount() {
-		return _pdfPageCount;
-	}
-	public void PageCount(Integer _pdfPageCount) {
-		this._pdfPageCount = _pdfPageCount;
-	}
-	public Boolean CommentFile() {
-		return _pdfCommentFile;
-	}
-	public void CommentFile(Boolean _pdfCommentFile) {
-		this._pdfCommentFile = _pdfCommentFile;
-	}
+	public String pdfTitle() {return _pdfTitle;}
 	
-	public pdfPaperSize PaperSize() {
-		return mvarPaperSize;
-	}
-	public void PaperSize(pdfPaperSize mvarPaperSize) {
-		this.mvarPaperSize = mvarPaperSize;
-		
+	public void pdfTitle(String _pdfTitle) {this._pdfTitle = _pdfTitle;}
+	
+	public String pdfAuthor() {return _pdfAuthor;}
+	
+	public void pdfAuthor(String _pdfAuthor) {this._pdfAuthor = _pdfAuthor;	}
+	
+	public String pdfSubject() {return _pdfSubject;}
+	
+	public void pdfSubject(String _pdfSubject) {this._pdfSubject = _pdfSubject;	}
+	
+	public String pdfKeyWords() {return _pdfKeyWords;}
+	
+	public void pdfKeyWords(String _pdfKeyWords) {this._pdfKeyWords = _pdfKeyWords;}
+	
+	public String pdfCreator() {return _pdfCreator;}
+	
+	public void pdfCreator(String _pdfCreator) {this._pdfCreator = _pdfCreator;}
+	
+	public String pdfProducer() {return _pdfProducer;	}
+	
+	public void pdfProducer(String _pdfProducer) {	this._pdfProducer = _pdfProducer;}
+	
+	public Integer PageCount() {return _pdfPageCount;}
+	
+	public void PageCount(Integer _pdfPageCount) {this._pdfPageCount = _pdfPageCount;}
+	
+	public Boolean CommentFile() {return _pdfCommentFile;}
+	
+	public void CommentFile(Boolean _pdfCommentFile) {this._pdfCommentFile = _pdfCommentFile;	}
+	
+	public pdfPaperSize PaperSize() {return mvarPaperSize;	}
+	
+	public void PaperSize(pdfPaperSize mvarPaperSize) {this.mvarPaperSize = mvarPaperSize;
+	
 		switch(mvarPaperSize){
            //-- Letter, 8.5 x 11 in.
 			case pdfLetter:
@@ -1198,8 +1175,14 @@ public class clsPdfWriter {
     	colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
     	Type0FontDictionary type0FontDic = new Type0FontDictionary();
     	FontDescriptor fontDesc = new FontDescriptor();
-
-    	type0FontDic.setBaseFont(curPDFFont.getFontBaseName());
+    	
+    	if(blnEmbedded == true){
+    		String strSubFontName = curPDFFont.getPrefixNameTag();
+    		strSubFontName = strSubFontName + "+" +curPDFFont.getFontBaseName();
+    		type0FontDic.setBaseFont(strSubFontName);
+    	}
+    	else{type0FontDic.setBaseFont(curPDFFont.getFontBaseName());}
+    
     	type0FontDic.setEncoding("Identity-H");
     	fontDesc.setFontName(curPDFFont.getFontBaseName());
     	fontDesc.setFlags(curPDFFont.getFontDescriptorFlags());
@@ -1848,74 +1831,33 @@ public class clsPdfWriter {
 //End Region    
 	 
     public void embedFontFile(PdfFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
-    	// Only embed fonts from resource at this time
     	upDateReferenceTable();
-    	URL baseURL = clsPdfWriter.class.getResource("/resources/fonts/");
-    	InputStream inputFontFile = null;
     	String strEmbedded= "";
-    	
-    	
     	strEmbedded = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     	strEmbedded+="<< /Length ";
-    	
-    	switch (strFontName){
-    	case "MalgunGothic":
-    		inputFontFile = new URL(baseURL, "malgun.ttf").openStream();
-    		System.out.println("Got Here Malgun");
-    		break;
-    	case "James":// Just place holder till I get it working
-    		System.out.println("James");
-    	case "Chris": // More place holders
-    		System.out.println("Chris");
-
-    	}
-    	
-		
-//		strEmbedded = "endstream" + PDFCRLF;
-//		strEmbedded+= "endobj"+ PDFCRLF;
-//		BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
-//		writeString(writer2, strEmbedded);
-//		writer2.close();
-//		// Reopen it in case more fonts need to be created. 
-//		writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
-		
-    	if(inputFontFile != null){
-    		try{		
-    			ByteArrayOutputStream baos = new ByteArrayOutputStream();				
-    			byte[] buffer = new byte[1024];
-    			int read = 0;
-    			while ((read = inputFontFile.read(buffer, 0, buffer.length)) != -1) {
-    				baos.write(buffer, 0, read);
-    			}		
-    			baos.flush();	
-    			strEmbedded +=	baos.toByteArray().length  + "/Length1 " + baos.toByteArray().length +" >>" + PDFCRLF;
-    			strEmbedded += "stream";
-    			writeString(writer, strEmbedded);
-    			writer.close();
-    			intCrossRefOffSet+=	baos.toByteArray().length;
-    			DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
-    			dosFile.write(baos.toByteArray());
-    			dosFile.close();
-    			strEmbedded = "endstream" + PDFCRLF;
-    			strEmbedded+= "endobj"+ PDFCRLF;
-    			BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
-    			writeString(writer2, strEmbedded);
-    			writer2.close();
-    			// Reopen it in case more fonts need to be created. 
-    			writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
-    			}
-    		catch (FileNotFoundException e1) {System.err.println("Cant find the file");	}
-    		catch (IOException e1) {e1.printStackTrace();}
-    	}
-    	
-
+    	byte[] SubFont = pffFont.getSubSetFontBytes(false,false);
+    	strEmbedded +=	SubFont.length  + "/Length1 " + SubFont.length +" >>" + PDFCRLF;
+    	strEmbedded += "stream";
+    	writeString(writer, strEmbedded);
+    	writer.close();
+    	intCrossRefOffSet+=	SubFont.length;
+    	DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+    	dosFile.write(SubFont);
+    	dosFile.close();
+    	strEmbedded = "endstream" + PDFCRLF;
+    	strEmbedded+= "endobj"+ PDFCRLF;
+    	BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+    	writeString(writer2, strEmbedded);
+    	writer2.close();
+    	// Reopen it in case more fonts need to be created. 
+    	writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
     }
     public void writeString(BufferedWriter writer, String str) throws IOException{
 		writer.write(str);
 		intCrossRefOffSet += str.getBytes().length;
 	}
 	 
-    public void WritePDF(String strFilePath){
+    public void WritePDF(String strFilePath, boolean blnEmbedFontFile){
     	strPDFilepath = strFilePath;
     	File file = new File(strFilePath);
     	BufferedWriter writer = null;
@@ -1929,11 +1871,10 @@ public class clsPdfWriter {
     		//-- Load only the font in use by the application to keep file size small and easy to read.
     		while(keyFonts.hasMoreElements()){
     			String key = keyFonts.nextElement();
-    			if (key.startsWith("pdfStandardFonts") ) {//-- Check to see if we need to load any standard fonts
-    				writeString(writer, LoadStandardFont(key));
-    			}
+    			//-- Check to see if we need to load any standard fonts
+    			if (key.startsWith("pdfStandardFonts") ) {writeString(writer, LoadStandardFont(key));}
     			// Else just load everything else as Type 0 Font.	 
-    			 LoadType0Font(key,writer,false);
+    			 LoadType0Font(key,writer,blnEmbedFontFile);
     		}
     		// Done with first writer
     		writer.close();
@@ -1978,25 +1919,5 @@ public class clsPdfWriter {
 
 
     }		 
-	    
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
-	 
 	
-    
-	
-}
+}// End of class
