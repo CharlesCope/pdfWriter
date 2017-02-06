@@ -128,7 +128,7 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
 				// Now I want to try two fonts
 				//String strFontOne ="This is Time Roman Font Line One.. ";
-				String strFontTwo = " Malgun Gothic Font Plus say  Hello Japanese  " + "\u3053\u3093\u306B\u3061\u306F"; 
+				String strFontTwo = " Example company Wizard text = \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC";
 				//String strFontThree ="This is  New Courier Font Line Three ";
 				
 				// Write the data..

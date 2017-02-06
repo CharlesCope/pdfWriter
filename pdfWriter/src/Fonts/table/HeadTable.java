@@ -25,8 +25,10 @@ public class HeadTable implements Table {
     private short indexToLocFormat;
     private short glyphDataFormat;
     private byte[] byteTable;
+    private int fileOffset;
     
     protected HeadTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         byteTable = new byte[de.getLength()];
         raf.read(byteTable, 0, de.getLength());
@@ -154,6 +156,8 @@ public class HeadTable implements Table {
     public long getModified() {return modified;}
 
     public int getType() {return head;}
+    
+    public int getOffset(){return fileOffset;}
 
     public short getUnitsPerEm() {return unitsPerEm;}
 

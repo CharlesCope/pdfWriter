@@ -7,8 +7,10 @@ public class CvtTable implements Table {
 
     private short[] values;
     private byte[] byteTable;
+    private int fileOffset;
 
     protected CvtTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         byteTable = new byte[de.getLength()];
         raf.read(byteTable, 0, de.getLength());
@@ -22,6 +24,8 @@ public class CvtTable implements Table {
     }
 
     public int getType() {return cvt;}
+    
+    public int getOffset(){return fileOffset;}
 
     public short[] getValues() {return values;}
     

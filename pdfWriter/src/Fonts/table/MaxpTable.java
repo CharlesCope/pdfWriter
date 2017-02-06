@@ -22,8 +22,10 @@ public class MaxpTable implements Table {
     private int maxComponentElements;
     private int maxComponentDepth;
     private byte[] byteTable;
+    private int fileOffset;
     
     protected MaxpTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         byteTable = new byte[de.getLength()];
         raf.read(byteTable, 0, de.getLength());
@@ -75,6 +77,8 @@ public class MaxpTable implements Table {
     public void setNumGlyphs(int subSetNumGlyphs) {	numGlyphs = subSetNumGlyphs;}
 
     public int getType() {return maxp;}
+    
+    public int getOffset(){return fileOffset;}
     
     public byte[] getAllBytes(){
     	// For subset we need to be able to adjust the number of glyphs.

@@ -473,7 +473,7 @@ public class PdfFont {
     public String getWEntry(){ 
     	/** The W Entry array allows the definition of widths for individual CIDs */
     	
-  	  int cidMax = intGlyphCount;
+    	int cidMax = intGlyphCount;
         int[] gidwidths = new int[cidMax * 2];
         
         for (int cid = 0; cid < cidMax; cid++){

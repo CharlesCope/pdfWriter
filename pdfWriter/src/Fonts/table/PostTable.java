@@ -72,65 +72,66 @@ public class PostTable implements Table {
     private int numGlyphs;
     private int[] glyphNameIndex;
     private String[] psGlyphName;
+    private int fileOffset;
 
     /** Creates new PostTable */
     protected PostTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
-    	  MAC_GLYPH_NAMES_INDICES = new HashMap<String,Integer>(NUMBER_OF_MAC_GLYPHS);
-          for (int i = 0; i < NUMBER_OF_MAC_GLYPHS; ++i){
-              MAC_GLYPH_NAMES_INDICES.put(MAC_GLYPH_NAMES[i],i);
-          }
-    	
-        raf.seek(de.getOffset());
-        version = raf.readInt();
-        italicAngle = raf.readInt();
-        underlinePosition = raf.readShort();
-        underlineThickness = raf.readShort();
-        isFixedPitch = raf.readInt();
-        minMemType42 = raf.readInt();
-        maxMemType42 = raf.readInt();
-        minMemType1 = raf.readInt();
-        maxMemType1 = raf.readInt();
-        
-        if (version == 1.0f) {
-        	psGlyphName = new String[NUMBER_OF_MAC_GLYPHS];
-             System.arraycopy(MAC_GLYPH_NAMES, 0, psGlyphName, 0, NUMBER_OF_MAC_GLYPHS);
-        }
-        
-        else if (version == 0x00020000) {
-            numGlyphs = raf.readUnsignedShort();
-            glyphNameIndex = new int[numGlyphs];
-            for (int i = 0; i < numGlyphs; i++) {
-                glyphNameIndex[i] = raf.readUnsignedShort();
-            }
-            int h = highestGlyphNameIndex();
-            if (h > 257) {
-                h -= 257;
-                psGlyphName = new String[h];
-                for (int i = 0; i < h; i++) {
-                    int len = raf.readUnsignedByte();
-                    byte[] buf = new byte[len];
-                    raf.readFully(buf);
-                    psGlyphName[i] = new String(buf);
-                }
-            }
-        } 
-        else if (version == 2.5f) {
-        	numGlyphs = raf.readUnsignedShort();
-        	int[] glyphNameIndex = new int[numGlyphs];
-        	
-        	for (int i = 0; i < glyphNameIndex.length; i++){
-        		int offset = raf.readByte();
-        		glyphNameIndex[i] = i + 1 + offset;
-        	}
-        	psGlyphName = new String[glyphNameIndex.length];
-        	for (int i = 0; i < psGlyphName.length; i++){
-        		String name = MAC_GLYPH_NAMES[glyphNameIndex[i]];
-        		if (name != null){psGlyphName[i] = name;}
-        	}
-        }
-        else if (version == 3.0f){
-        	// no postscript information is provided.
-        	}
+    	MAC_GLYPH_NAMES_INDICES = new HashMap<String,Integer>(NUMBER_OF_MAC_GLYPHS);
+    	for (int i = 0; i < NUMBER_OF_MAC_GLYPHS; ++i){
+    		MAC_GLYPH_NAMES_INDICES.put(MAC_GLYPH_NAMES[i],i);
+    	}
+    	fileOffset = de.getOffset();
+    	raf.seek(de.getOffset());
+    	version = raf.readInt();
+    	italicAngle = raf.readInt();
+    	underlinePosition = raf.readShort();
+    	underlineThickness = raf.readShort();
+    	isFixedPitch = raf.readInt();
+    	minMemType42 = raf.readInt();
+    	maxMemType42 = raf.readInt();
+    	minMemType1 = raf.readInt();
+    	maxMemType1 = raf.readInt();
+
+    	if (version == 1.0f) {
+    		psGlyphName = new String[NUMBER_OF_MAC_GLYPHS];
+    		System.arraycopy(MAC_GLYPH_NAMES, 0, psGlyphName, 0, NUMBER_OF_MAC_GLYPHS);
+    	}
+
+    	else if (version == 0x00020000) {
+    		numGlyphs = raf.readUnsignedShort();
+    		glyphNameIndex = new int[numGlyphs];
+    		for (int i = 0; i < numGlyphs; i++) {
+    			glyphNameIndex[i] = raf.readUnsignedShort();
+    		}
+    		int h = highestGlyphNameIndex();
+    		if (h > 257) {
+    			h -= 257;
+    			psGlyphName = new String[h];
+    			for (int i = 0; i < h; i++) {
+    				int len = raf.readUnsignedByte();
+    				byte[] buf = new byte[len];
+    				raf.readFully(buf);
+    				psGlyphName[i] = new String(buf);
+    			}
+    		}
+    	} 
+    	else if (version == 2.5f) {
+    		numGlyphs = raf.readUnsignedShort();
+    		int[] glyphNameIndex = new int[numGlyphs];
+
+    		for (int i = 0; i < glyphNameIndex.length; i++){
+    			int offset = raf.readByte();
+    			glyphNameIndex[i] = i + 1 + offset;
+    		}
+    		psGlyphName = new String[glyphNameIndex.length];
+    		for (int i = 0; i < psGlyphName.length; i++){
+    			String name = MAC_GLYPH_NAMES[glyphNameIndex[i]];
+    			if (name != null){psGlyphName[i] = name;}
+    		}
+    	}
+    	else if (version == 3.0f){
+    		// no postscript information is provided.
+    	}
     }
 
     private int highestGlyphNameIndex() {
@@ -165,7 +166,8 @@ public class PostTable implements Table {
      * @return The table type
      */
     public int getType() {return post; }
-
+    
+    public int getOffset(){return fileOffset;}
     
     public int getItalicAngle(){
     	/** Data stored as mantissa IEEE single precision standard.*/	

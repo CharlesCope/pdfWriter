@@ -19,8 +19,10 @@ public class CmapTable implements Table {
     private int numTables;
     private CmapIndexEntry[] entries;
     private CmapFormat[] formats;
+    private int fileOffset;
 
     protected CmapTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         long fp = raf.getFilePointer();
         version = raf.readUnsignedShort();
@@ -60,6 +62,7 @@ public class CmapTable implements Table {
     public int getTableVersionNumber(){return version;}
     public int getNumberOfEncodingTables(){return numTables;}
     public int getType() {return cmap;}
+    public int getOffset(){return fileOffset;}
     
     public byte[] getSubSetBytes(SortedMap<Integer, Integer> uniToGID, SortedSet<Integer> glyphIds){
     

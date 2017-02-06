@@ -12,7 +12,7 @@ public class GlyfTable implements Table {
     private byte[] buf = null;
     private GlyfDescript[] descript;
     private byte[] byteTable;
-    private long fileOffset;
+    private int fileOffset;
     
     protected GlyfTable(DirectoryEntry de, RandomAccessFile raf) throws IOException {
     	fileOffset = de.getOffset();
@@ -85,6 +85,8 @@ public class GlyfTable implements Table {
     public GlyfDescript getDescription(int i) {return descript[i];}
 
     public int getType() {return glyf;}
+    
+    public int getOffset(){return fileOffset;}
     
     public byte[] getAllBytes(){return byteTable;}
     

@@ -22,8 +22,10 @@ public class HheaTable implements Table {
     private int   numberOfHMetrics;
     private int dataLength;
     private byte[] byteTable;
+    private int fileOffset;
     
     protected HheaTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         dataLength = de.getLength();
         byteTable = new byte[dataLength];
@@ -70,6 +72,8 @@ public class HheaTable implements Table {
     	numberOfHMetrics = intSubsetNumberOfHMetrics;}
 
     public int getType() {return hhea;}
+    
+    public int getOffset(){return fileOffset;}
 
     public short getXMaxExtent() {return xMaxExtent;}
     

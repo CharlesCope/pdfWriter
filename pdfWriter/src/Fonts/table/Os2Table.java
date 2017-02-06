@@ -41,8 +41,10 @@ public class Os2Table implements Table {
     private short sCapHeight;
     private int usDefaultChar;
     private int usBreakChar;
-
+    private int fileOffset;
+    
     protected Os2Table(DirectoryEntry de,RandomAccessFile raf) throws IOException {
+    	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         version = raf.readUnsignedShort();
         xAvgCharWidth = raf.readShort();
@@ -158,10 +160,7 @@ public class Os2Table implements Table {
     public int getDefaultChar(){return usDefaultChar;}
     
     public int getWinBreakChar(){return usBreakChar;}
-    
-    
-    
-    
+        
     public boolean getIsSerif(){
     	/** The high byte of this field contains the family class, while the low byte contains the family subclass.*/
     	byte data = (byte) ((getFamilyClass() & 0xFF00) >> 8);
@@ -170,6 +169,7 @@ public class Os2Table implements Table {
     	return true;
     	
     }
+   
     public boolean getIsScript(){
     	byte data = (byte) ((getFamilyClass() & 0xFF00) >> 8);
     	int intHighBit = Byte.toUnsignedInt(data);
@@ -178,4 +178,6 @@ public class Os2Table implements Table {
     }
     
     public int getType() {return OS_2;}
+    
+    public int getOffset(){return fileOffset;}
 }

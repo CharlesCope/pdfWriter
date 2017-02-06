@@ -76,6 +76,8 @@ public class HmtxTable implements Table {
 
     public int getType() {return hmtx;}
     
+    public int getOffset(){return fileOffset;}
+    
     public byte[] getAllBytes(){return byteTable;}
     
     public byte[] getSubSetBytes(byte[] data,SortedSet <Integer> ssGlyphIds, int NumberOfHMetrics){
