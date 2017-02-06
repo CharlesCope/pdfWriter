@@ -1,18 +1,21 @@
 package Fonts;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-
 import Fonts.table.CmapFormat;
 import Fonts.table.CmapTable;
 import Fonts.table.CvtTable;
@@ -35,7 +38,7 @@ import cidObjects.CIDSystemInfo;
 import pdfCmaps.identityH;
 
 /**
- * The TrueType font.
+ * The TrueType font by Charles Cope
  */
 public class PdfFont {
 	private static final int ITALIC = 1;
@@ -120,6 +123,7 @@ public class PdfFont {
 	private final SortedSet<Integer> glyphIds; // new glyph ids
 	private CmapFormat unicodeCmap;
 	String JavaNewLine = System.getProperty("line.separator");
+	private boolean hasAddedCompoundReferences;
 	
 	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
@@ -241,6 +245,7 @@ public class PdfFont {
     	
     	return strPrefixNameTag;
 	}
+   
     public String getAscent(){return intAscent.toString();}
     
     public String getDescent(){return intDescent.toString();}
@@ -278,7 +283,6 @@ public class PdfFont {
 		default: intReturnValue = 50;				break;}
 
 		return  intReturnValue.toString();}
-
     
     public boolean getIsFixedPitch(){return blnFixedPitchFlag;}
     
@@ -438,7 +442,7 @@ public class PdfFont {
         } catch (IOException e) {e.printStackTrace();}
     }
     
-    //public static ChcFont create() { return new ChcFont(); }
+    
     
     /**
      * @param pathName Path to the TTF font file
@@ -581,6 +585,7 @@ public class PdfFont {
 		    cidSystemInfo.setSupplement(CmapH.getSupplement());
 		    strToUnicodeCMAP = strTemp;}
 		 }
+   
     public int getSpaceWidthToPDFWidth(){
 		/**Advance width rule : The space's advance width is set by visually selecting a value that is appropriate for the current font.
 		 * The general guidelines for the advance widths are:
@@ -600,10 +605,12 @@ public class PdfFont {
 		else{ return pdfScalingFormula((int) (intUnitsPerEm * .5));}
 		
 	}
+    
     public double toEmSpace(double dblValue){
         if (intUnitsPerEm == 1000) {return dblValue;}
         return Math.ceil((dblValue / intUnitsPerEm) * 1000);    // always round up
     }
+  
     public void subSetAdd(int unicode) {
     	if (unicodeCmap == null){unicodeCmap = this.getUnicodeCmap();}
         int gid = unicodeCmap.mapCharCode(unicode);
@@ -664,12 +671,87 @@ public class PdfFont {
 		return intWidth * intFontSize / 1000.0;
 
 	}
+   
     public int pdfScalingFormula(int intAdvanceWidth){
     	// Avoid divide by zero error.
     	if(intAdvanceWidth == 0 ){return 0;}
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
-    
+    /**
+     * Returns the map of new and old GIDs.
+     */
+    public Map<Integer, Integer> getGIDMap() throws IOException
+    {
+        addCompoundReferences();
+
+        Map<Integer, Integer> newToOld = new HashMap<Integer, Integer>();
+        int newGID = 0;
+        for (int oldGID : glyphIds)
+        {
+            newToOld.put(newGID, oldGID);
+            newGID++;
+        }
+        return newToOld;
+    }
+    private void addCompoundReferences() throws IOException {
+    	if (hasAddedCompoundReferences){return;}
+
+    	hasAddedCompoundReferences = true;
+
+    	boolean hasNested;
+    	do
+    	{
+
+    		long[] offsets = loca.getOffsets();
+    		InputStream is = new ByteArrayInputStream(getOriginalData());
+    		Set<Integer> glyphIdsToAdd = null;
+    		try
+    		{
+    			is.skip(glyf.getOffset());
+    			long lastOff = 0L;
+    			for (Integer glyphId : glyphIds){
+    				long offset = offsets[glyphId];
+    				long len = offsets[glyphId + 1] - offset;
+    				is.skip(offset - lastOff);
+    				byte[] buf = new byte[(int)len];
+    				is.read(buf);
+    				// rewrite glyphIds for compound glyphs
+    				if (buf.length >= 2 && buf[0] == -1 && buf[1] == -1){
+    					int off = 2*5;
+    					int flags;
+    					do
+    					{
+    						flags = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
+    						off +=2;
+    						int ogid = (buf[off] & 0xff) << 8 | buf[off + 1] & 0xff;
+    						if (!glyphIds.contains(ogid)){
+    							if (glyphIdsToAdd == null){glyphIdsToAdd = new TreeSet<Integer>();}
+    							glyphIdsToAdd.add(ogid);
+    						}
+    						off += 2;
+    						// ARG_1_AND_2_ARE_WORDS
+    						if ((flags & 1 << 0) != 0) {off += 2 * 2;}
+    						else {off += 2; }
+    						// WE_HAVE_A_TWO_BY_TWO
+    						if ((flags & 1 << 7) != 0) {off += 2 * 4;}
+    						// WE_HAVE_AN_X_AND_Y_SCALE
+    						else if ((flags & 1 << 6) != 0){off += 2 * 2;}
+    						// WE_HAVE_A_SCALE
+    						else if ((flags & 1 << 3) != 0){off += 2;}
+    					}
+    					while ((flags & 1 << 5) != 0); // MORE_COMPONENTS
+
+    				}
+    				lastOff = offsets[glyphId + 1];
+    			}
+    		}
+    		finally {is.close();}
+    		if (glyphIdsToAdd != null) { glyphIds.addAll(glyphIdsToAdd); }
+    		hasNested = glyphIdsToAdd != null;
+    	} while (hasNested);
+
+    }
+
     public byte[] getSubSetFontBytes( boolean cmapRequired, boolean postRequired){
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
     	int intNumberGlyph = glyphIds.size();
@@ -754,6 +836,7 @@ public class PdfFont {
         
         return 0x00010000L + toUInt32(nTables, searchRange) + toUInt32(entrySelector, last);
     }
+ 
     private long writeTableHeader(DataOutputStream out, String tag, long offset, byte[] bytes)throws IOException {
         long checksum = 0;
         for (int nup = 0, n = bytes.length; nup < n; nup++){
@@ -771,6 +854,7 @@ public class PdfFont {
         // account for the checksum twice, once for the header field, once for the content itself
         return toUInt32(tagbytes) + checksum + checksum + offset + bytes.length;
     }
+    
     private void writeTableBody(OutputStream os, byte[] bytes) throws IOException {
         os.write(bytes);
         if (bytes.length % 4 != 0){os.write(PAD_BUF, 0, 4 - bytes.length % 4);}
@@ -815,7 +899,8 @@ public class PdfFont {
 			return a;
 		}
 	}
-   private int randInt(int min, int max) {
+    
+    private int randInt(int min, int max) {
 
         // Usually this can be a field rather than a method variable
         Random rand = new Random();
@@ -826,6 +911,7 @@ public class PdfFont {
 
         return randomNum;
     }
+   
     public String getFontDictionary(){
     	
     	String strResults = "First Char >> "+ getFirstChar()+ JavaNewLine; 

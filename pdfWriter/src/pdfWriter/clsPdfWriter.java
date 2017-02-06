@@ -1228,7 +1228,10 @@ public class clsPdfWriter {
 
     	cidFontDic.setCIDSystemInfo(String.valueOf(intToUnicodeObject + 1) + " 0 R");
     	cidFontDic.setW(curPDFFont.getWEntry()); 
-    	if(blnEmbedded == true){cidFontDic.setCIDToGIDMap("/Identity");	}
+    	
+    	if(blnEmbedded == true){
+    		cidFontDic.setCIDToGIDMap(String.valueOf(intToUnicodeObject + 3) + " 0 R");	
+    		}
     	
     	strFont += cidFontDic.toString();
     	strFont += "endobj" + PDFCRLF;
@@ -1252,6 +1255,7 @@ public class clsPdfWriter {
     		strFont += "endobj" + PDFCRLF;	  
     		blnToUnicodeNeeded = false;
     	}
+        
     	writeString(writer,strFont);
     	strFont = "";
     	upDateReferenceTable();
@@ -1266,6 +1270,16 @@ public class clsPdfWriter {
     	strFont += "endobj" + PDFCRLF;
     	
     	writeString(writer,strFont);
+    	
+    	if(blnEmbedded == true){
+    		// Just testing right now. Where I need to work when I return.. Need to make method.
+    		upDateReferenceTable();
+    		String strTest = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF; 
+    		strTest += "Just Testing CIDToGIDMapping" + PDFCRLF;
+    		strTest += "endobj" + PDFCRLF;
+    		writeString(writer,strTest);
+    	}
+    	
     	// Now write the Embedded font if needed.
     	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
