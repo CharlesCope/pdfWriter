@@ -12,18 +12,22 @@ import java.util.SortedSet;
 
 
 public class HmtxTable implements Table {
-
+	private int[] advanceWidth;
+	private int[] SubSetAdvanceWidth;
     private byte[] buf = null;
     private int[] hMetrics = null;
     private short[] leftSideBearing = null;
     private byte[] byteTable;
     private int fileOffset;
+    private int numHMetrics;
     protected HmtxTable(DirectoryEntry de,RandomAccessFile raf) throws IOException {
     	fileOffset = de.getOffset();
         raf.seek(de.getOffset());
         byteTable = new byte[de.getLength()];
         raf.read(byteTable, 0, de.getLength());
         raf.seek(de.getOffset());
+        
+        
         
         buf = new byte[de.getLength()];
         raf.read(buf);
@@ -46,9 +50,20 @@ public class HmtxTable implements Table {
 
     public void init(int numberOfHMetrics, int lsbCount) {
         if (buf == null) {return;}
-        
+        numHMetrics = numberOfHMetrics;
         hMetrics = new int[numberOfHMetrics];
+        advanceWidth = new int[ numberOfHMetrics ];
+        short[] leftSideBearingDummy = new short[numberOfHMetrics];
         ByteArrayInputStream bais = new ByteArrayInputStream(buf);
+      
+        for (int i = 0; i < numberOfHMetrics; i++) {
+        	advanceWidth[i] = (bais.read()<<8 | bais.read());
+        	leftSideBearingDummy[i] = (short)(bais.read()<<8 | bais.read());	
+        }
+     
+        bais.reset();
+        
+        
         for (int i = 0; i < numberOfHMetrics; i++) {
             hMetrics[i] = (bais.read()<<24 | bais.read()<<16 | 
                            bais.read()<< 8 | bais.read());
@@ -61,11 +76,20 @@ public class HmtxTable implements Table {
         }
         buf = null;
     }
-
-    public int getAdvanceWidth(int i) {
-        if (hMetrics == null) {return 0;}
-        if (i < hMetrics.length) {return hMetrics[i] >> 16;}
-        else {return hMetrics[hMetrics.length - 1] >> 16;}
+    public int getSubSetAdvanceWidth(int gid){return SubSetAdvanceWidth[gid];}
+    
+    public int getAdvanceWidth(int gid) {
+    	  if (gid < numHMetrics) {
+              return advanceWidth[gid];
+          }
+          else {
+              // monospaced fonts may not have a width for every glyph
+              // the last one is for subsequent glyphs
+              return advanceWidth[advanceWidth.length -1];
+          }
+//        if (hMetrics == null) {return 0;}
+//        if (i < hMetrics.length) {return hMetrics[i] >> 16;}
+//        else {return hMetrics[hMetrics.length - 1] >> 16;}
     }
 
     public short getLeftSideBearing(int i) {
@@ -79,6 +103,19 @@ public class HmtxTable implements Table {
     public int getOffset(){return fileOffset;}
     
     public byte[] getAllBytes(){return byteTable;}
+    
+    public void setSubSetAdvance(byte[] data,int NumberOfHMetrics){
+		SubSetAdvanceWidth = new int[NumberOfHMetrics ];
+		short[] leftSideBearingDummy = new short[NumberOfHMetrics];
+		 
+		ByteArrayInputStream bInput = new ByteArrayInputStream(data);
+
+		for (int i = 0; i < NumberOfHMetrics; i++) {
+			SubSetAdvanceWidth[i] = (bInput.read()<<8 | bInput.read());
+			leftSideBearingDummy[i] = (short)(bInput.read()<<8 | bInput.read());	
+		}
+		bInput.reset(); 
+    }
     
     public byte[] getSubSetBytes(byte[] data,SortedSet <Integer> ssGlyphIds, int NumberOfHMetrics){
 
@@ -121,6 +158,7 @@ public class HmtxTable implements Table {
     			}
     		}
 
+    		
 
     	} 
     	catch (IOException e) {e.printStackTrace();}

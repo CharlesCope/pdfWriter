@@ -16,6 +16,7 @@ import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
 import Fonts.table.CmapFormat;
 import Fonts.table.CmapTable;
 import Fonts.table.CvtTable;
@@ -121,6 +122,8 @@ public class PdfFont {
 	// Subset stuff here
 	private final SortedMap<Integer, Integer> uniToGID;
 	private final SortedSet<Integer> glyphIds; // new glyph ids
+	private  Map<Integer, Integer> cidToGid;
+	private Map<Integer, Integer> newSubGIDToOldGID;
 	private CmapFormat unicodeCmap;
 	String JavaNewLine = System.getProperty("line.separator");
 	private boolean hasAddedCompoundReferences;
@@ -473,7 +476,50 @@ public class PdfFont {
 		return strFontBBox;
 		
 	}
-   
+    
+    public String getSubWEntry(){
+    	// Okay if we need subset of width we need to create some maps first.
+    	try {
+			createSubGIDMap();
+			createSubCidToGid();
+			byte[] temp = hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics());
+			hmtx.setSubSetAdvance(temp, glyphIds.size());
+			
+			float scaling = 1000f / intUnitsPerEm;
+
+			 ArrayList<String> widths = new  ArrayList<String>();
+			 ArrayList<String> ws = new  ArrayList<String>();
+			 
+			int prev = Integer.MIN_VALUE;
+			// Use a sorted list to get an optimal width array  
+			Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+			for (int cid : keys){
+				int gid = cidToGid.get(cid);
+				long width = Math.round(hmtx.getSubSetAdvanceWidth(gid) * scaling);
+				
+				if (width == 1000){
+					// skip default width
+					continue;
+				}
+				// c [w1 w2 ... wn]
+				if (prev != cid - 1){
+					ws = new ArrayList<String>();
+					widths.add(String.valueOf(cid)); // c
+					ws.add(String.valueOf(width)); // wi
+					widths.add(ws.toString());
+				}
+			
+				prev = cid;
+			}
+
+
+			// Now return it without the comma and make it readable for humans.
+			System.out.println(widths.toString().replace(",", "").replace("]", "]" + PDFCRLF));
+			return widths.toString().replace(",", "").replace("]", "]" + PDFCRLF);
+	        
+    	} catch (IOException e) {e.printStackTrace();}
+		return "Error in getSubWEntry method";
+    }
     public String getWEntry(){ 
     	/** The W Entry array allows the definition of widths for individual CIDs */
     	
@@ -677,21 +723,28 @@ public class PdfFont {
     	if(intAdvanceWidth == 0 ){return 0;}
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
-    /**
-     * Returns the map of new and old GIDs.
-     */
-    public Map<Integer, Integer> getGIDMap() throws IOException
-    {
+  
+    private void createSubGIDMap() throws IOException{
         addCompoundReferences();
 
-        Map<Integer, Integer> newToOld = new HashMap<Integer, Integer>();
+        newSubGIDToOldGID = new HashMap<Integer, Integer>();
         int newGID = 0;
         for (int oldGID : glyphIds)
         {
-            newToOld.put(newGID, oldGID);
+        	newSubGIDToOldGID.put(newGID, oldGID);
             newGID++;
         }
-        return newToOld;
+        
+    }
+    private  void createSubCidToGid(){
+    	// Need to Call createSubGIDMap() first.
+    	cidToGid = new HashMap<Integer, Integer>(newSubGIDToOldGID.size());
+    	 for (Map.Entry<Integer, Integer> entry : newSubGIDToOldGID.entrySet())
+         {
+             int newGID = entry.getKey();
+             int oldGID = entry.getValue();
+             cidToGid.put(oldGID, newGID);
+         }
     }
     private void addCompoundReferences() throws IOException {
     	if (hasAddedCompoundReferences){return;}
