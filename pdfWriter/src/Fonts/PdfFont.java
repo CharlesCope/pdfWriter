@@ -9,6 +9,7 @@ import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -480,41 +481,54 @@ public class PdfFont {
     public String getSubWEntry(){
     	// Okay if we need subset of width we need to create some maps first.
     	try {
-			createSubGIDMap();
-			createSubCidToGid();
-			byte[] temp = hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics());
-			hmtx.setSubSetAdvance(temp, glyphIds.size());
-			
-			float scaling = 1000f / intUnitsPerEm;
+    		createSubGIDMap();
+    		createSubCidToGid();
+    		byte[] temp = hmtx.getSubSetBytes(getOriginalData(), glyphIds,hhea.getNumberOfHMetrics());
+    		hmtx.setSubSetAdvance(temp, glyphIds.size());
 
-			 ArrayList<String> widths = new  ArrayList<String>();
-			 ArrayList<String> ws = new  ArrayList<String>();
-			 
-			int prev = Integer.MIN_VALUE;
-			// Use a sorted list to get an optimal width array  
-			Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
-			for (int cid : keys){
-				int gid = cidToGid.get(cid);
-				long width = Math.round(hmtx.getSubSetAdvanceWidth(gid) * scaling);
-				
-				if (width == 1000){
-					// skip default width
-					continue;
-				}
-				// c [w1 w2 ... wn]
-				if (prev != cid - 1){
-					ws = new ArrayList<String>();
-					widths.add(String.valueOf(cid)); // c
-					ws.add(String.valueOf(width)); // wi
-					widths.add(ws.toString());
-				}
-			
-				prev = cid;
+    		float scaling = 1000f / intUnitsPerEm;
+
+    		ArrayList<String> widths = new  ArrayList<String>();
+    		ArrayList<String> ws = new  ArrayList<String>();
+
+    		int prev = Integer.MIN_VALUE;
+    		// Use a sorted list to get an optimal width array  
+    		Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+    		for (int cid : keys){
+    			int gid = cidToGid.get(cid);
+    			long width = Math.round(hmtx.getSubSetAdvanceWidth(gid) * scaling);
+
+    			if (width == 1000){
+    				// skip default width
+    				continue;
+    			}
+    			// c [w1 w2 ... wn]
+    			if (prev != cid - 1){
+
+    				if(ws.size() > 2){
+    					Set<String> set = new LinkedHashSet<String>(ws);
+    					ArrayList<String> list = new ArrayList<String>(set);
+    					widths.remove(widths.size()-1);
+    					widths.add(list.toString());
+    				}
+    				ws = new ArrayList<String>();
+    				widths.add(String.valueOf(cid)); // c
+    				ws.add(String.valueOf(width)); // wi
+    				widths.add(ws.toString());
+    			}
+    			ws.add(String.valueOf(width)); 
+    			prev = cid;
+    		}
+    	
+    		// Just Check our last entry for multiple values.
+    		if(ws.size() > 2){
+				Set<String> set = new LinkedHashSet<String>(ws);
+				ArrayList<String> list = new ArrayList<String>(set);
+				widths.remove(widths.size()-1);
+				widths.add(list.toString());
 			}
 
-
 			// Now return it without the comma and make it readable for humans.
-			System.out.println(widths.toString().replace(",", "").replace("]", "]" + PDFCRLF));
 			return widths.toString().replace(",", "").replace("]", "]" + PDFCRLF);
 	        
     	} catch (IOException e) {e.printStackTrace();}
