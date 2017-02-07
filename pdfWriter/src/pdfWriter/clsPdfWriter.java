@@ -1180,11 +1180,14 @@ public class clsPdfWriter {
     		String strSubFontName = curPDFFont.getPrefixNameTag();
     		strSubFontName = strSubFontName + "+" +curPDFFont.getFontBaseName();
     		type0FontDic.setBaseFont(strSubFontName);
+    		fontDesc.setFontName(strSubFontName);
     	}
-    	else{type0FontDic.setBaseFont(curPDFFont.getFontBaseName());}
+    	else{
+    		fontDesc.setFontName(curPDFFont.getFontBaseName());
+    		type0FontDic.setBaseFont(curPDFFont.getFontBaseName());}
     
     	type0FontDic.setEncoding("Identity-H");
-    	fontDesc.setFontName(curPDFFont.getFontBaseName());
+    	
     	fontDesc.setFlags(curPDFFont.getFontDescriptorFlags());
     	fontDesc.setFontBBox(curPDFFont.getFontBBox());
     	fontDesc.setMissingWidth(String.valueOf(curPDFFont.getMissingWidth()));
@@ -1264,22 +1267,23 @@ public class clsPdfWriter {
     	strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     	
     	if(blnEmbedded == true){
-    		fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 1) + " 0 R");
+    		fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 2) + " 0 R");
     	}
         	
     	strFont += fontDesc.toString();
     	strFont += "endobj" + PDFCRLF;
     	
     	writeString(writer,strFont);
-    	
+    	writer.flush();
     	if(blnEmbedded == true){
-    		CIDToGIDMapping(curPDFFont, writer);
+    		intDynamicObjectCount +=1;
+    		CIDToGIDMapping(curPDFFont);
     	}
     	
     	// Now write the Embedded font if needed.
     	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
-    		embedFontFile(curPDFFont, writer, fontDesc.getFontName());
+    		embedFontFile(curPDFFont, fontDesc.getFontName());
     	}
 
     	
@@ -1839,37 +1843,47 @@ public class clsPdfWriter {
     	return strFilePath;
 	}
 //End Region    
-	public void CIDToGIDMapping(PdfFont pdfFont,BufferedWriter writer) throws IOException{
+	private void CIDToGIDMapping(PdfFont pdfFont) throws IOException{
 		upDateReferenceTable();
+		BufferedWriter writer1 = new BufferedWriter(new FileWriter(strPDFilepath, true));
 		String CIDToGIDMapping = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF; 
-			
-
-		
-		CIDToGIDMapping += "Just Testing CIDToGIDMapping" + PDFCRLF;
+		byte[] btyeCIDToGIDMap = pdfFont.getSubSetCIDToGIDMapping();
+		int intLength = btyeCIDToGIDMap.length;
+		CIDToGIDMapping += "<</Length " + intLength +"/Length1 " + intLength + ">>stream" + PDFCRLF;
+		writeString(writer1, CIDToGIDMapping);
+    	writer1.close();
+    	//-- Write Binary data to purpose PDF file.
+    	DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+    	dosFile.write(btyeCIDToGIDMap);
+    	dosFile.close();
+    	intCrossRefOffSet+=	intLength;
+    	CIDToGIDMapping = "endstream" + PDFCRLF;
 		CIDToGIDMapping += "endobj" + PDFCRLF;
-		writeString(writer,CIDToGIDMapping);
+		BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+		writeString(writer2, CIDToGIDMapping);
+		writer2.close();
 	}
-    public void embedFontFile(PdfFont pffFont,BufferedWriter writer, String strFontName) throws MalformedURLException, IOException {
+    public void embedFontFile(PdfFont pfdFont, String strFontName) throws MalformedURLException, IOException {
     	upDateReferenceTable();
+    	BufferedWriter writer1 = new BufferedWriter(new FileWriter(strPDFilepath, true));
     	String strEmbedded= "";
     	strEmbedded = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
     	strEmbedded+="<< /Length ";
-    	byte[] SubFont = pffFont.getSubSetFontBytes(false,false);
+    	byte[] SubFont = pfdFont.getSubSetFontBytes(false,false);
     	strEmbedded +=	SubFont.length  + "/Length1 " + SubFont.length +" >>" + PDFCRLF;
     	strEmbedded += "stream";
-    	writeString(writer, strEmbedded);
-    	writer.close();
-    	intCrossRefOffSet+=	SubFont.length;
+    	writeString(writer1, strEmbedded);
+    	writer1.close();
+    	//-- Write Binary data to purpose PDF file.
     	DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
     	dosFile.write(SubFont);
     	dosFile.close();
+    	intCrossRefOffSet+=	SubFont.length;
     	strEmbedded = "endstream" + PDFCRLF;
     	strEmbedded+= "endobj"+ PDFCRLF;
     	BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
     	writeString(writer2, strEmbedded);
     	writer2.close();
-    	// Reopen it in case more fonts need to be created. 
-    	writer =	new BufferedWriter(new FileWriter(strPDFilepath, true));
     }
     public void writeString(BufferedWriter writer, String str) throws IOException{
 		writer.write(str);

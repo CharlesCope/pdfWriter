@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -737,7 +738,8 @@ public class PdfFont {
     	if(intAdvanceWidth == 0 ){return 0;}
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
-  
+    
+    
     private void createSubGIDMap() throws IOException{
         addCompoundReferences();
 
@@ -818,7 +820,22 @@ public class PdfFont {
     	} while (hasNested);
 
     }
+    
+    public byte[] getSubSetCIDToGIDMapping(){
+    	ByteArrayOutputStream out = new ByteArrayOutputStream();
+    	int cidMax = Collections.max(cidToGid.keySet());
 
+    	for (int intCount = 0; intCount <= cidMax; intCount++){
+    		int gid;
+    		if (cidToGid.containsKey(intCount)){gid = cidToGid.get(intCount);	}
+    		else{gid = 0;}
+    		try {
+    			out.write(new byte[] { (byte)(gid >> 8 & 0xff), (byte)(gid & 0xff) });
+    		} catch (IOException e) {e.printStackTrace();}
+    	}
+    	return out.toByteArray();
+    }
+    
     public byte[] getSubSetFontBytes( boolean cmapRequired, boolean postRequired){
     	ByteArrayOutputStream baos = new ByteArrayOutputStream();
     	int intNumberGlyph = glyphIds.size();
