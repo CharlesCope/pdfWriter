@@ -821,6 +821,14 @@ public class PdfFont {
 
     }
     
+    public byte[] getSubSetCIDSet(){
+    	byte[] bytes = new byte[Collections.max(cidToGid.keySet()) / 8 + 1];
+    	for (int cid : cidToGid.keySet())  {
+    		int mask = 1 << 7 - cid % 8;
+    		bytes[cid / 8] |= mask;
+    	}
+    	return bytes;
+    }
     public byte[] getSubSetCIDToGIDMapping(){
     	ByteArrayOutputStream out = new ByteArrayOutputStream();
     	int cidMax = Collections.max(cidToGid.keySet());

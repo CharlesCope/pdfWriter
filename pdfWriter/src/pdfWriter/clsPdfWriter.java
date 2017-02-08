@@ -1268,6 +1268,7 @@ public class clsPdfWriter {
     	
     	if(blnEmbedded == true){
     		fontDesc.setFontFile2(String.valueOf(intpdfObjectCount + 2) + " 0 R");
+    		fontDesc.setCIDSet(String.valueOf(intpdfObjectCount + 3) + " 0 R"); // Work On this next
     	}
         	
     	strFont += fontDesc.toString();
@@ -1278,12 +1279,10 @@ public class clsPdfWriter {
     	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
     		CIDToGIDMapping(curPDFFont);
-    	}
-    	
-    	// Now write the Embedded font if needed.
-    	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
     		embedFontFile(curPDFFont, fontDesc.getFontName());
+    		intDynamicObjectCount +=1; 
+    		CIDSet(curPDFFont);
     	}
 
     	
@@ -1843,6 +1842,28 @@ public class clsPdfWriter {
     	return strFilePath;
 	}
 //End Region    
+    private void CIDSet(PdfFont pdfFont) throws IOException{
+    	upDateReferenceTable();
+    	BufferedWriter writer1 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+    	String CIDSet = intpdfObjectCount.toString() + " 0 obj" + PDFCRLF; 
+    	byte[] btyeCIDSet = pdfFont.getSubSetCIDSet();
+		int intLength = btyeCIDSet.length;
+		CIDSet += "<</Length " + intLength +">>stream" + PDFCRLF;
+		writeString(writer1, CIDSet);
+    	writer1.close();
+    	//-- Write Binary data to purpose PDF file.
+    	DataOutputStream dosFile = new DataOutputStream(new FileOutputStream(strPDFilepath, true));
+    	dosFile.write(btyeCIDSet);
+    	dosFile.close();
+    	intCrossRefOffSet+=	intLength;
+    	CIDSet = "endstream" + PDFCRLF;
+    	CIDSet += "endobj" + PDFCRLF;
+		BufferedWriter writer2 = new BufferedWriter(new FileWriter(strPDFilepath, true));
+		writeString(writer2, CIDSet);
+		writer2.close();
+    	
+    }
+    
 	private void CIDToGIDMapping(PdfFont pdfFont) throws IOException{
 		upDateReferenceTable();
 		BufferedWriter writer1 = new BufferedWriter(new FileWriter(strPDFilepath, true));
