@@ -128,7 +128,16 @@ public class CmapFormat4 extends CmapFormat {
         Arrays.fill(gidToCode, -1);
         return gidToCode;
     }
-
+	
+    @Override
+	public int getCharacterCode(int gid) {
+    	  if (gid < 0 || gid >= glyphIdToCharacterCode.length) {return 0;}
+          // workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
+          // missing character codes and code 0.
+          int code = glyphIdToCharacterCode[gid];
+          if (code == -1){return 0;}
+          return code;
+	}
     public String toString() {
         return new StringBuffer()
         .append(super.toString())
@@ -149,4 +158,6 @@ public class CmapFormat4 extends CmapFormat {
         .append(", idRangeOffset: ")
         .append(idRangeOffset).toString();
     }
+
+
 }

@@ -17,7 +17,7 @@ public class CmapFormat6 extends CmapFormat {
     @SuppressWarnings("unused")
 	private int entryCount;
     private int[] glyphIdArray;
-
+    private int[] glyphIdToCharacterCode;
     public int[] getGlyphIdArray() {return glyphIdArray;}
 	public void setGlyphIdArray(int[] glyphIdArray) {this.glyphIdArray = glyphIdArray;}
 
@@ -32,4 +32,13 @@ public class CmapFormat6 extends CmapFormat {
     public int mapCharCode(int charCode) {
         return 0;
     }
+    @Override
+  	public int getCharacterCode(int gid) {
+      	  if (gid < 0 || gid >= glyphIdToCharacterCode.length) {return 0;}
+            // workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
+            // missing character codes and code 0.
+            int code = glyphIdToCharacterCode[gid];
+            if (code == -1){return 0;}
+            return code;
+  	}
 }

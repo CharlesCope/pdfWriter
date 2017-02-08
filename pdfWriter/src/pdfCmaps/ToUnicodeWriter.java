@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import Fonts.Hex;
 
 
@@ -17,14 +16,14 @@ import Fonts.Hex;
  *
  * @author John Hewson
  */
-final class ToUnicodeWriter{
+public final class ToUnicodeWriter{
 	private final Map<Integer, String> cidToUnicode = new TreeMap<Integer, String>();
 	private int wMode;
 
 	/**
 	 * Creates a new ToUnicode CMap writer.
 	 */
-	ToUnicodeWriter(){this.wMode = 0;}
+	public ToUnicodeWriter(){this.wMode = 0;}
 
 	/**
 	 * Sets the WMode (writing mode) of this CMap.

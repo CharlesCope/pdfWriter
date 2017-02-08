@@ -684,7 +684,7 @@ public class clsPdfWriter {
         //-- %PDF−1.6
         //-- %PDF-1.7 This is the Refernce I used to create the file but only using version 1.3
         //-- of the Features so I am hard coding it for now maybe later pass in the values
-    	String strFileHeader  = "%PDF-1.3"+ PDFCRLF;;
+    	String strFileHeader  = "%PDF-1.5"+ PDFCRLF;;
         //-- Note: if (a PDF file contains binary data, as most do (see Section 3.1, “Lexical Conventions”),
         //-- it is recommended that the header line be immediately followed by a comment line containing at 
         //-- least four binary characters—that is, characters whose codes are 128 or greater 

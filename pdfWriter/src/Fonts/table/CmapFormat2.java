@@ -12,7 +12,7 @@ public class CmapFormat2 extends CmapFormat {
     @SuppressWarnings("unused")
 	private int[] subHeaders2;
     private int[] glyphIndexArray;
-
+    private int[] glyphIdToCharacterCode;
     public int[] getGlyphIndexArray() {return glyphIndexArray;}
 	public void setGlyphIndexArray(int[] glyphIndexArray) {this.glyphIndexArray = glyphIndexArray;}
 	// Started getting code from here.
@@ -41,7 +41,16 @@ public class CmapFormat2 extends CmapFormat {
 
     public int getFirst() { return 0; }
     public int getLast()  { return 0; }
-    
+   
+    @Override
+    public int getCharacterCode(int gid) {
+    	if (gid < 0 || gid >= glyphIdToCharacterCode.length) {return 0;}
+    	// workaround for the fact that glyphIdToCharacterCode doesn't distinguish between
+    	// missing character codes and code 0.
+    	int code = glyphIdToCharacterCode[gid];
+    	if (code == -1){return 0;}
+    	return code;
+    }
     public int mapCharCode(int charCode) {
 		return charCode;
     }

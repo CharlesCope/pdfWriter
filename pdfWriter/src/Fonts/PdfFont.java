@@ -39,7 +39,7 @@ import Fonts.table.TableDirectory;
 import Fonts.table.TableFactory;
 import cidObjects.CIDSystemInfo;
 import pdfCmaps.identityH;
-
+import pdfCmaps.ToUnicodeWriter;
 
 /**
  * The TrueType font by Charles Cope
@@ -124,13 +124,16 @@ public class PdfFont {
 	
 	// Subset stuff here
 	private final SortedMap<Integer, Integer> uniToGID;
-	private final SortedSet<Integer> glyphIds; // new glyph ids
 	private  Map<Integer, Integer> cidToGid;
 	private Map<Integer, Integer> newSubGIDToOldGID;
+	private final SortedSet<Integer> glyphIds; // new glyph ids
 	private CmapFormat unicodeCmap;
 	String JavaNewLine = System.getProperty("line.separator");
 	private boolean hasAddedCompoundReferences;
 	private boolean blnIsEmbedded = false;
+	private float minSubSetVersion = (float) 1.0; 
+	
+
 	
 
 	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
@@ -227,6 +230,8 @@ public class PdfFont {
     public int getBoundingBoxUpperRighty() {return BBoxUpperRighty;}
     
     public int getMissingWidth(){return intMissingWidth; }
+    
+    public float getMinSubSetVersion() {return minSubSetVersion;	}
     
     public String getItalicAngle(){return intItalicAngle.toString();}
     
@@ -645,14 +650,15 @@ public class PdfFont {
 		if (blnIsEmbedded == true){ // We need to create the Cmap our self
 			try {
 				byte[] btyeCmap = getBuildToUnicodeCMap();
+				String strCMap = new String(btyeCmap);
+				
 				strTemp = "<< /Length " + btyeCmap.length + " >>" + PDFCRLF;
 				strTemp += "stream" + PDFCRLF;
-				strTemp += "Just Testing for now " + PDFCRLF;
+				strTemp += strCMap;
 				strTemp += "endstream" + PDFCRLF;
-//TODO Finish here when I return.
-				cidSystemInfo.setRegistry("Dummy Info");
-				cidSystemInfo.setOrdering("Dummy Info");
-				cidSystemInfo.setSupplement(3);
+				cidSystemInfo.setRegistry("(Adobe)");
+				cidSystemInfo.setOrdering("(Identity)");
+				cidSystemInfo.setSupplement(0);
 				strToUnicodeCMAP = strTemp;
 			} catch (IOException e) {e.printStackTrace();}
 		}
@@ -768,8 +774,19 @@ public class PdfFont {
     }
     
     private byte[] getBuildToUnicodeCMap() throws IOException {
-    	byte[] bytes = null;
-    	 // ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
+    	// build GID -> Unicode map
+    	Map<Integer, Integer>  gidToUni = new HashMap<Integer, Integer>(intGlyphCount);
+       
+    	for (int gid = 1, max = intGlyphCount; gid <= max; gid++){
+            // skip composite glyph components that have no code point
+            Integer codePoint = unicodeCmap.getCharacterCode(gid);
+            if (codePoint != null){
+            	gidToUni.put(gid, codePoint); // CID = GID
+            }
+        }
+    	
+    
+    	  ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
           boolean hasSurrogates = false;
           
           for (int gid = 1, max = getNumGlyphs(); gid <= max; gid++){
@@ -780,9 +797,20 @@ public class PdfFont {
                   else{cid = newSubGIDToOldGID.get(gid);        }
               }
               else{cid = gid;}
+              // skip composite glyph components that have no code point
+              Integer codePoint = gidToUni.get(cid); // old GID -> Unicode
+              
+              if (codePoint != null){
+                  if (codePoint > 0xFFFF){hasSurrogates = true;}
+                  toUniWriter.add(cid, new String(new int[]{ codePoint }, 0, 1));
+              }
           }
-          
-          return bytes;
+          ByteArrayOutputStream out = new ByteArrayOutputStream();
+          toUniWriter.writeTo(out);
+
+          if (hasSurrogates == true ){minSubSetVersion = 1.5f;}
+        	  
+          return out.toByteArray();
     }
     
     private void createSubGIDMap() throws IOException{

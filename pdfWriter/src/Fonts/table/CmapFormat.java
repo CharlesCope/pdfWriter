@@ -42,6 +42,8 @@ public abstract class CmapFormat {
     public int getVersion() {return version;}
 
     public abstract int mapCharCode(int charCode);
+    
+    public abstract int getCharacterCode(int gid);
 
     public abstract int getFirst();
     public abstract int getLast();
