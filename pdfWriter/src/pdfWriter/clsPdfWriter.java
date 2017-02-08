@@ -387,8 +387,6 @@ public class clsPdfWriter {
 			String strFilePath = getFontPath(font);
 		
 			PdfFont	pdfFont =new PdfFont().create(strFilePath);
-			// TODO: Need an if statement here later but just for testing right now.  Hard coded for now.
-			pdfFont.setToUnicodeCMAP("identityH");
 			PDFFontList.add(pdfFont);
 		}
 		
@@ -1164,6 +1162,8 @@ public class clsPdfWriter {
     private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
     	String strComment  = "";
     	PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
+    	curPDFFont.setIsEmbedded(blnEmbedded);
+    	curPDFFont.setToUnicodeCMAP("identityH");
     	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        	

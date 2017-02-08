@@ -40,6 +40,7 @@ import Fonts.table.TableFactory;
 import cidObjects.CIDSystemInfo;
 import pdfCmaps.identityH;
 
+
 /**
  * The TrueType font by Charles Cope
  */
@@ -129,7 +130,9 @@ public class PdfFont {
 	private CmapFormat unicodeCmap;
 	String JavaNewLine = System.getProperty("line.separator");
 	private boolean hasAddedCompoundReferences;
+	private boolean blnIsEmbedded = false;
 	
+
 	private static final byte[] PAD_BUF = new byte[] { 0, 0, 0 };
 
 	/** Constructor   */
@@ -230,11 +233,17 @@ public class PdfFont {
     public String getFontBaseName(){return strBaseFontName;}
     
     public String getFontFamilyName(){return strFontFamilyName;}
+	
+    public boolean getIsEmbedded() {	return blnIsEmbedded;}
+
+
     /**
 	 * The tag consists of exactly six upper case letters; the
 	 * choice of letters is arbitrary, but different subsets in the same PDF file must have
 	 * different tags. 
 	 */
+	public void setIsEmbedded(boolean blnIsEmbedded) {this.blnIsEmbedded = blnIsEmbedded;	}
+	
     public String getPrefixNameTag() {
     	int intRandom = 65;
 		int asciiForUpperA = 65;
@@ -629,24 +638,43 @@ public class PdfFont {
 	
 	public String getToUnicodeCMAP(){return strToUnicodeCMAP;}
 	
-    public void setToUnicodeCMAP(String strPdfCmapName){ 
+	public void setToUnicodeCMAP(String strPdfCmapName){ 
+	// Note these are not the same as Font Cmaps these are PDF Cmaps only.
 		String strTemp = ""; 
 		
-		if (strPdfCmapName == "identityH"){
-			// Create the Cmap object
-		    identityH CmapH = new identityH();
-		    strTemp = "<< /Length " + CmapH.Length() + " >>" + PDFCRLF;
-		    strTemp += "stream" + PDFCRLF;
-		    strTemp += CmapH.toString() + PDFCRLF;
-		    strTemp += "endstream" + PDFCRLF;
-		    
-		    // set the values of the CIDdSystemInfo based on CMAP DATA
-		    cidSystemInfo.setRegistry(CmapH.getRegistry());
-		    cidSystemInfo.setOrdering(CmapH.getOrdering());
-		    cidSystemInfo.setSupplement(CmapH.getSupplement());
-		    strToUnicodeCMAP = strTemp;}
-		 }
-   
+		if (blnIsEmbedded == true){ // We need to create the Cmap our self
+			try {
+				byte[] btyeCmap = getBuildToUnicodeCMap();
+				strTemp = "<< /Length " + btyeCmap.length + " >>" + PDFCRLF;
+				strTemp += "stream" + PDFCRLF;
+				strTemp += "Just Testing for now " + PDFCRLF;
+				strTemp += "endstream" + PDFCRLF;
+//TODO Finish here when I return.
+				cidSystemInfo.setRegistry("Dummy Info");
+				cidSystemInfo.setOrdering("Dummy Info");
+				cidSystemInfo.setSupplement(3);
+				strToUnicodeCMAP = strTemp;
+			} catch (IOException e) {e.printStackTrace();}
+		}
+		else{ // We just use a predefined Cmap
+			
+
+			if (strPdfCmapName == "identityH"){
+				// Create the Cmap object
+				identityH CmapH = new identityH();
+				strTemp = "<< /Length " + CmapH.Length() + " >>" + PDFCRLF;
+				strTemp += "stream" + PDFCRLF;
+				strTemp += CmapH.toString() + PDFCRLF;
+				strTemp += "endstream" + PDFCRLF;
+
+				// set the values of the CIDdSystemInfo based on CMAP DATA
+				cidSystemInfo.setRegistry(CmapH.getRegistry());
+				cidSystemInfo.setOrdering(CmapH.getOrdering());
+				cidSystemInfo.setSupplement(CmapH.getSupplement());
+				strToUnicodeCMAP = strTemp;}
+		}
+	}
+
     public int getSpaceWidthToPDFWidth(){
 		/**Advance width rule : The space's advance width is set by visually selecting a value that is appropriate for the current font.
 		 * The general guidelines for the advance widths are:
@@ -739,6 +767,23 @@ public class PdfFont {
     	return (intAdvanceWidth * 1000) / intUnitsPerEm;
     }
     
+    private byte[] getBuildToUnicodeCMap() throws IOException {
+    	byte[] bytes = null;
+    	 // ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
+          boolean hasSurrogates = false;
+          
+          for (int gid = 1, max = getNumGlyphs(); gid <= max; gid++){
+              // optional CID2GIDMap for subsetting
+              int cid;
+              if (newSubGIDToOldGID != null){
+                  if (!newSubGIDToOldGID.containsKey(gid)){continue;}
+                  else{cid = newSubGIDToOldGID.get(gid);        }
+              }
+              else{cid = gid;}
+          }
+          
+          return bytes;
+    }
     
     private void createSubGIDMap() throws IOException{
         addCompoundReferences();
