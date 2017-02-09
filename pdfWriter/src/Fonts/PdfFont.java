@@ -776,7 +776,8 @@ public class PdfFont {
     private byte[] getBuildToUnicodeCMap() throws IOException {
     	// build GID -> Unicode map
     	Map<Integer, Integer>  gidToUni = new HashMap<Integer, Integer>(intGlyphCount);
-       
+    	 
+    	 
     	for (int gid = 1, max = intGlyphCount; gid <= max; gid++){
             // skip composite glyph components that have no code point
             Integer codePoint = unicodeCmap.getCharacterCode(gid);
@@ -784,12 +785,10 @@ public class PdfFont {
             	gidToUni.put(gid, codePoint); // CID = GID
             }
         }
-    	
-    
     	  ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
           boolean hasSurrogates = false;
           
-          for (int gid = 1, max = getNumGlyphs(); gid <= max; gid++){
+          for (int gid = 1, max = intGlyphCount; gid <= max; gid++){
               // optional CID2GIDMap for subsetting
               int cid;
               if (newSubGIDToOldGID != null){
@@ -802,9 +801,13 @@ public class PdfFont {
               
               if (codePoint != null){
                   if (codePoint > 0xFFFF){hasSurrogates = true;}
+               
                   toUniWriter.add(cid, new String(new int[]{ codePoint }, 0, 1));
+                  //System.out.println("cid = " + cid + " New String = " + new String(new int[]{ codePoint }, 0, 1 ));
               }
           }
+         
+          
           ByteArrayOutputStream out = new ByteArrayOutputStream();
           toUniWriter.writeTo(out);
 

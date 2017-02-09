@@ -43,7 +43,7 @@ public abstract class CmapFormat {
 
     public abstract int mapCharCode(int charCode);
     
-    public abstract int getCharacterCode(int gid);
+    public abstract Integer getCharacterCode(int gid);
 
     public abstract int getFirst();
     public abstract int getLast();
