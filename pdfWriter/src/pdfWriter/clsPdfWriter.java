@@ -376,7 +376,7 @@ public class clsPdfWriter {
 	    
 	}
 	 
-	public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, Font font,Integer intFontSize , Color color, pdfTextAlign Align , Integer Rotate){
+	public void ShowingText(Integer intPage, Integer sngHorzOffSet, Integer sngVertOffSet, String strTextToShow, Font font,String strFontLoc,Integer intFontSize , Color color, pdfTextAlign Align , Integer Rotate){
 		//-- Keep Up with our fonts that are used in the program
 		//-- Test if the Font key exists, and then add it if it doesn't.
 
@@ -384,9 +384,12 @@ public class clsPdfWriter {
 			intFontCount += 1;
 			
 			dicFontsUsed.put(font.getName(), intFontCount);
-			String strFilePath = getFontPath(font);
-		
-			PdfFont	pdfFont =new PdfFont().create(strFilePath);
+			 //String strFontLoc = "../pdfWriter/src/resources/fonts/malgun.ttf";
+			 
+			// If you want to get the font from the system
+			 //String strFilePath = getFontPath(font);
+			//	PdfFont	pdfFont =new PdfFont().create(strFilePath);
+			PdfFont	pdfFont =new PdfFont().create(strFontLoc);
 			PDFFontList.add(pdfFont);
 		}
 		
@@ -1105,60 +1108,60 @@ public class clsPdfWriter {
 	 
 	 
     //Region "Helper Function"
-    private String LoadStandardFont(String strFontName ) {
-    	String strComment   = "";
-        if( _pdfCommentFile == true){
-            strComment = "% Comment- Call to LoadStandardFont " + PDFCRLF;
-        }
-        //-- Need to set our Collection for this object 
-        upDateReferenceTable();
-        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
-
-        //-- Keep our collection up to date
-        colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
-
-        String strBaseFont  = "";
-        //-- Here are the 14 Standard type of fonts supported by Adobe Reader.
-        //-- Can not use the - in Enums so I had to do this work around maybe later find better solution.
-        if(strFontName.equals("pdfStandardFonts.Times_Roman")){
-                strBaseFont = "Times−Roman";
-        }else if(strFontName.equals("pdfStandardFonts.Times_Bold")){
-                strBaseFont = "Times−Bold";
-        }else if(strFontName.equals("pdfStandardFonts.Times_Italic")){
-                strBaseFont = "Times−Italic";
-        }else if(strFontName.equals("pdfStandardFonts.Times_BoldItalic")){
-                strBaseFont = "Times−BoldItalic";
-        }else if(strFontName.equals("pdfStandardFonts.Helvetica")){
-                strBaseFont = "Helvetica";
-        }else if(strFontName.equals("pdfStandardFonts.Helvetica_Bold")){
-                strBaseFont = "Helvetica−Bold";
-        }else if(strFontName.equals("pdfStandardFonts.Helvetica_Oblique")){
-                strBaseFont = "Helvetica−Oblique";
-        }else if(strFontName.equals("pdfStandardFonts.Helvetica_BoldOblique")){
-                strBaseFont = "Helvetica−BoldOblique";
-        }else if(strFontName.equals("pdfStandardFonts.Courier")){
-                strBaseFont = "Courier";
-        }else if(strFontName.equals("pdfStandardFonts.Courier_Bold")){
-                strBaseFont = "Courier−Bold";
-        }else if(strFontName.equals("pdfStandardFonts.Courier_Oblique")){
-                strBaseFont = "Courier−Oblique";
-        }else if(strFontName.equals("pdfStandardFonts.Courier_BoldOblique")){
-                strBaseFont = "Courier−BoldOblique";
-        }else if(strFontName.equals("pdfStandardFonts.Symbol")){
-                strBaseFont = "Symbol";
-        }else if(strFontName.equals("pdfStandardFonts.ZapfDingbats")){
-                strBaseFont = "ZapfDingbats";
-        }
-        
-        strFont += "<< /Type /Font" + PDFCRLF;
-        strFont += "/Subtype /Type1" + PDFCRLF;
-        strFont += "/Name /F" + dicFontsUsed.get(strFontName).toString() + PDFCRLF;
-        strFont += "/BaseFont /" + strBaseFont + PDFCRLF;
-        strFont += "/Encoding /WinAnsiEncoding" + PDFCRLF;
-        strFont += ">>" + PDFCRLF;
-        strFont += "endobj" + PDFCRLF;
-        return strFont;
-    }
+    //private String LoadStandardFont(String strFontName ) {
+//    	String strComment   = "";
+//        if( _pdfCommentFile == true){
+//            strComment = "% Comment- Call to LoadStandardFont " + PDFCRLF;
+//        }
+//        //-- Need to set our Collection for this object 
+//        upDateReferenceTable();
+//        String strFont  = strComment + intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+//
+//        //-- Keep our collection up to date
+//        colFonts.add("F" + dicFontsUsed.get(strFontName).toString(), intpdfObjectCount.toString());
+//
+//        String strBaseFont  = "";
+//        //-- Here are the 14 Standard type of fonts supported by Adobe Reader.
+//        //-- Can not use the - in Enums so I had to do this work around maybe later find better solution.
+//        if(strFontName.equals("pdfStandardFonts.Times_Roman")){
+//                strBaseFont = "Times−Roman";
+//        }else if(strFontName.equals("pdfStandardFonts.Times_Bold")){
+//                strBaseFont = "Times−Bold";
+//        }else if(strFontName.equals("pdfStandardFonts.Times_Italic")){
+//                strBaseFont = "Times−Italic";
+//        }else if(strFontName.equals("pdfStandardFonts.Times_BoldItalic")){
+//                strBaseFont = "Times−BoldItalic";
+//        }else if(strFontName.equals("pdfStandardFonts.Helvetica")){
+//                strBaseFont = "Helvetica";
+//        }else if(strFontName.equals("pdfStandardFonts.Helvetica_Bold")){
+//                strBaseFont = "Helvetica−Bold";
+//        }else if(strFontName.equals("pdfStandardFonts.Helvetica_Oblique")){
+//                strBaseFont = "Helvetica−Oblique";
+//        }else if(strFontName.equals("pdfStandardFonts.Helvetica_BoldOblique")){
+//                strBaseFont = "Helvetica−BoldOblique";
+//        }else if(strFontName.equals("pdfStandardFonts.Courier")){
+//                strBaseFont = "Courier";
+//        }else if(strFontName.equals("pdfStandardFonts.Courier_Bold")){
+//                strBaseFont = "Courier−Bold";
+//        }else if(strFontName.equals("pdfStandardFonts.Courier_Oblique")){
+//                strBaseFont = "Courier−Oblique";
+//        }else if(strFontName.equals("pdfStandardFonts.Courier_BoldOblique")){
+//                strBaseFont = "Courier−BoldOblique";
+//        }else if(strFontName.equals("pdfStandardFonts.Symbol")){
+//                strBaseFont = "Symbol";
+//        }else if(strFontName.equals("pdfStandardFonts.ZapfDingbats")){
+//                strBaseFont = "ZapfDingbats";
+//        }
+//        
+//        strFont += "<< /Type /Font" + PDFCRLF;
+//        strFont += "/Subtype /Type1" + PDFCRLF;
+//        strFont += "/Name /F" + dicFontsUsed.get(strFontName).toString() + PDFCRLF;
+//        strFont += "/BaseFont /" + strBaseFont + PDFCRLF;
+//        strFont += "/Encoding /WinAnsiEncoding" + PDFCRLF;
+//        strFont += ">>" + PDFCRLF;
+//        strFont += "endobj" + PDFCRLF;
+//        return strFont;
+//    }
     
     private void LoadType0Font(String strFontName, Boolean blnEmbedded) throws IOException{
     	// Keep up with font used
