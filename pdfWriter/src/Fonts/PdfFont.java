@@ -652,9 +652,9 @@ public class PdfFont {
 				byte[] btyeCmap = getBuildToUnicodeCMap();
 				String strCMap = new String(btyeCmap);
 				
-				strTemp = "<< /Length " + btyeCmap.length + " >>" + PDFCRLF;
+				strTemp = "<< /Length " + btyeCmap.length + " >>";
 				strTemp += "stream" + PDFCRLF;
-				strTemp += strCMap;
+				strTemp += strCMap + PDFCRLF;
 				strTemp += "endstream" + PDFCRLF;
 				cidSystemInfo.setRegistry("(Adobe)");
 				cidSystemInfo.setOrdering("(Identity)");
@@ -788,7 +788,7 @@ public class PdfFont {
     	  ToUnicodeWriter toUniWriter = new ToUnicodeWriter();
           boolean hasSurrogates = false;
           
-          for (int gid = 1, max = intGlyphCount; gid <= max; gid++){
+          for (int gid = 1, max = glyphIds.size(); gid <= max; gid++){
               // optional CID2GIDMap for subsetting
               int cid;
               if (newSubGIDToOldGID != null){

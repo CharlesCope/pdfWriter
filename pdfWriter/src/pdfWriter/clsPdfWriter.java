@@ -684,12 +684,12 @@ public class clsPdfWriter {
         //-- %PDF−1.6
         //-- %PDF-1.7 This is the Refernce I used to create the file but only using version 1.3
         //-- of the Features so I am hard coding it for now maybe later pass in the values
-    	String strFileHeader  = "%PDF-1.5"+ PDFCRLF;;
+    	String strFileHeader  = "%PDF-1.4"+ PDFCRLF;;
         //-- Note: if (a PDF file contains binary data, as most do (see Section 3.1, “Lexical Conventions”),
         //-- it is recommended that the header line be immediately followed by a comment line containing at 
         //-- least four binary characters—that is, characters whose codes are 128 or greater 
         //-- %âãÏÓ these seem to be the standard on files I have tested.
-        //strFileHeader += "%aaIO" + PDFCRLF;
+        strFileHeader += "%aaIO" + PDFCRLF;
         //-- Now give it back
 
         return strFileHeader;
@@ -893,8 +893,8 @@ public class clsPdfWriter {
 
         //-- We have to have /ProcSet /PDF / Text at a min..
         //-- For resource type ProcSet, the value is an array of procedure set names
-
-        strResource += "<< /ProcSet [ /PDF /Text" + (colXobjectImages.size() > 0 ? " /ImageC" : "") + "]" +  PDFCRLF;
+            
+            strResource += "<< /ProcSet [ /PDF /Text" + (colXobjectImages.size() > 0 ? " /ImageC" : "") + "]" +  PDFCRLF;
         //-- A dictionary that maps resource names to external objects
         if (colXobjectImages.size() > 0 ) {
             strResource += "/XObject << " +  PDFCRLF;
@@ -1163,7 +1163,7 @@ public class clsPdfWriter {
     	String strComment  = "";
     	PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
     	curPDFFont.setIsEmbedded(blnEmbedded);
-    	curPDFFont.setToUnicodeCMAP("identityH");
+    	
     	//curPDFFont.get
     	if( _pdfCommentFile == true){strComment = "% Comment- Call to Load Type 0 Font " + PDFCRLF; }
        	
@@ -1247,6 +1247,9 @@ public class clsPdfWriter {
     		upDateReferenceTable();
     		intDynamicObjectCount +=1;
     		strFont += intpdfObjectCount.toString() + " 0 obj" + PDFCRLF;
+    		//setToUnicodeCMAP must be called after getSubWEntry to get correct result
+    		// Don't build it unless needed. I have it hard coded to identityH for now.
+    		curPDFFont.setToUnicodeCMAP("identityH");
     		strFont += curPDFFont.getToUnicodeCMAP();
     		strFont += "endobj" + PDFCRLF;
     		
