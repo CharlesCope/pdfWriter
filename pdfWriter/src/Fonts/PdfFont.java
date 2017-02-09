@@ -521,9 +521,9 @@ public class PdfFont {
     			if (prev != cid - 1){
 
     				if(ws.size() > 2){
-    					Set<String> set = new LinkedHashSet<String>(ws);
-    					ArrayList<String> list = new ArrayList<String>(set);
-    					widths.remove(widths.size()-1);
+    					ArrayList<String> list = new ArrayList<String>(ws);
+    					list.remove(0); // Remove the first item
+    					widths.remove(widths.size()-1);// Remove last item enter 
     					widths.add(list.toString());
     				}
     				ws = new ArrayList<String>();

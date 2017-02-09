@@ -449,7 +449,8 @@ public class clsPdfWriter {
 		      //-- Where to place the string on the page                               Td- Move text position
 		      strCodeText += sngHorzOffSet.toString() + " " + sngVertOffSet.toString() + " Td" +PDFCRLF;
 		  }
-		  // TODO Don't know if I need this or not Check it when I get it working ( CheckReserveChar(strTextToShow))
+		 
+		  strTextToShow = ( CheckReserveChar(strTextToShow));
 		  String strTemp = curPDFFont.getEncodedString(strTextToShow );
 	
 		  //-- Text to display on page
@@ -1895,7 +1896,7 @@ public class clsPdfWriter {
     	strEmbedded+="<< /Length ";
     	byte[] SubFont = pfdFont.getSubSetFontBytes(false,false);
     	strEmbedded +=	SubFont.length  + "/Length1 " + SubFont.length +" >>" + PDFCRLF;
-    	strEmbedded += "stream";
+    	strEmbedded += "stream"+ PDFCRLF;
     	writeString(writer1, strEmbedded);
     	writer1.close();
     	//-- Write Binary data to purpose PDF file.
