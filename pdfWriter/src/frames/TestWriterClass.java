@@ -127,7 +127,7 @@ public class TestWriterClass extends JDialog {
 				myPDFClass.PageCount(1);
 				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
 				// Now I want to try two fonts
-			//	String strFontOne ="This is Time Roman Font Line One.. ";
+				String strFontOne ="This is Time Roman Font Line One.. ";
 				String strFontTwo = " Example company Wizard text = \uD68C\uC0AC\uD504\uB85C\uD30C\uC77C \uC704\uC790\uB4DC";
 				//String strFontThree ="This is  New Courier Font Line Three ";
 				
@@ -135,14 +135,14 @@ public class TestWriterClass extends JDialog {
 				Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
 			//	Font fontMalgunBold = new Font ("Malgun Gothic Bold", Font.TRUETYPE_FONT, 14);
 				
-				//Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
+				Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
 			//	Font fontCourier = new Font("Courier New", Font.PLAIN, 14);
 				
-				//myPDFClass.ShowingText(1, 100, 720, strFontOne, fontTimes, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 750, strFontOne, fontTimes, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				myPDFClass.ShowingText(1, 100, 700, strFontTwo, fontMalgun, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				//myPDFClass.ShowingText(1, 100, 680, strFontThree, fontCourier, 16, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
 				//-- Put the file on the user desk top
-				String strFileName = "TestingTrueTypeFonts.pdf";
+				String strFileName = "Testing Two TrueTypeFonts.pdf";
 				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;
 				myPDFClass.WritePDF(strPath,blnEmbedded);
 

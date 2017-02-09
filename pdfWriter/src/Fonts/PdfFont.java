@@ -647,7 +647,7 @@ public class PdfFont {
 	// Note these are not the same as Font Cmaps these are PDF Cmaps only.
 		String strTemp = ""; 
 		
-		if (blnIsEmbedded == true){ // We need to create the Cmap our self
+		if (blnIsEmbedded == false){ // We need to create the Cmap our self
 			try {
 				byte[] btyeCmap = getBuildToUnicodeCMap();
 				String strCMap = new String(btyeCmap);

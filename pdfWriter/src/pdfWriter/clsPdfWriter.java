@@ -140,7 +140,7 @@ public class clsPdfWriter {
     private Integer intXObjectCount; //-- Keep up with the XObject in the file
     private Integer intFontDescriptorCount; //-- Keep up with Font Descriptors
     private Integer intDynamicObjectCount;//-- Keep up with Dynamic Objects
-    private Integer intToUnicodeObject = 0; //-- Keep up with the Unicode Cmap file;
+    private int intNumberOfType0Fonts = 0;//-- Keeps up with the number of loaded 
     private Boolean blnToUnicodeNeeded = true; // Keep only one copy of unicode Cmap in file.
     private String strPDFilepath;// Used to write binary data to pdf file.
     private  List<PdfFont> PDFFontList = new LinkedList<>();
@@ -1160,7 +1160,11 @@ public class clsPdfWriter {
         return strFont;
     }
     
-    private void LoadType0Font(String strFontName, BufferedWriter writer,Boolean blnEmbedded) throws IOException{
+    private void LoadType0Font(String strFontName, Boolean blnEmbedded) throws IOException{
+    	// Keep up with font used
+    	intNumberOfType0Fonts ++;
+    	int thisFontCIDToGIDMapLoc = 7 * intNumberOfType0Fonts;
+    	BufferedWriter writerFont = new BufferedWriter(new FileWriter(strPDFilepath, true));
     	String strComment  = "";
     	PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(strFontName)-1);
     	curPDFFont.setIsEmbedded(blnEmbedded);
@@ -1207,14 +1211,12 @@ public class clsPdfWriter {
     
     	// Point to our supporting Font Dictionary objects
     	type0FontDic.setDescendantFonts(String.valueOf(intpdfObjectCount + 1) + " 0 R");
-    	// Keep up with the Unicode Cmap location.
-    	if (intToUnicodeObject == 0){ intToUnicodeObject =  intpdfObjectCount + 2;}
-    	type0FontDic.setToUnicode(intToUnicodeObject.toString() + " 0 R");
+    	type0FontDic.setToUnicode(String.valueOf(4 )+ " 0 R"); // This will always be true.
 
     	strFont += type0FontDic.toString();
     	strFont += "endobj" + PDFCRLF;
     	    	
-    	writeString(writer,strFont);
+    	writeString(writerFont,strFont);
     	
     	strFont = "";
     	upDateReferenceTable();
@@ -1225,16 +1227,15 @@ public class clsPdfWriter {
     	cidFontDic.setSubType(CIDFontTypes.CIDFontType2);
     	cidFontDic.setBaseFont(type0FontDic.getBaseFont());
 
-    	if(blnToUnicodeNeeded == true){
-    		cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");}
-    	else if (blnToUnicodeNeeded == false){
-    		cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 1) + " 0 R"); }
+    	if(blnToUnicodeNeeded == true){cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 3) + " 0 R");}
+    	else if (blnToUnicodeNeeded == false){cidFontDic.setFontDescriptor(String.valueOf(intpdfObjectCount + 1) + " 0 R"); }
 
-    	cidFontDic.setCIDSystemInfo(String.valueOf(intToUnicodeObject + 1) + " 0 R");
+    	cidFontDic.setCIDSystemInfo(String.valueOf(5) + " 0 R"); // This will always be true  
 
     	if(blnEmbedded == true){
     		cidFontDic.setW(curPDFFont.getSubWEntry()); 
-    		cidFontDic.setCIDToGIDMap(String.valueOf(intToUnicodeObject + 3) + " 0 R");	
+    		if(blnToUnicodeNeeded == true){cidFontDic.setCIDToGIDMap(String.valueOf(7) + " 0 R");}
+    		else{cidFontDic.setCIDToGIDMap(String.valueOf(thisFontCIDToGIDMapLoc - intNumberOfType0Fonts + 1) + " 0 R");}
     	}
     	else{cidFontDic.setW(curPDFFont.getWEntry());}
 
@@ -1243,7 +1244,7 @@ public class clsPdfWriter {
 
     	// Check to see if we need to add cmap
     	if(blnToUnicodeNeeded == true){
-    		writeString(writer,strFont);
+    		writeString(writerFont,strFont);
         	strFont = "";
     		upDateReferenceTable();
     		intDynamicObjectCount +=1;
@@ -1254,7 +1255,7 @@ public class clsPdfWriter {
     		strFont += curPDFFont.getToUnicodeCMAP();
     		strFont += "endobj" + PDFCRLF;
     		
-    		writeString(writer,strFont);
+    		writeString(writerFont,strFont);
         	strFont = "";
     		upDateReferenceTable();
     		intDynamicObjectCount +=1;
@@ -1264,7 +1265,7 @@ public class clsPdfWriter {
     		blnToUnicodeNeeded = false;
     	}
         
-    	writeString(writer,strFont);
+    	writeString(writerFont,strFont);
     	strFont = "";
     	upDateReferenceTable();
     	intDynamicObjectCount +=1;
@@ -1278,8 +1279,8 @@ public class clsPdfWriter {
     	strFont += fontDesc.toString();
     	strFont += "endobj" + PDFCRLF;
     	
-    	writeString(writer,strFont);
-    	writer.flush();
+    	writeString(writerFont,strFont);
+    	writerFont.close();
     	if(blnEmbedded == true){
     		intDynamicObjectCount +=1;
     		CIDToGIDMapping(curPDFFont);
@@ -1288,7 +1289,7 @@ public class clsPdfWriter {
     		intDynamicObjectCount +=1; 
     		CIDSet(curPDFFont);
     	}
-
+    
     	
     }
     
@@ -1924,18 +1925,18 @@ public class clsPdfWriter {
     		writeString(writer, FileHeader());
 
 			writeString(writer, pdfFileInfo());
-
+			// Done with first writer
+    		writer.close();
     		Enumeration<String> keyFonts = dicFontsUsed.keys();
     		//-- Load only the font in use by the application to keep file size small and easy to read.
     		while(keyFonts.hasMoreElements()){
     			String key = keyFonts.nextElement();
     			//-- Check to see if we need to load any standard fonts
-    			if (key.startsWith("pdfStandardFonts") ) {writeString(writer, LoadStandardFont(key));}
+    			//if (key.startsWith("pdfStandardFonts") ) {writeString(writer, LoadStandardFont(key));}
     			// Else just load everything else as Type 0 Font.	 
-    			 LoadType0Font(key,writer,blnEmbedFontFile);
+    			 LoadType0Font(key,blnEmbedFontFile);
     		}
-    		// Done with first writer
-    		writer.close();
+    		
 
     		//-- Load up any Images into our XObject 
     		Set<String> keys = colImages.keySet();
