@@ -384,7 +384,6 @@ public class clsPdfWriter {
 			intFontCount += 1;
 			
 			dicFontsUsed.put(font.getName(), intFontCount);
-			 //String strFontLoc = "../pdfWriter/src/resources/fonts/malgun.ttf";
 			 
 			// If you want to get the font from the system
 			 //String strFilePath = getFontPath(font);

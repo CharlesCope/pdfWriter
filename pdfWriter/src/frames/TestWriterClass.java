@@ -2,17 +2,20 @@ package frames;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.net.URL;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
@@ -21,7 +24,6 @@ import javax.swing.JPanel;
 import javax.swing.border.Border;
 
 import pdfWriter.clsPdfWriter;
-import javax.swing.JCheckBox;
 
 
 
@@ -33,9 +35,21 @@ public class TestWriterClass extends JDialog {
 	private JLabel lblMessage;
 	String strFontLoc;
 	private boolean blnEmbedded = false;
+	private File fileFontMalgunPlain = null;
+	private File fileFontMalgunBold = null;
+	private File fileFontTimesPlain = null;
+	private File fileFontTimesBold = null;
+	private File fileFontTimesItalic = null;
+	private File fileFontTimesBoldItalic = null;
+		
 	
-	Font fontTimes = new Font ("Times New Roman", Font.TRUETYPE_FONT, 14);
-	Font fontMalgun = new Font ("Malgun Gothic", Font.TRUETYPE_FONT, 14);
+	Font fontTimesPlain = new Font ("Times New Roman", Font.PLAIN, 14);
+	Font fontTimesBold = new Font ("Times New Roman", Font.BOLD, 14);
+	Font fontTimesItalic = new Font ("Times New Roman", Font.ITALIC, 14);
+	Font fontTimesBoldItalic = new Font ("Times New Roman", Font.BOLD + Font.ITALIC, 14);
+	
+	Font fontMalgunPlain = new Font ("Malgun Gothic", Font.PLAIN, 14);
+	Font fontMalgunBold = new Font ("Malgun Gothic", Font.BOLD, 14);
 	
 	/** Launch the application.	 */
 	public static void main(String[] args) {
@@ -55,7 +69,7 @@ public class TestWriterClass extends JDialog {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(TestWriterClass.class.getResource("/resources/images/pencil.png")));
 		setUpFrame();
 		setUpEvents();
-		strFontLoc = "../pdfWriter/src/resources/fonts/times.ttf";
+		strFontLoc = "";
 	}
 	
 	private void setUpFrame(){
@@ -93,7 +107,7 @@ public class TestWriterClass extends JDialog {
 	    Border border = BorderFactory.createLineBorder(Color.BLUE, 2);
 
 		lblMessage = new JLabel();
-		lblMessage.setFont(fontTimes);
+		lblMessage.setFont(fontTimesPlain);
 		lblMessage.setText("English Hello ");
 		lblMessage.setBorder(border);
 		lblMessage.setBounds(10, 85, 414, 85);
@@ -115,6 +129,18 @@ public class TestWriterClass extends JDialog {
 		chckbxEmbedded.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		chckbxEmbedded.setBounds(10, 196, 135, 23);
 		contentPanel.add(chckbxEmbedded);
+		
+		JButton btnNewButton = new JButton("New button");
+		btnNewButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+			
+				JOptionPane.showMessageDialog(null, "Done " );
+				
+				
+			}
+		});
+		btnNewButton.setBounds(307, 198, 117, 23);
+		contentPanel.add(btnNewButton);
 	}
 	private void setUpEvents(){
 		btnPDF.addActionListener(new ActionListener() {
@@ -155,31 +181,32 @@ public class TestWriterClass extends JDialog {
 		         case "English":
 		        	 lblMessage.setFont(fontTimes);
 		        	 lblMessage.setText("English Hello ");
-		        	 strFontLoc = "../pdfWriter/src/resources/fonts/times.ttf";
+		        	 strFontLoc = fileFontTimesPlain.getPath();
 		             break;
 		         case "Japanese":
 		        	 lblMessage.setFont(fontMalgun);
 		        	 // Should look like this Japanese Hello こんにちは  
 		        	 lblMessage.setText("Japanese Hello " + "\u3053\u3093\u306B\u3061\u306F");
-		        	 strFontLoc = "../pdfWriter/src/resources/fonts/malgun.ttf";
+		        	 strFontLoc = fileFontMalgunPlain.getPath();
+		        	 System.out.println("The path is" + strFontLoc);
 		        	 break;
 		         case "Korean":
 		        	 lblMessage.setFont(fontMalgun);
 		        	 // Should look like this Korean 안녕하세요
 		        	 lblMessage.setText("Korean Hello = \uc548\ub155\ud558\uc138\uc694");
-		        	 strFontLoc = "../pdfWriter/src/resources/fonts/malgun.ttf";
+		        	 strFontLoc = fileFontMalgunBold.getPath();
 		        	 break;
 		         case "Spanish":
 		        	 lblMessage.setFont(fontTimes);
 		        	 // Should look like this Spanish Hello Hola
 		        	 lblMessage.setText("Spanish Hello " + "Hola");
-		        	 strFontLoc = "../pdfWriter/src/resources/fonts/times.ttf";
+		        	 strFontLoc = fileFontTimesBold.getPath();
 		             break;
 		         case "Chinese":
 		        	 lblMessage.setFont(fontMalgun);
 		        	 // Should look like this Simplified Chinese Hello 你好
 		        	 lblMessage.setText("Chinese Hello " + "\u4F60\u597D");
-		        	 strFontLoc = "../pdfWriter/src/resources/fonts/malgun.ttf";
+		        	 strFontLoc = fileFontMalgunPlain.getPath();;
 		             break;
 		        }
 		        
@@ -187,29 +214,65 @@ public class TestWriterClass extends JDialog {
 	}
 	private void loadFonts(){
 		// Make sure fonts are available to use on local machine.
-		GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
-
+	
 
 		try {
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/malgun.ttf").toURI())));
+			GraphicsEnvironment gEnv = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			URL baseURL = TestWriterClass.class.getResource("/resources/fonts/");
+			
+			InputStream inputFontMalgunPlain = new URL(baseURL, "malgun.ttf").openStream();
+			InputStream inputFontMalgunBold = new URL(baseURL, "malgunbd.ttf").openStream();
+			
+			InputStream inputFontTimesPlain = new URL(baseURL, "times.ttf").openStream();
+			InputStream inputFontTimesBold = new URL(baseURL, "timesbd.ttf").openStream();;
+			InputStream inputFontTimesItalic = new URL(baseURL, "timesbi.ttf").openStream();
+			InputStream inputFontTimesBoldItalic = new URL(baseURL, "timesbi.ttf").openStream();
+			
+		    fileFontMalgunPlain = getResourceAsFile(inputFontMalgunPlain);
+			fileFontMalgunBold = getResourceAsFile(inputFontMalgunBold);
+			
+			fileFontTimesPlain = getResourceAsFile(inputFontTimesPlain);
+			fileFontTimesBold = getResourceAsFile(inputFontTimesBold);
+			fileFontTimesItalic = getResourceAsFile(inputFontTimesItalic);
+			fileFontTimesBoldItalic = getResourceAsFile(inputFontTimesBoldItalic);
 
-
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/malgunbd.ttf").toURI())));
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/malgunsl.ttf").toURI())));
-
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/times.ttf").toURI())));
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/timesbd.ttf").toURI())));
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/timesbi.ttf").toURI())));
-			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, 
-					new File(TestWriterClass.class.getResource("/resources/fonts/timesi.ttf").toURI())));
+			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontMalgunPlain));
+		    gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontMalgunBold));
+		  
+		    gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontTimesPlain));
+		    gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontTimesBold));
+			gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontTimesItalic));
+		    gEnv.registerFont(Font.createFont(Font.TRUETYPE_FONT, fileFontTimesBoldItalic));
+		  		    
+		} catch (Exception e1) {
+			System.err.println("Font Files not found in jar file");
+		}
 		
-		} catch (FontFormatException | IOException | URISyntaxException e) {e.printStackTrace();}
+		
+	}
+	public static File getResourceAsFile(InputStream StreamingData) {
+		File tempFile = null;
+		if(StreamingData != null){
 
+			try {
+				tempFile = File.createTempFile(String.valueOf(StreamingData.hashCode()), ".tmp");
+				tempFile.deleteOnExit();
+			} catch (IOException e1) {System.err.println("Sorry not able to create temp  file");}
+
+
+			try (FileOutputStream out = new FileOutputStream(tempFile)) {
+				//copy stream
+				byte[] buffer = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = StreamingData.read(buffer)) != -1) {
+					try {
+						out.write(buffer, 0, bytesRead);
+					} catch (IOException e) {System.err.println("Sorry cant write buffer data");	}
+				}
+			} catch (FileNotFoundException e1) {System.err.println("Cant find the file");	}
+			catch (IOException e1) {e1.printStackTrace();}
+			return tempFile;
+		}
+		return tempFile;
 	}
 }
