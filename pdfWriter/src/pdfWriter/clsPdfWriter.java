@@ -383,7 +383,7 @@ public class clsPdfWriter {
 		if (dicFontsUsed.get( font.getFontName())==null){
 			intFontCount += 1;
 			
-			dicFontsUsed.put(font.getName(), intFontCount);
+			dicFontsUsed.put(font.getFontName(), intFontCount);
 			 
 			// If you want to get the font from the system
 			 //String strFilePath = getFontPath(font);
