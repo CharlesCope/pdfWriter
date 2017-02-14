@@ -10,7 +10,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -38,8 +37,8 @@ import Fonts.table.Table;
 import Fonts.table.TableDirectory;
 import Fonts.table.TableFactory;
 import cidObjects.CIDSystemInfo;
-import pdfCmaps.identityH;
 import pdfCmaps.ToUnicodeWriter;
+import pdfCmaps.identityH;
 
 /**
  * The TrueType font by Charles Cope
