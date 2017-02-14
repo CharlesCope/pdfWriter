@@ -509,45 +509,38 @@ public class PdfFont {
     		int prev = Integer.MIN_VALUE;
     		// Use a sorted list to get an optimal width array  
     		Set<Integer> keys = new TreeSet<Integer>(cidToGid.keySet());
+    		// Get the Widths first for all the glyphs.
     		for (int cid : keys){
     			int gid = cidToGid.get(cid);
     			long width = Math.round(hmtx.getSubSetAdvanceWidth(gid) * scaling);
-
-    			if (width == 1000){
-    				// skip default width
-    				continue;
-    			}
-    			// c [w1 w2 ... wn]
-    			if (prev != cid - 1){
-
-    				if(ws.size() > 2){
-    					ArrayList<String> list = new ArrayList<String>(ws);
-    					list.remove(0); // Remove the first item
-    					widths.remove(widths.size()-1);// Remove last item enter 
-    					widths.add(list.toString());
-    				}
-    				ws = new ArrayList<String>();
-    				widths.add(String.valueOf(cid)); // c
-    				ws.add(String.valueOf(width)); // wi
-    				widths.add(ws.toString());
-    			}
     			ws.add(String.valueOf(width)); 
-    			prev = cid;
     		}
-    	
-    		// Just Check our last entry for multiple values.
-    		if(ws.size() > 2){
-				Set<String> set = new LinkedHashSet<String>(ws);
-				ArrayList<String> list = new ArrayList<String>(set);
-				widths.remove(widths.size()-1);
-				widths.add(list.toString());
-			}
 
-			// Now return it without the comma and make it readable for humans.
-			return widths.toString().replace(",", "").replace("]", "]" + PDFCRLF);
-	        
+    		// Now add all the width to the array.    		
+
+    		int intIndex = 0;
+    		for (int cid : keys){
+
+    			if (prev == cid - 1){
+    				widths.add(String.valueOf(ws.get(intIndex)));}
+    			if (prev != cid - 1){
+    				widths.add("]");
+    				widths.add(String.valueOf(cid)); 
+    				widths.add("[");
+    				widths.add(String.valueOf(ws.get(intIndex)));
+    			}
+    			prev = cid;
+    			intIndex++;
+
+    		}
+
+
+    		String strTemp = widths.toString().replace(",", "").replace("[]", "[") + "]";
+    		strTemp = strTemp.replace("]", "]" + PDFCRLF);
+    		// Now return it without the comma and make it readable for humans.
+    		return strTemp;		        
     	} catch (IOException e) {e.printStackTrace();}
-		return "Error in getSubWEntry method";
+    	return "Error in getSubWEntry method";
     }
     public String getWEntry(){ 
     	/** The W Entry array allows the definition of widths for individual CIDs */
