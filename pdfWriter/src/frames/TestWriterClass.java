@@ -130,10 +130,35 @@ public class TestWriterClass extends JDialog {
 		chckbxEmbedded.setBounds(10, 196, 135, 23);
 		contentPanel.add(chckbxEmbedded);
 		
-		JButton btnNewButton = new JButton("New button");
+		JButton btnNewButton = new JButton("Two Fonts");
 		btnNewButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-			
+				clsPdfWriter myPDFClass = new clsPdfWriter();
+
+				//-- Comment the file for learning
+				myPDFClass.CommentFile(true);
+				myPDFClass.pdfTitle("Example Use of pdfWriter Class Java");
+				myPDFClass.pdfSubject("Testing the pdfWriter Class");
+				myPDFClass.pdfCreator("Java TradeWare");
+				myPDFClass.pdfAuthor("Charles Cope");
+				myPDFClass.pdfProducer("pdfWritter");
+				myPDFClass.PageCount(1);
+				myPDFClass.PaperSize(clsPdfWriter.pdfPaperSize.pdfLetter);
+				
+				String textTimes ="This is Time Roman Normal .. ";
+				String textTimesBold = "Your Heating And Air Professionals";
+				
+				Font TimesPlain = new Font("Times New Roman", Font.PLAIN, 12);
+				Font TimesBold = new Font("Times New Roman", Font.BOLD, 12);
+				
+				myPDFClass.ShowingText(1, 100, 700, textTimes,TimesPlain,fileFontTimesPlain.getPath(), 12, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				myPDFClass.ShowingText(1, 100, 600, textTimesBold, TimesBold,fileFontTimesBold.getPath(), 12, Color.BLACK, clsPdfWriter.pdfTextAlign.pdfAlignLeft, 0);
+				
+				//-- Put the file on the user desk top
+				String strFileName = "Writer two fonts.pdf";
+				String strPath = System.getProperty("user.home") + File.separator + "Desktop" + File.separator + strFileName ;
+				myPDFClass.WritePDF(strPath,true);
+				
 				JOptionPane.showMessageDialog(null, "Done " );
 				
 				

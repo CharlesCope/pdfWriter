@@ -392,7 +392,7 @@ public class clsPdfWriter {
 			PDFFontList.add(pdfFont);
 		}
 		
-		PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getName())-1);
+		PdfFont curPDFFont = PDFFontList.get(dicFontsUsed.get(font.getFontName())-1);
 		
 		// Now add the code points to the font.
 		for (int offset = 0; offset < strTextToShow.length(); ) {
@@ -427,7 +427,7 @@ public class clsPdfWriter {
 		  //-- BT- Begin text object
 		  strCodeText += "BT" +PDFCRLF;
 		  //-- Tf - Set text font and size
-		  strCodeText += "/F" + dicFontsUsed.get(font.getName()).toString() + " " + intFontSize.toString() + " Tf" +PDFCRLF;
+		  strCodeText += "/F" + dicFontsUsed.get(font.getFontName()).toString() + " " + intFontSize.toString() + " Tf" +PDFCRLF;
 		  
 		//-- Now do we need to rotate it
 		  if (Rotate != 0) {
